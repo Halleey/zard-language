@@ -1,10 +1,10 @@
 public class Token {
     public enum TokenType {
-        KEYWORD, IDENTIFIER, NUMBER, OPERATOR, DELIMITER, STRING, EOF
+        KEYWORD, IDENTIFIER, OPERATOR, NUMBER, STRING, DELIMITER, EOF
     }
 
-    private TokenType type;
-    private String value;
+    private final TokenType type;
+    private final String value;
 
     public Token(TokenType type, String value) {
         this.type = type;
@@ -21,6 +21,9 @@ public class Token {
 
     @Override
     public String toString() {
-        return String.format("Token{type=%s, value='%s'}", type, value);
+        return "Token{" +
+                "type=" + type +
+                ", value='" + value + '\'' +
+                '}';
     }
 }

@@ -44,13 +44,23 @@ public class Lexer {
         }
         String identifier = result.toString();
         switch (identifier) {
-            case "int", "string", "double":
-                return new Token(Token.TokenType.KEYWORD, identifier);
-            case "print":
+            case "int", "string", "double", "print":
                 return new Token(Token.TokenType.KEYWORD, identifier);
             default:
                 return new Token(Token.TokenType.IDENTIFIER, identifier);
         }
+    }
+
+    private Token readOperator() {
+        StringBuilder result = new StringBuilder();
+        result.append(currentChar);
+        advance();
+
+        if (currentChar == '+' || currentChar == '-' || currentChar == '*' || currentChar == '/' ||currentChar == '=') {
+            result.append(currentChar);
+            advance();
+        }
+        return new Token(Token.TokenType.OPERATOR, result.toString());
     }
 
     // Método para ler números
@@ -93,6 +103,10 @@ public class Lexer {
             }
             if (Character.isLetter(currentChar)) {
                 tokens.add(readIdentifier()); // Lê um identificador ou palavra-chave
+                continue;
+            }
+            if(currentChar == '=') {
+                tokens.add(readOperator());
                 continue;
             }
             if (Character.isDigit(currentChar)) {

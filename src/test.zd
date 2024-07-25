@@ -1,4 +1,4 @@
-int age;
+int age = 17;
 double temperature;
-string nome;
-print(age "hello world");
+string name  = hallyson;
+print("Meu nome é " name " e tenho " age " anos");
