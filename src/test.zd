@@ -1,0 +1,4 @@
+int age;
+double temperature;
+string nome;
+print(age "hello world");
