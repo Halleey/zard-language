@@ -1,4 +1,7 @@
-int age = 17;
-double temperature;
-string name  = hallyson;
-print("Meu nome é " name " e tenho " age " anos");
+int a = 2;
+int b = 3;
+int c = a * b;
+print(c);
+if(3 > 2) {
+print(true);
+}

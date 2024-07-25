@@ -15,7 +15,11 @@ public class Lexer {
 
     // Método para lançar uma exceção quando ocorrer um erro de análise
     private void error() {
-        throw new RuntimeException("Error parsing input at position " + pos);
+        if (pos < input.length()) {
+            throw new RuntimeException("Error parsing input at position " + pos + ": " + input.charAt(pos));
+        } else {
+            throw new RuntimeException("Error parsing input at position " + pos + ": EOF");
+        }
     }
 
     // Método para avançar para o próximo caractere
@@ -25,6 +29,7 @@ public class Lexer {
             currentChar = '\0'; // Define o caractere atual como '\0' para indicar o fim da entrada
         } else {
             currentChar = input.charAt(pos); // Atualiza o caractere atual para o próximo caractere na entrada
+            System.out.println("Advanced to position " + pos + ": " + currentChar);
         }
     }
 
@@ -44,7 +49,7 @@ public class Lexer {
         }
         String identifier = result.toString();
         switch (identifier) {
-            case "int", "string", "double", "print":
+            case "int", "string", "double", "print", "if", "else":
                 return new Token(Token.TokenType.KEYWORD, identifier);
             default:
                 return new Token(Token.TokenType.IDENTIFIER, identifier);
@@ -56,17 +61,27 @@ public class Lexer {
         result.append(currentChar);
         advance();
 
-        if (currentChar == '+' || currentChar == '-' || currentChar == '*' || currentChar == '/' ||currentChar == '=') {
+        // Check for two-character operators
+        if ((result.toString().equals("=") && currentChar == '=') ||
+                (result.toString().equals("<") && (currentChar == '=' || currentChar == '>')) ||
+                (result.toString().equals(">") && currentChar == '=')) {
             result.append(currentChar);
             advance();
         }
         return new Token(Token.TokenType.OPERATOR, result.toString());
     }
 
-    // Método para ler números
     private Token readNumber() {
         StringBuilder result = new StringBuilder();
-        while (currentChar != '\0' && Character.isDigit(currentChar)) {
+        boolean hasDecimalPoint = false;
+
+        while (currentChar != '\0' && (Character.isDigit(currentChar) || currentChar == '.')) {
+            if (currentChar == '.') {
+                if (hasDecimalPoint) {
+                    throw new RuntimeException("Número inválido com mais de um ponto decimal");
+                }
+                hasDecimalPoint = true;
+            }
             result.append(currentChar);
             advance();
         }
@@ -89,33 +104,54 @@ public class Lexer {
         List<Token> tokens = new ArrayList<>();
         while (currentChar != '\0') {
             if (Character.isWhitespace(currentChar)) {
-                skipWhitespace(); // Ignora espaços em branco
+                skipWhitespace();
                 continue;
             }
-            if (currentChar == '(' || currentChar == ')' || currentChar == ';') {
-                tokens.add(new Token(Token.TokenType.DELIMITER, Character.toString(currentChar))); // Adiciona delimitadores
+            if (currentChar == '(' || currentChar == ')' || currentChar == '{' || currentChar == '}' || currentChar == ';') {
+                tokens.add(new Token(Token.TokenType.DELIMITER, Character.toString(currentChar)));
                 advance();
                 continue;
             }
             if (currentChar == '"') {
-                tokens.add(readString()); // Lê uma string
+                tokens.add(readString());
                 continue;
             }
             if (Character.isLetter(currentChar)) {
-                tokens.add(readIdentifier()); // Lê um identificador ou palavra-chave
-                continue;
-            }
-            if(currentChar == '=') {
-                tokens.add(readOperator());
+                tokens.add(readIdentifier());
                 continue;
             }
             if (Character.isDigit(currentChar)) {
-                tokens.add(readNumber()); // Lê um número
+                tokens.add(readNumber());
+                continue;
+            }
+            if (currentChar == '+' || currentChar == '-' || currentChar == '*' || currentChar == '/') {
+                tokens.add(readOperator());
+                continue;
+            }
+            if (currentChar == '=' || currentChar == '>' || currentChar == '<') {
+                tokens.add(readOperator());
                 continue;
             }
             error(); // Lança um erro se o caractere não for reconhecido
         }
-        tokens.add(new Token(Token.TokenType.EOF, "")); // Adiciona um token de fim de arquivo
+        tokens.add(new Token(Token.TokenType.EOF, ""));
+
+        // Log the tokens
+        for (Token token : tokens) {
+            System.out.println("Token: " + token);
+        }
+
         return tokens;
+    }
+
+
+    public static void main(String[] args) {
+        String input = "int a = 2; if (3 > 2) { print(true); }";
+        Lexer lexer = new Lexer(input);
+        List<Token> tokens = lexer.tokenize();
+
+        for (Token token : tokens) {
+            System.out.println("Token: " + token);
+        }
     }
 }

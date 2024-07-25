@@ -35,6 +35,150 @@ public class Parser {
         }
     }
 
+    private void ifStatement() {
+        eat(Token.TokenType.KEYWORD); // Consome 'if'
+        eat(Token.TokenType.DELIMITER); // Consome '('
+        Object condition = expression(); // Processa a condição
+        eat(Token.TokenType.DELIMITER); // Consome ')'
+        eat(Token.TokenType.DELIMITER); // Consome '{'
+
+        if (!(condition instanceof Boolean)) {
+            throw new RuntimeException("Erro de sintaxe: a condição do if deve ser um valor booleano");
+        }
+
+        boolean conditionResult = (Boolean) condition;
+        if (conditionResult) {
+            parseBlock(); // Processa o bloco do if
+        } else {
+            skipBlock(); // Pula o bloco do if
+        }
+
+        if (currentToken.getType() == Token.TokenType.KEYWORD && "else".equals(currentToken.getValue())) {
+            eat(Token.TokenType.KEYWORD); // Consome 'else'
+            parseBlock(); // Processa o bloco do else
+        }
+    }
+
+    private void parseBlock() {
+        while (currentToken.getType() != Token.TokenType.DELIMITER || !currentToken.getValue().equals("}")) {
+            statement();
+        }
+        eat(Token.TokenType.DELIMITER); // Consome '}'
+    }
+
+    private void skipBlock() {
+        int openBraces = 0;
+        while (currentToken.getType() != Token.TokenType.DELIMITER || !currentToken.getValue().equals("}")) {
+            if (currentToken.getType() == Token.TokenType.DELIMITER && currentToken.getValue().equals("{")) {
+                openBraces++;
+            }
+            if (currentToken.getType() == Token.TokenType.DELIMITER && currentToken.getValue().equals("}")) {
+                if (openBraces == 0) {
+                    break;
+                }
+                openBraces--;
+            }
+            advance();
+        }
+        eat(Token.TokenType.DELIMITER); // Consome '}'
+    }
+
+    private Object expression() {
+        Object result = term();
+
+        while (currentToken.getType() == Token.TokenType.OPERATOR &&
+                (currentToken.getValue().equals("==") ||
+                        currentToken.getValue().equals("!=") ||
+                        currentToken.getValue().equals("<") ||
+                        currentToken.getValue().equals(">") ||
+                        currentToken.getValue().equals("<=") ||
+                        currentToken.getValue().equals(">="))) {
+            String operator = currentToken.getValue();
+            eat(Token.TokenType.OPERATOR);
+            Object right = term();
+
+            if (result instanceof Number && right instanceof Number) {
+                double leftValue = ((Number) result).doubleValue();
+                double rightValue = ((Number) right).doubleValue();
+                switch (operator) {
+                    case "==":
+                        return leftValue == rightValue;
+                    case "!=":
+                        return leftValue != rightValue;
+                    case "<":
+                        return leftValue < rightValue;
+                    case ">":
+                        return leftValue > rightValue;
+                    case "<=":
+                        return leftValue <= rightValue;
+                    case ">=":
+                        return leftValue >= rightValue;
+                }
+            } else {
+                throw new RuntimeException("Erro de sintaxe: operadores de comparação são suportados apenas para números");
+            }
+        }
+        return result;
+    }
+
+    private Object term() {
+        Object result = factor();
+
+        while (currentToken.getType() == Token.TokenType.OPERATOR &&
+                (currentToken.getValue().equals("*") || currentToken.getValue().equals("/"))) {
+            String operator = currentToken.getValue();
+            eat(Token.TokenType.OPERATOR);
+            Object right = factor();
+
+            if (operator.equals("*")) {
+                result = ((Number) result).doubleValue() * ((Number) right).doubleValue();
+            } else if (operator.equals("/")) {
+                result = ((Number) result).doubleValue() / ((Number) right).doubleValue();
+            }
+        }
+        return result;
+    }
+
+    private Object factor() {
+        if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
+            String identifier = currentToken.getValue();
+            eat(Token.TokenType.IDENTIFIER);
+            return variableValues.getOrDefault(identifier, identifier);
+        } else if (currentToken.getType() == Token.TokenType.NUMBER) {
+            String number = currentToken.getValue();
+            eat(Token.TokenType.NUMBER);
+            return number.contains(".") ? Double.parseDouble(number) : Integer.parseInt(number);
+        } else if (currentToken.getType() == Token.TokenType.STRING) {
+            String str = currentToken.getValue();
+            eat(Token.TokenType.STRING);
+            return str;
+        } else if (currentToken.getType() == Token.TokenType.DELIMITER && currentToken.getValue().equals("(")) {
+            eat(Token.TokenType.DELIMITER); // Consome '('
+            Object result = expression(); // Avalia a expressão entre parênteses
+            eat(Token.TokenType.DELIMITER); // Consome ')'
+            return result;
+        }
+        throw new RuntimeException("Erro de sintaxe: esperado IDENTIFIER, NUMBER, STRING ou '(' mas encontrado " + currentToken.getType());
+    }
+
+    private Object calc() {
+        Object result = term();
+
+        while (currentToken.getType() == Token.TokenType.OPERATOR &&
+                (currentToken.getValue().equals("+") || currentToken.getValue().equals("-"))) {
+            String operator = currentToken.getValue();
+            eat(Token.TokenType.OPERATOR);
+            Object right = term();
+
+            if (operator.equals("+")) {
+                result = ((Number) result).doubleValue() + ((Number) right).doubleValue();
+            } else if (operator.equals("-")) {
+                result = ((Number) result).doubleValue() - ((Number) right).doubleValue();
+            }
+        }
+        return result;
+    }
+
     private void statement() {
         if (currentToken.getType() == Token.TokenType.KEYWORD) {
             switch (currentToken.getValue()) {
@@ -46,11 +190,14 @@ public class Parser {
                 case "string":
                     variableDeclaration();
                     break;
+                case "if":
+                    ifStatement();
+                    break;
                 default:
                     throw new RuntimeException("Erro de sintaxe: declaração inesperada " + currentToken);
             }
         } else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
-            atribuirValor(); // Processa atribuições
+            atribuirValor();
         } else {
             throw new RuntimeException("Erro de sintaxe: esperado KEYWORD ou IDENTIFIER mas encontrado " + currentToken.getType());
         }
@@ -60,32 +207,41 @@ public class Parser {
         eat(Token.TokenType.KEYWORD); // Consome 'print'
         eat(Token.TokenType.DELIMITER); // Consome '('
 
-        StringBuilder result = new StringBuilder();
-        while (currentToken.getType() != Token.TokenType.DELIMITER) { // Enquanto não encontrar ')'
-            if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
-                String identifier = currentToken.getValue();
-                eat(Token.TokenType.IDENTIFIER);
-                result.append(variableValues.getOrDefault(identifier, identifier));
-            } else if (currentToken.getType() == Token.TokenType.STRING) {
-                String str = currentToken.getValue();
-                eat(Token.TokenType.STRING);
-                result.append(str);
-            } else {
-                throw new RuntimeException("Erro de sintaxe: esperado IDENTIFIER ou STRING mas encontrado " + currentToken.getType());
-            }
-            if (currentToken.getType() == Token.TokenType.OPERATOR) {
-                String operator = currentToken.getValue();
-                eat(Token.TokenType.OPERATOR);
-                if (!operator.equals("+")) {
-                    throw new RuntimeException("Erro de sintaxe: esperado operador '+' mas encontrado " + operator);
-                }
-            }
-        }
+        Object result = printExpression(); // Processa a expressão de impressão
+        System.out.println(result);
 
         eat(Token.TokenType.DELIMITER); // Consome ')'
         eat(Token.TokenType.DELIMITER); // Consome ';'
+    }
 
-        System.out.println(result.toString()); // Imprime o valor concatenado
+    private Object printExpression() {
+        StringBuilder sb = new StringBuilder();
+
+        while (currentToken.getType() != Token.TokenType.DELIMITER || !currentToken.getValue().equals(")")) {
+            if (currentToken.getType() == Token.TokenType.STRING) {
+                sb.append(currentToken.getValue());
+                eat(Token.TokenType.STRING);
+            } else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
+                String identifier = currentToken.getValue();
+                sb.append(variableValues.getOrDefault(identifier, identifier));
+                eat(Token.TokenType.IDENTIFIER);
+            } else if (currentToken.getType() == Token.TokenType.NUMBER) {
+                String number = currentToken.getValue();
+                sb.append(number);
+                eat(Token.TokenType.NUMBER);
+            } else if (currentToken.getType() == Token.TokenType.OPERATOR && currentToken.getValue().equals("+")) {
+                sb.append(" ");
+                eat(Token.TokenType.OPERATOR);
+            } else {
+                throw new RuntimeException("Erro de sintaxe: esperado STRING, IDENTIFIER, NUMBER ou OPERATOR mas encontrado " + currentToken.getType());
+            }
+
+            if (currentToken.getType() == Token.TokenType.DELIMITER && currentToken.getValue().equals(")")) {
+                break;
+            }
+        }
+
+        return sb.toString();
     }
 
     private void variableDeclaration() {
@@ -94,29 +250,26 @@ public class Parser {
         String variableName = currentToken.getValue();
         eat(Token.TokenType.IDENTIFIER);
 
-        // Se houver um operador de atribuição, processa o valor
         if (currentToken.getType() == Token.TokenType.OPERATOR && currentToken.getValue().equals("=")) {
             eat(Token.TokenType.OPERATOR);
-            Object value = expression();
+            Object value = calc(); // Processa a expressão para obter o valor da variável
             variableValues.put(variableName, value);
         } else {
             variableValues.put(variableName, getDefault(type));
         }
 
-        // Consome o delimitador ';' após a declaração
         eat(Token.TokenType.DELIMITER);
-
         System.out.println("Declaração de variável: Tipo " + type + ", Nome: " + variableName);
     }
 
     private void atribuirValor() {
-        String variableName = currentToken.getValue(); // Nome da variável
-        eat(Token.TokenType.IDENTIFIER); // Consome o nome da variável
-        eat(Token.TokenType.OPERATOR); // Consome o operador '='
+        String variableName = currentToken.getValue();
+        eat(Token.TokenType.IDENTIFIER);
+        eat(Token.TokenType.OPERATOR);
 
-        Object value = expression(); // Processa a expressão à direita da atribuição
-        variableValues.put(variableName, value); // Armazena o valor da variável
-        eat(Token.TokenType.DELIMITER); // Consome o delimitador ';'
+        Object value = calc(); // Processa a expressão para atribuição
+        variableValues.put(variableName, value);
+        eat(Token.TokenType.DELIMITER);
     }
 
     private Object getDefault(String type) {
@@ -132,27 +285,9 @@ public class Parser {
         }
     }
 
-    private Object expression() {
-        if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
-            String identifier = currentToken.getValue();
-            eat(Token.TokenType.IDENTIFIER);
-            return variableValues.getOrDefault(identifier, identifier); // Retorna o valor da variável ou o identificador
-        } else if (currentToken.getType() == Token.TokenType.NUMBER) {
-            String number = currentToken.getValue();
-            eat(Token.TokenType.NUMBER);
-            return Integer.parseInt(number); // Converte para inteiro
-        } else if (currentToken.getType() == Token.TokenType.STRING) {
-            String str = currentToken.getValue();
-            eat(Token.TokenType.STRING);
-            return str; // Retorna a string
-        } else {
-            throw new RuntimeException("Erro de sintaxe: esperado IDENTIFIER, NUMBER ou STRING mas encontrado " + currentToken.getType());
-        }
-    }
-
     public void parse() {
         while (currentToken.getType() != Token.TokenType.EOF) {
-            statement(); // Processa instruções enquanto não for EOF
+            statement();
         }
     }
 
