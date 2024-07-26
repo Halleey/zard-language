@@ -1,19 +1,12 @@
 int a;
-int b;
-int c;
-
-print("Insira um valor");
+print(teste);
 input a;
-print("Insira um valor");
-input b;
-c = a / b;
-
-if(c > 10) {
-print ("muito bom");
-}else  if(c == 8) {
-("foi bem ");
+if(a == 0) {
+    print(funcionou);
+    int b;
+    input b;
+    print(b);
 }
-else {
-print(fracasso);
-}
-print(alert);
+string name;
+input name;
+print("meu nome é " + name);

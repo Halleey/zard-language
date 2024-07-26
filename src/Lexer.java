@@ -1,9 +1,6 @@
-
 import java.util.ArrayList;
 import java.util.List;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class Lexer {
     private String input; // Armazena a entrada do código fonte
@@ -140,10 +137,9 @@ public class Lexer {
         return tokens;
     }
 
-
-    public static void main(String[] args) {
-        String input = "int a = 2; if (3 > 2) { print(true); }";
-        Lexer lexer = new Lexer(input);
-        List<Token> tokens = lexer.tokenize();
-    }
+//    public static void main(String[] args) {
+//        String input = "int a = 2; if (3 > 2) { print(true); }";
+//        Lexer lexer = new Lexer(input);
+//        List<Token> tokens = lexer.tokenize();
+//    }
 }

@@ -4,7 +4,6 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 public class Parser {
     private List<Token> tokens;
     private int pos;
@@ -42,50 +41,22 @@ public class Parser {
             throw new RuntimeException("Erro de sintaxe: esperado " + type + " mas encontrado " + currentToken.getType());
         }
     }
-    private void ifStatement() {
-        eat(Token.TokenType.KEYWORD);
-        eat(Token.TokenType.DELIMITER);
-        Object condition = expression();
-        eat(Token.TokenType.DELIMITER);
-        eat(Token.TokenType.DELIMITER);
-        if (!(condition instanceof Boolean)) {
-            throw new RuntimeException("Erro de sintaxe: a condição do if deve ser um valor booleano");
-        }
 
-        boolean conditionResult = (Boolean) condition;
-        if (conditionResult) {
-            parseBlock();
-        } else {
-            skipToNextBlock();
-
-            if (currentToken.getType() == Token.TokenType.KEYWORD && currentToken.getValue().equals("else")) {
-                eat(Token.TokenType.KEYWORD); // Consome 'else'
-                if (currentToken.getType() == Token.TokenType.KEYWORD && currentToken.getValue().equals("if")) {
-                    ifStatement();
-                } else {
-                    eat(Token.TokenType.DELIMITER); // Consome '{'
-                    parseBlock();
-                }
+    public void parseBlock() {
+        System.out.println("Parsing block start");
+        while (currentToken.getType() != Token.TokenType.DELIMITER || !currentToken.getValue().equals("}")) {
+            System.out.println("Inside block, current token: " + currentToken);
+            statement();
+            if (currentToken.getType() == Token.TokenType.EOF) {
+                throw new RuntimeException("Erro de sintaxe: bloco não terminado");
             }
         }
-    }
-
-    private void parseBlock() {
-        while (currentToken.getType() != Token.TokenType.DELIMITER || !currentToken.getValue().equals("}")) {
-            statement();
-        }
+        System.out.println("End of block");
         eat(Token.TokenType.DELIMITER); // Consome '}'
+        System.out.println("Post-block token: " + currentToken);
     }
 
-    private void skipToNextBlock() {
-        // Avança até encontrar o próximo bloco (início de outro bloco ou fim do arquivo)
-        while (currentToken.getType() != Token.TokenType.DELIMITER || !currentToken.getValue().equals("}")) {
-            advance();
-        }
-        eat(Token.TokenType.DELIMITER);
-    }
-
-    private Object expression() {
+    public Object expression() {
         Object result = term();
 
         while (currentToken.getType() == Token.TokenType.OPERATOR &&
@@ -181,7 +152,7 @@ public class Parser {
         return result;
     }
 
-    private void statement() {
+    void statement() {
         if (currentToken.getType() == Token.TokenType.KEYWORD) {
             switch (currentToken.getValue()) {
                 case "print":
@@ -193,11 +164,15 @@ public class Parser {
                     new VariableStatement(this).execute();
                     break;
                 case "if":
-                    ifStatement();
+                    new IfStatement(this).execute();
                     break;
                 case "input":
                     new  InputStatement(this).execute();
                     break;
+                case "}":
+                    advance();
+                case ";":
+                    advance();
                 default:
                     throw new RuntimeException("Erro de sintaxe: declaração inesperada " + currentToken);
             }
