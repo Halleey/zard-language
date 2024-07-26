@@ -13,7 +13,7 @@ public class Lexer {
         this.currentChar = input.charAt(pos); // Inicializa o caractere atual
     }
 
-    // Método para lançar uma exceção quando ocorrer um erro de análise
+
     private void error() {
         if (pos < input.length()) {
             throw new RuntimeException("Error parsing input at position " + pos + ": " + input.charAt(pos));
@@ -43,12 +43,12 @@ public class Lexer {
     private Token readIdentifier() {
         StringBuilder result = new StringBuilder();
         while (currentChar != '\0' && (Character.isLetterOrDigit(currentChar) || currentChar == '_')) {
-            result.append(currentChar); // Adiciona o caractere ao resultado
-            advance(); // Avança para o próximo caractere
+            result.append(currentChar);
+            advance();
         }
         String identifier = result.toString();
         switch (identifier) {
-            case "int", "string", "double", "print", "if", "else","else if" :
+            case "int", "string", "double", "print", "if", "else","else if","input" :
                 return new Token(Token.TokenType.KEYWORD, identifier);
             default:
                 return new Token(Token.TokenType.IDENTIFIER, identifier);
@@ -60,7 +60,7 @@ public class Lexer {
         result.append(currentChar);
         advance();
 
-        // Check for two-character operators
+
         if ((result.toString().equals("=") && currentChar == '=') ||
                 (result.toString().equals("<") && (currentChar == '=' || currentChar == '>')) ||
                 (result.toString().equals(">") && currentChar == '=')) {
@@ -89,12 +89,12 @@ public class Lexer {
 
     private Token readString() {
         StringBuilder result = new StringBuilder();
-        advance(); // Pular o caractere de abertura "
+        advance();
         while (currentChar != '\0' && currentChar != '"') {
             result.append(currentChar);
             advance();
         }
-        advance(); // Pular o caractere de fechamento "
+        advance();
         return new Token(Token.TokenType.STRING, result.toString());
     }
 

@@ -1,11 +1,9 @@
-int a = 2;
-int b = 3;
-int c = a * b;
-print(c);
-string nome = Hallyson;
-print(nome);
-if(2 > 2) {
-    print("first");
-}
-else if(2 == 2) {
-    print("dois é igual a dois");}
+int a;
+int b;
+int c;
+print("Insira o valor de A");
+input a;
+print("Insira o valor de B");
+input b;
+c = a + b;
+print("Resultado é " c );

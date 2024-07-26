@@ -4,6 +4,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 public class Parser {
     private List<Token> tokens;
@@ -35,30 +36,60 @@ public class Parser {
         }
     }
 
-    private void ifStatement() {
-        eat(Token.TokenType.KEYWORD); // Consome 'if'
-        eat(Token.TokenType.DELIMITER); // Consome '('
-        Object condition = expression(); // Processa a condição
-        eat(Token.TokenType.DELIMITER); // Consome ')'
-        eat(Token.TokenType.DELIMITER); // Consome '{'
 
+    private void inputStatement() {
+        eat(Token.TokenType.KEYWORD); // Consome 'input'
+        if (currentToken.getType() != Token.TokenType.IDENTIFIER) {
+            throw new RuntimeException("Erro de sintaxe: esperado IDENTIFIER após 'input'");
+        }
+        String varName = currentToken.getValue();
+        advance();
+        Scanner entrada = new Scanner(System.in);
+        String input = entrada.nextLine();
+        Object value;
+        try {
+            if (variableValues.containsKey(varName)) {
+                Object existingValue = variableValues.get(varName);
+                if (existingValue instanceof Integer) {
+                    value = Integer.parseInt(input);
+                } else if (existingValue instanceof Double) {
+                    value = Double.parseDouble(input);
+                } else {
+                    value = input;
+                }
+            } else {
+                value = input;
+            }
+        } catch (NumberFormatException e) {
+            value = input;
+        }
+        variableValues.put(varName, value);
+        eat(Token.TokenType.DELIMITER);
+    }
+
+    private void ifStatement() {
+        eat(Token.TokenType.KEYWORD);
+        eat(Token.TokenType.DELIMITER);
+        Object condition = expression();
+        eat(Token.TokenType.DELIMITER);
+        eat(Token.TokenType.DELIMITER);
         if (!(condition instanceof Boolean)) {
             throw new RuntimeException("Erro de sintaxe: a condição do if deve ser um valor booleano");
         }
 
         boolean conditionResult = (Boolean) condition;
         if (conditionResult) {
-            parseBlock(); // Processa o bloco do if
+            parseBlock();
         } else {
-            skipToNextBlock(); // Pula o bloco do if
-            // Verifica se há um else ou else if
+            skipToNextBlock();
+
             if (currentToken.getType() == Token.TokenType.KEYWORD && currentToken.getValue().equals("else")) {
                 eat(Token.TokenType.KEYWORD); // Consome 'else'
                 if (currentToken.getType() == Token.TokenType.KEYWORD && currentToken.getValue().equals("if")) {
-                    ifStatement(); // Processa 'else if' como um novo 'if'
+                    ifStatement();
                 } else {
                     eat(Token.TokenType.DELIMITER); // Consome '{'
-                    parseBlock(); // Processa o bloco do else
+                    parseBlock();
                 }
             }
         }
@@ -76,7 +107,7 @@ public class Parser {
         while (currentToken.getType() != Token.TokenType.DELIMITER || !currentToken.getValue().equals("}")) {
             advance();
         }
-        eat(Token.TokenType.DELIMITER); // Consome '}'
+        eat(Token.TokenType.DELIMITER);
     }
 
     private Object expression() {
@@ -149,9 +180,9 @@ public class Parser {
             eat(Token.TokenType.STRING);
             return str;
         } else if (currentToken.getType() == Token.TokenType.DELIMITER && currentToken.getValue().equals("(")) {
-            eat(Token.TokenType.DELIMITER); // Consome '('
-            Object result = expression(); // Avalia a expressão entre parênteses
-            eat(Token.TokenType.DELIMITER); // Consome ')'
+            eat(Token.TokenType.DELIMITER);
+            Object result = expression();
+            eat(Token.TokenType.DELIMITER);
             return result;
         }
         throw new RuntimeException("Erro de sintaxe: esperado IDENTIFIER, NUMBER, STRING ou '(' mas encontrado " + currentToken.getType());
@@ -188,6 +219,9 @@ public class Parser {
                     break;
                 case "if":
                     ifStatement();
+                    break;
+                case "input":
+                    inputStatement();
                     break;
                 default:
                     throw new RuntimeException("Erro de sintaxe: declaração inesperada " + currentToken);
@@ -288,19 +322,14 @@ public class Parser {
     }
 
     public static void main(String[] args) {
-        String filePath = "src/test.zd";
-        Lexer lexer = new Lexer(readFile(filePath));
-        List<Token> tokens = lexer.tokenize();
-        Parser parser = new Parser(tokens);
-        parser.parse();
-        System.out.println("Parsing completed successfully.");
-    }
-
-    private static String readFile(String filePath) {
         try {
-            return Files.readString(Paths.get(filePath));
+            String input = new String(Files.readAllBytes(Paths.get("src/test.zd")));
+            Lexer lexer = new Lexer(input);
+            List<Token> tokens = lexer.tokenize();
+            Parser parser = new Parser(tokens);
+            parser.parse();
         } catch (IOException e) {
-            throw new RuntimeException("Error reading file: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
