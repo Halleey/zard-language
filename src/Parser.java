@@ -50,12 +50,17 @@ public class Parser {
         if (conditionResult) {
             parseBlock(); // Processa o bloco do if
         } else {
-            skipBlock(); // Pula o bloco do if
-        }
-
-        if (currentToken.getType() == Token.TokenType.KEYWORD && "else".equals(currentToken.getValue())) {
-            eat(Token.TokenType.KEYWORD); // Consome 'else'
-            parseBlock(); // Processa o bloco do else
+            skipToNextBlock(); // Pula o bloco do if
+            // Verifica se há um else ou else if
+            if (currentToken.getType() == Token.TokenType.KEYWORD && currentToken.getValue().equals("else")) {
+                eat(Token.TokenType.KEYWORD); // Consome 'else'
+                if (currentToken.getType() == Token.TokenType.KEYWORD && currentToken.getValue().equals("if")) {
+                    ifStatement(); // Processa 'else if' como um novo 'if'
+                } else {
+                    eat(Token.TokenType.DELIMITER); // Consome '{'
+                    parseBlock(); // Processa o bloco do else
+                }
+            }
         }
     }
 
@@ -66,18 +71,9 @@ public class Parser {
         eat(Token.TokenType.DELIMITER); // Consome '}'
     }
 
-    private void skipBlock() {
-        int openBraces = 0;
+    private void skipToNextBlock() {
+        // Avança até encontrar o próximo bloco (início de outro bloco ou fim do arquivo)
         while (currentToken.getType() != Token.TokenType.DELIMITER || !currentToken.getValue().equals("}")) {
-            if (currentToken.getType() == Token.TokenType.DELIMITER && currentToken.getValue().equals("{")) {
-                openBraces++;
-            }
-            if (currentToken.getType() == Token.TokenType.DELIMITER && currentToken.getValue().equals("}")) {
-                if (openBraces == 0) {
-                    break;
-                }
-                openBraces--;
-            }
             advance();
         }
         eat(Token.TokenType.DELIMITER); // Consome '}'
@@ -295,9 +291,6 @@ public class Parser {
         String filePath = "src/test.zd";
         Lexer lexer = new Lexer(readFile(filePath));
         List<Token> tokens = lexer.tokenize();
-        for (Token token : tokens) {
-            System.out.println(token);
-        }
         Parser parser = new Parser(tokens);
         parser.parse();
         System.out.println("Parsing completed successfully.");

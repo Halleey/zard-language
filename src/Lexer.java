@@ -29,7 +29,6 @@ public class Lexer {
             currentChar = '\0'; // Define o caractere atual como '\0' para indicar o fim da entrada
         } else {
             currentChar = input.charAt(pos); // Atualiza o caractere atual para o próximo caractere na entrada
-            System.out.println("Advanced to position " + pos + ": " + currentChar);
         }
     }
 
@@ -49,7 +48,7 @@ public class Lexer {
         }
         String identifier = result.toString();
         switch (identifier) {
-            case "int", "string", "double", "print", "if", "else":
+            case "int", "string", "double", "print", "if", "else","else if" :
                 return new Token(Token.TokenType.KEYWORD, identifier);
             default:
                 return new Token(Token.TokenType.IDENTIFIER, identifier);
@@ -135,12 +134,6 @@ public class Lexer {
             error(); // Lança um erro se o caractere não for reconhecido
         }
         tokens.add(new Token(Token.TokenType.EOF, ""));
-
-        // Log the tokens
-        for (Token token : tokens) {
-            System.out.println("Token: " + token);
-        }
-
         return tokens;
     }
 
@@ -149,9 +142,5 @@ public class Lexer {
         String input = "int a = 2; if (3 > 2) { print(true); }";
         Lexer lexer = new Lexer(input);
         List<Token> tokens = lexer.tokenize();
-
-        for (Token token : tokens) {
-            System.out.println("Token: " + token);
-        }
     }
 }

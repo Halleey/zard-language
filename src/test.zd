@@ -2,6 +2,10 @@ int a = 2;
 int b = 3;
 int c = a * b;
 print(c);
-if(3 > 2) {
-print(true);
+string nome = Hallyson;
+print(nome);
+if(2 > 2) {
+    print("first");
 }
+else if(2 == 2) {
+    print("dois é igual a dois");}
