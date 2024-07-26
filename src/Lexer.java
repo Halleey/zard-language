@@ -2,6 +2,9 @@
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Lexer {
     private String input; // Armazena a entrada do código fonte
     private int pos = 0; // Posição atual no input

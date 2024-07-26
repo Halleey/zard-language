@@ -1,9 +1,19 @@
 int a;
 int b;
 int c;
-print("Insira o valor de A");
+
+print("Insira um valor");
 input a;
-print("Insira o valor de B");
+print("Insira um valor");
 input b;
-c = a + b;
-print("Resultado é " c );
+c = a / b;
+
+if(c > 10) {
+print ("muito bom");
+}else  if(c == 8) {
+("foi bem ");
+}
+else {
+print(fracasso);
+}
+print(alert);

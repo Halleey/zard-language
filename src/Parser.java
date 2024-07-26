@@ -4,7 +4,6 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
 public class Parser {
     private List<Token> tokens;
@@ -19,7 +18,15 @@ public class Parser {
         this.variableValues = new HashMap<>();
     }
 
-    private void advance() {
+    public Token getCurrentToken() {
+        return currentToken;
+    }
+
+    public Map<String, Object> getVariableValues() {
+        return variableValues;
+    }
+
+    public void advance() {
         pos++;
         if (pos < tokens.size()) {
             currentToken = tokens.get(pos);
@@ -28,45 +35,13 @@ public class Parser {
         }
     }
 
-    private void eat(Token.TokenType type) {
+    public void eat(Token.TokenType type) {
         if (currentToken.getType() == type) {
             advance();
         } else {
             throw new RuntimeException("Erro de sintaxe: esperado " + type + " mas encontrado " + currentToken.getType());
         }
     }
-
-
-    private void inputStatement() {
-        eat(Token.TokenType.KEYWORD); // Consome 'input'
-        if (currentToken.getType() != Token.TokenType.IDENTIFIER) {
-            throw new RuntimeException("Erro de sintaxe: esperado IDENTIFIER após 'input'");
-        }
-        String varName = currentToken.getValue();
-        advance();
-        Scanner entrada = new Scanner(System.in);
-        String input = entrada.nextLine();
-        Object value;
-        try {
-            if (variableValues.containsKey(varName)) {
-                Object existingValue = variableValues.get(varName);
-                if (existingValue instanceof Integer) {
-                    value = Integer.parseInt(input);
-                } else if (existingValue instanceof Double) {
-                    value = Double.parseDouble(input);
-                } else {
-                    value = input;
-                }
-            } else {
-                value = input;
-            }
-        } catch (NumberFormatException e) {
-            value = input;
-        }
-        variableValues.put(varName, value);
-        eat(Token.TokenType.DELIMITER);
-    }
-
     private void ifStatement() {
         eat(Token.TokenType.KEYWORD);
         eat(Token.TokenType.DELIMITER);
@@ -188,7 +163,7 @@ public class Parser {
         throw new RuntimeException("Erro de sintaxe: esperado IDENTIFIER, NUMBER, STRING ou '(' mas encontrado " + currentToken.getType());
     }
 
-    private Object calc() {
+    public Object calc() {
         Object result = term();
 
         while (currentToken.getType() == Token.TokenType.OPERATOR &&
@@ -215,19 +190,19 @@ public class Parser {
                 case "int":
                 case "double":
                 case "string":
-                    variableDeclaration();
+                    new VariableStatement(this).execute();
                     break;
                 case "if":
                     ifStatement();
                     break;
                 case "input":
-                    inputStatement();
+                    new  InputStatement(this).execute();
                     break;
                 default:
                     throw new RuntimeException("Erro de sintaxe: declaração inesperada " + currentToken);
             }
         } else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
-            atribuirValor();
+            new VariableStatement(this).assignValue();
         } else {
             throw new RuntimeException("Erro de sintaxe: esperado KEYWORD ou IDENTIFIER mas encontrado " + currentToken.getType());
         }
@@ -272,47 +247,6 @@ public class Parser {
         }
 
         return sb.toString();
-    }
-
-    private void variableDeclaration() {
-        String type = currentToken.getValue();
-        eat(Token.TokenType.KEYWORD);
-        String variableName = currentToken.getValue();
-        eat(Token.TokenType.IDENTIFIER);
-
-        if (currentToken.getType() == Token.TokenType.OPERATOR && currentToken.getValue().equals("=")) {
-            eat(Token.TokenType.OPERATOR);
-            Object value = calc(); // Processa a expressão para obter o valor da variável
-            variableValues.put(variableName, value);
-        } else {
-            variableValues.put(variableName, getDefault(type));
-        }
-
-        eat(Token.TokenType.DELIMITER);
-        System.out.println("Declaração de variável: Tipo " + type + ", Nome: " + variableName);
-    }
-
-    private void atribuirValor() {
-        String variableName = currentToken.getValue();
-        eat(Token.TokenType.IDENTIFIER);
-        eat(Token.TokenType.OPERATOR);
-
-        Object value = calc(); // Processa a expressão para atribuição
-        variableValues.put(variableName, value);
-        eat(Token.TokenType.DELIMITER);
-    }
-
-    private Object getDefault(String type) {
-        switch (type) {
-            case "int":
-                return 0;
-            case "double":
-                return 0.0;
-            case "string":
-                return "";
-            default:
-                throw new RuntimeException("Tipo desconhecido: " + type);
-        }
     }
 
     public void parse() {
