@@ -39,7 +39,6 @@ public class Lexer {
         }
     }
 
-    // Método para ler identificadores e palavras-chave
     private Token readIdentifier() {
         StringBuilder result = new StringBuilder();
         while (currentChar != '\0' && (Character.isLetterOrDigit(currentChar) || currentChar == '_')) {
@@ -48,12 +47,21 @@ public class Lexer {
         }
         String identifier = result.toString();
         switch (identifier) {
-            case "int", "string", "double", "print", "if", "else","else if","input" :
+            case "int":
+            case "string":
+            case "double":
+            case "print":
+            case "if":
+            case "else":
+            case "else if":
+            case "input":
+            case "boolean":
                 return new Token(Token.TokenType.KEYWORD, identifier);
             default:
                 return new Token(Token.TokenType.IDENTIFIER, identifier);
         }
     }
+
 
     private Token readOperator() {
         StringBuilder result = new StringBuilder();

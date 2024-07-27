@@ -1,6 +1,6 @@
 public class VariableStatement {
-
     private Parser parser;
+
     public VariableStatement(Parser parser) {
         this.parser = parser;
     }
@@ -46,4 +46,3 @@ public class VariableStatement {
         parser.eat(Token.TokenType.DELIMITER);
     }
 }
-

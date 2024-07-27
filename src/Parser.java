@@ -9,6 +9,7 @@ public class Parser {
     private int pos;
     private Token currentToken;
     private Map<String, Object> variableValues;
+    private int currentIndex;
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
@@ -23,6 +24,14 @@ public class Parser {
 
     public Map<String, Object> getVariableValues() {
         return variableValues;
+    }
+
+    public Token peekNextToken() {
+        int nextPos = pos + 1;
+        if (nextPos < tokens.size()) {
+            return tokens.get(nextPos);
+        }
+        return null; // Retorna null se não houver próximo token
     }
 
     public void advance() {
@@ -55,10 +64,8 @@ public class Parser {
         eat(Token.TokenType.DELIMITER); // Consome '}'
         System.out.println("Post-block token: " + currentToken);
     }
-
     public Object expression() {
         Object result = term();
-
         while (currentToken.getType() == Token.TokenType.OPERATOR &&
                 (currentToken.getValue().equals("==") ||
                         currentToken.getValue().equals("!=") ||
@@ -87,7 +94,8 @@ public class Parser {
                     case ">=":
                         return leftValue >= rightValue;
                 }
-            } else {
+            }
+            else {
                 throw new RuntimeException("Erro de sintaxe: operadores de comparação são suportados apenas para números");
             }
         }
@@ -96,7 +104,6 @@ public class Parser {
 
     private Object term() {
         Object result = factor();
-
         while (currentToken.getType() == Token.TokenType.OPERATOR &&
                 (currentToken.getValue().equals("*") || currentToken.getValue().equals("/"))) {
             String operator = currentToken.getValue();
@@ -112,27 +119,35 @@ public class Parser {
         return result;
     }
 
-    private Object factor() {
-        if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
-            String identifier = currentToken.getValue();
-            eat(Token.TokenType.IDENTIFIER);
-            return variableValues.getOrDefault(identifier, identifier);
-        } else if (currentToken.getType() == Token.TokenType.NUMBER) {
-            String number = currentToken.getValue();
-            eat(Token.TokenType.NUMBER);
-            return number.contains(".") ? Double.parseDouble(number) : Integer.parseInt(number);
-        } else if (currentToken.getType() == Token.TokenType.STRING) {
-            String str = currentToken.getValue();
-            eat(Token.TokenType.STRING);
-            return str;
-        } else if (currentToken.getType() == Token.TokenType.DELIMITER && currentToken.getValue().equals("(")) {
-            eat(Token.TokenType.DELIMITER);
-            Object result = expression();
-            eat(Token.TokenType.DELIMITER);
-            return result;
+    public Object factor() {
+        Token token = currentToken;
+        switch (token.getType()) {
+            case IDENTIFIER:
+                advance();
+                return variableValues.get(token.getValue());
+            case NUMBER:
+                advance();
+                return Double.valueOf(token.getValue());
+            case STRING:
+                advance();
+                return token.getValue();
+            case DELIMITER:
+                if (token.getValue().equals("(")) {
+                    advance();
+                    Object result = expression();
+                    if (!currentToken.getValue().equals(")")) {
+                        throw new RuntimeException("Erro de sintaxe: esperado ')' mas encontrado " + currentToken);
+                    }
+                    advance();
+                    return result;
+                }
+                break;
+            default:
+                throw new RuntimeException("Erro de sintaxe: esperado IDENTIFIER, NUMBER, STRING ou '(' mas encontrado " + token.getType());
         }
-        throw new RuntimeException("Erro de sintaxe: esperado IDENTIFIER, NUMBER, STRING ou '(' mas encontrado " + currentToken.getType());
+        return null;
     }
+
 
     public Object calc() {
         Object result = term();
@@ -152,7 +167,7 @@ public class Parser {
         return result;
     }
 
-    void statement() {
+    public void statement() {
         if (currentToken.getType() == Token.TokenType.KEYWORD) {
             switch (currentToken.getValue()) {
                 case "print":
@@ -164,15 +179,17 @@ public class Parser {
                     new VariableStatement(this).execute();
                     break;
                 case "if":
+                case "else if":
+                case "else":
                     new IfStatement(this).execute();
                     break;
                 case "input":
-                    new  InputStatement(this).execute();
+                    new InputStatement(this).execute();
                     break;
                 case "}":
-                    advance();
                 case ";":
                     advance();
+                    break;
                 default:
                     throw new RuntimeException("Erro de sintaxe: declaração inesperada " + currentToken);
             }
@@ -182,6 +199,7 @@ public class Parser {
             throw new RuntimeException("Erro de sintaxe: esperado KEYWORD ou IDENTIFIER mas encontrado " + currentToken.getType());
         }
     }
+
 
     private void printStatement() {
         eat(Token.TokenType.KEYWORD); // Consome 'print'
