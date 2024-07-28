@@ -196,7 +196,7 @@ public class Parser {
         if (currentToken.getType() == Token.TokenType.KEYWORD) {
             switch (currentToken.getValue()) {
                 case "print":
-                    printStatement();
+                    new PrintStatement(this).execute();
                     break;
                 case "int":
                 case "double":
@@ -227,49 +227,7 @@ public class Parser {
     }
 
 
-    private void printStatement() {
-        eat(Token.TokenType.KEYWORD); // Consome 'print'
-        eat(Token.TokenType.DELIMITER); // Consome '('
 
-        Object result = printExpression(); // Processa a expressão de impressão
-        System.out.println(result);
-        eat(Token.TokenType.DELIMITER); // Consome ')'
-        eat(Token.TokenType.DELIMITER); // Consome ';'
-
-    }
-
-    private Object printExpression() {
-        StringBuilder sb = new StringBuilder();
-
-        while (currentToken.getType() != Token.TokenType.DELIMITER || !currentToken.getValue().equals(")")) {
-            if (currentToken.getType() == Token.TokenType.STRING) {
-                sb.append(currentToken.getValue());
-                eat(Token.TokenType.STRING);
-            }
-
-            else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
-                String identifier = currentToken.getValue();
-                sb.append(variableValues.getOrDefault(identifier, identifier));
-                eat(Token.TokenType.IDENTIFIER);
-            } else if (currentToken.getType() == Token.TokenType.NUMBER) {
-                String number = currentToken.getValue();
-                sb.append(number);
-                eat(Token.TokenType.NUMBER);
-            } else if (currentToken.getType() == Token.TokenType.OPERATOR && currentToken.getValue().equals("+")) {
-                sb.append(" ");
-                eat(Token.TokenType.OPERATOR);
-
-            } else {
-                throw new RuntimeException("Erro de sintaxe: esperado STRING, IDENTIFIER, NUMBER ou OPERATOR mas encontrado " + currentToken.getType());
-            }
-
-            if (currentToken.getType() == Token.TokenType.DELIMITER && currentToken.getValue().equals(")")) {
-                break;
-            }
-        }
-
-        return sb.toString();
-    }
 
     public void parse() {
         while (currentToken.getType() != Token.TokenType.EOF) {

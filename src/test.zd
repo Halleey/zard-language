@@ -3,4 +3,12 @@ int peso;
 double preco = 13.2;
 string nome = "hallyson";
 boolean teste = true;
-print(idade " " peso " " preco " "nome " "teste);
+
+print(idade " " peso " " preco " " nome " " teste);
+
+if (idade > 16) {
+    print("Você é maior de idade.");
+} else {
+    print("Você é menor de idade.");
+}
+
