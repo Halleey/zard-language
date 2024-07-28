@@ -31,6 +31,8 @@ public class VariableStatement {
                 return 0.0;
             case "string":
                 return "";
+            case "boolean":
+                return false;
             default:
                 throw new RuntimeException("Tipo desconhecido: " + type);
         }

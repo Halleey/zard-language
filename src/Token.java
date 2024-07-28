@@ -1,6 +1,6 @@
 public class Token {
     public enum TokenType {
-        KEYWORD, IDENTIFIER, OPERATOR, NUMBER, STRING, DELIMITER, EOF
+        KEYWORD, IDENTIFIER, OPERATOR, NUMBER, STRING, DELIMITER, EOF, BOOLEAN
     }
 
     private final TokenType type;

@@ -9,7 +9,6 @@ public class Parser {
     private int pos;
     private Token currentToken;
     private Map<String, Object> variableValues;
-    private int currentIndex;
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
@@ -64,8 +63,11 @@ public class Parser {
         eat(Token.TokenType.DELIMITER); // Consome '}'
         System.out.println("Post-block token: " + currentToken);
     }
+
+
     public Object expression() {
         Object result = term();
+
         while (currentToken.getType() == Token.TokenType.OPERATOR &&
                 (currentToken.getValue().equals("==") ||
                         currentToken.getValue().equals("!=") ||
@@ -73,11 +75,13 @@ public class Parser {
                         currentToken.getValue().equals(">") ||
                         currentToken.getValue().equals("<=") ||
                         currentToken.getValue().equals(">="))) {
+
             String operator = currentToken.getValue();
             eat(Token.TokenType.OPERATOR);
             Object right = term();
 
             if (result instanceof Number && right instanceof Number) {
+
                 double leftValue = ((Number) result).doubleValue();
                 double rightValue = ((Number) right).doubleValue();
                 switch (operator) {
@@ -93,12 +97,25 @@ public class Parser {
                         return leftValue <= rightValue;
                     case ">=":
                         return leftValue >= rightValue;
+                    default:
+                        throw new RuntimeException("Operador de comparação desconhecido: " + operator);
                 }
-            }
-            else {
-                throw new RuntimeException("Erro de sintaxe: operadores de comparação são suportados apenas para números");
+            } else if (result instanceof Boolean && right instanceof Boolean) {
+                boolean leftValue = (Boolean) result;
+                boolean rightValue = (Boolean) right;
+                switch (operator) {
+                    case "==":
+                        return leftValue == rightValue;
+                    case "!=":
+                        return leftValue != rightValue;
+                    default:
+                        throw new RuntimeException("Operadores de comparação suportados para booleanos: ==, !=");
+                }
+            } else {
+                throw new RuntimeException("Erro de sintaxe: operadores de comparação são suportados apenas para números e booleanos");
             }
         }
+
         return result;
     }
 
@@ -142,6 +159,9 @@ public class Parser {
                     return result;
                 }
                 break;
+            case BOOLEAN:
+                advance();
+                return  Boolean.valueOf(token.getValue());
             default:
                 throw new RuntimeException("Erro de sintaxe: esperado IDENTIFIER, NUMBER, STRING ou '(' mas encontrado " + token.getType());
         }
@@ -158,14 +178,19 @@ public class Parser {
             eat(Token.TokenType.OPERATOR);
             Object right = term();
 
-            if (operator.equals("+")) {
-                result = ((Number) result).doubleValue() + ((Number) right).doubleValue();
-            } else if (operator.equals("-")) {
-                result = ((Number) result).doubleValue() - ((Number) right).doubleValue();
+            if (result instanceof Number && right instanceof Number) {
+                if (operator.equals("+")) {
+                    result = ((Number) result).doubleValue() + ((Number) right).doubleValue();
+                } else if (operator.equals("-")) {
+                    result = ((Number) result).doubleValue() - ((Number) right).doubleValue();
+                }
+            } else {
+                throw new RuntimeException("Erro de sintaxe: operações aritméticas suportadas apenas para números");
             }
         }
         return result;
     }
+
 
     public void statement() {
         if (currentToken.getType() == Token.TokenType.KEYWORD) {
@@ -176,6 +201,7 @@ public class Parser {
                 case "int":
                 case "double":
                 case "string":
+                case "boolean":
                     new VariableStatement(this).execute();
                     break;
                 case "if":
@@ -207,9 +233,9 @@ public class Parser {
 
         Object result = printExpression(); // Processa a expressão de impressão
         System.out.println(result);
-
         eat(Token.TokenType.DELIMITER); // Consome ')'
         eat(Token.TokenType.DELIMITER); // Consome ';'
+
     }
 
     private Object printExpression() {
@@ -219,7 +245,9 @@ public class Parser {
             if (currentToken.getType() == Token.TokenType.STRING) {
                 sb.append(currentToken.getValue());
                 eat(Token.TokenType.STRING);
-            } else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
+            }
+
+            else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
                 String identifier = currentToken.getValue();
                 sb.append(variableValues.getOrDefault(identifier, identifier));
                 eat(Token.TokenType.IDENTIFIER);
@@ -230,6 +258,7 @@ public class Parser {
             } else if (currentToken.getType() == Token.TokenType.OPERATOR && currentToken.getValue().equals("+")) {
                 sb.append(" ");
                 eat(Token.TokenType.OPERATOR);
+
             } else {
                 throw new RuntimeException("Erro de sintaxe: esperado STRING, IDENTIFIER, NUMBER ou OPERATOR mas encontrado " + currentToken.getType());
             }
@@ -247,7 +276,6 @@ public class Parser {
             statement();
         }
     }
-
     public static void main(String[] args) {
         try {
             String input = new String(Files.readAllBytes(Paths.get("src/test.zd")));

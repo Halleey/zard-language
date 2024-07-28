@@ -1,23 +1,6 @@
-int idade;
-double preco;
-string nome;
-print(teste);
-int a;
-input a;
-if(a == 3) {
-    print(funcionou);
-    int b;
-    input b;
-    print(b);
-}else if(a == 2){
-print("else if rodando aqui");
-}
-else if(a == 6) {
-print("bloco 6");
-}
-else{
-print("error");
-}
-int l;
-input l;
-print(l);
+int idade = 17;
+int peso;
+double preco = 13.2;
+string nome = "hallyson";
+boolean teste = true;
+print(idade " " peso " " preco " "nome " "teste);
