@@ -14,6 +14,7 @@ public class Lexer {
     }
 
 
+
     private void error() {
         if (pos < input.length()) {
             throw new RuntimeException("Error parsing input at position " + pos + ": " + input.charAt(pos));
@@ -32,10 +33,23 @@ public class Lexer {
         }
     }
 
-    // Método para ignorar espaços em branco
+    private void skipCommment()
+    {
+        while (currentChar != '\0' && currentChar != '\n') {
+            advance();
+        }
+    }
     private void skipWhitespace() {
-        while (currentChar != '\0' && Character.isWhitespace(currentChar)) {
-            advance(); // Avança até o próximo caractere não branco
+        while (currentChar != '\0') {
+            if (Character.isWhitespace(currentChar)) {
+                advance();
+            }
+            else if(currentChar == '#') {
+                skipCommment();
+            }
+           else {
+               break;
+            }
         }
     }
 
@@ -55,6 +69,8 @@ public class Lexer {
             case "else":
             case "else if":
             case "input":
+            case "function":
+            case "return":
                 return new Token(Token.TokenType.KEYWORD, identifier);
             case "boolean":
                 return new Token(Token.TokenType.KEYWORD, identifier); // BOOLEAN como KEYWORD para declaração

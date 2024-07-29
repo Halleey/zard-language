@@ -64,7 +64,6 @@ public class Parser {
         System.out.println("Post-block token: " + currentToken);
     }
 
-
     public Object expression() {
         Object result = term();
 
@@ -168,7 +167,6 @@ public class Parser {
         return null;
     }
 
-
     public Object calc() {
         Object result = term();
 
@@ -190,7 +188,6 @@ public class Parser {
         }
         return result;
     }
-
 
     public void statement() {
         if (currentToken.getType() == Token.TokenType.KEYWORD) {
@@ -225,8 +222,6 @@ public class Parser {
             throw new RuntimeException("Erro de sintaxe: esperado KEYWORD ou IDENTIFIER mas encontrado " + currentToken.getType());
         }
     }
-
-
 
 
     public void parse() {

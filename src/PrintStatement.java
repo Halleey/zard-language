@@ -18,7 +18,7 @@ public class PrintStatement {
     public Object printExpression() {
         StringBuilder sb = new StringBuilder();
 
-        while (parser.getCurrentToken().getType() != Token.TokenType.DELIMITER || !parser.getCurrentToken().getValue().equals(")")) {
+        while (!parser.getCurrentToken().getValue().equals(")")) {
             if (parser.getCurrentToken().getType() == Token.TokenType.STRING) {
                 sb.append(parser.getCurrentToken().getValue());
                 parser.eat(Token.TokenType.STRING);
