@@ -71,6 +71,7 @@ public class Lexer {
             case "input":
             case "function":
             case "return":
+            case "main":
                 return new Token(Token.TokenType.KEYWORD, identifier);
             case "boolean":
                 return new Token(Token.TokenType.KEYWORD, identifier); // BOOLEAN como KEYWORD para declaração

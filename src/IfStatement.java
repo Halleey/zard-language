@@ -139,7 +139,7 @@ public class IfStatement {
                 // Se o próximo token é '{', processa o bloco 'else'
 
                 parser.eat(Token.TokenType.DELIMITER); // Consome '{'
-                // Avança até o final do bloco 'else'
+
                 while (parser.getCurrentToken().getType() != Token.TokenType.DELIMITER ||
                         !parser.getCurrentToken().getValue().equals("}")) {
                     parser.advance();

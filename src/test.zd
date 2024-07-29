@@ -1,3 +1,5 @@
+main(){
+
 int idade = 15;
 int peso;
 double preco = 13.2;
@@ -12,4 +14,4 @@ if (idade > 16) {
 } else {
     print("Você é menor de idade.");
 }
-
+}

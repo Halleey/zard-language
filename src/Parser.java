@@ -9,12 +9,17 @@ public class Parser {
     private int pos;
     private Token currentToken;
     private Map<String, Object> variableValues;
-
+    private Map<String, FunctionStatement> functions;
+    private boolean mainFound;
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
         this.pos = 0;
         this.currentToken = tokens.get(pos);
         this.variableValues = new HashMap<>();
+    }
+
+    public Map<String, FunctionStatement> getFunctions() {
+        return functions;
     }
 
     public Token getCurrentToken() {
@@ -190,6 +195,7 @@ public class Parser {
     }
 
     public void statement() {
+
         if (currentToken.getType() == Token.TokenType.KEYWORD) {
             switch (currentToken.getValue()) {
                 case "print":
@@ -200,6 +206,10 @@ public class Parser {
                 case "string":
                 case "boolean":
                     new VariableStatement(this).execute();
+                    break;
+                case "main":
+                    new MainStatement(this).execute();
+                    mainFound = true;
                     break;
                 case "if":
                 case "else if":
@@ -222,11 +232,13 @@ public class Parser {
             throw new RuntimeException("Erro de sintaxe: esperado KEYWORD ou IDENTIFIER mas encontrado " + currentToken.getType());
         }
     }
-
-
     public void parse() {
-        while (currentToken.getType() != Token.TokenType.EOF) {
-            statement();
+         while (currentToken.getType() != Token.TokenType.EOF && currentToken.getValue().equals("main")) {
+                statement();
+            }
+        if(!mainFound) {
+            throw new RuntimeException("Main method not definied");
+
         }
     }
     public static void main(String[] args) {
