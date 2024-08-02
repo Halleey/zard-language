@@ -1,17 +1,21 @@
 main(){
-
 int idade = 15;
 int peso;
 double preco = 13.2;
 string nome = "hallyson";
 boolean teste = true;
-#testando comentarios
-
+peso++;
+idade --;
 print(idade " " peso " " preco " " nome " " teste);
+int contador = 0;
 
 if (idade > 16) {
     print("Você é maior  de idade.");
 } else {
     print("Você é menor de idade.");
+}
+while (contador < 10) {
+    print(contador);
+    contador++;
 }
 }

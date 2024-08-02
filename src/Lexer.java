@@ -3,7 +3,7 @@ import java.util.List;
 
 
 public class Lexer {
-    private String input; // Armazena a entrada do código fonte
+    private final String input; // Armazena a entrada do código fonte
     private int pos = 0; // Posição atual no input
     private char currentChar; // Caractere atual sendo analisado
 
@@ -12,8 +12,6 @@ public class Lexer {
         this.input = input;
         this.currentChar = input.charAt(pos); // Inicializa o caractere atual
     }
-
-
 
     private void error() {
         if (pos < input.length()) {
@@ -72,6 +70,7 @@ public class Lexer {
             case "function":
             case "return":
             case "main":
+            case "while":
                 return new Token(Token.TokenType.KEYWORD, identifier);
             case "boolean":
                 return new Token(Token.TokenType.KEYWORD, identifier); // BOOLEAN como KEYWORD para declaração
@@ -89,8 +88,17 @@ public class Lexer {
         result.append(currentChar);
         advance();
 
-
-        if ((result.toString().equals("=") && currentChar == '=') ||
+        if (result.toString().equals("+") || result.toString().equals("-")) {
+            if (currentChar == '+') {
+                result.append(currentChar);
+                advance();
+                return new Token(Token.TokenType.OPERATOR, result.toString());
+            } else if (currentChar == '-') {
+                result.append(currentChar);
+                advance();
+                return new Token(Token.TokenType.OPERATOR, result.toString());
+            }
+        } else if ((result.toString().equals("=") && currentChar == '=') ||
                 (result.toString().equals("<") && (currentChar == '=' || currentChar == '>')) ||
                 (result.toString().equals(">") && currentChar == '=')) {
             result.append(currentChar);
@@ -98,6 +106,7 @@ public class Lexer {
         }
         return new Token(Token.TokenType.OPERATOR, result.toString());
     }
+
 
     private Token readNumber() {
         StringBuilder result = new StringBuilder();

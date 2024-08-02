@@ -195,7 +195,6 @@ public class Parser {
     }
 
     public void statement() {
-
         if (currentToken.getType() == Token.TokenType.KEYWORD) {
             switch (currentToken.getValue()) {
                 case "print":
@@ -219,6 +218,8 @@ public class Parser {
                 case "input":
                     new InputStatement(this).execute();
                     break;
+                case "while":
+                    new WhileStatement(this).execute();
                 case "}":
                 case ";":
                     advance();
@@ -226,19 +227,44 @@ public class Parser {
                 default:
                     throw new RuntimeException("Erro de sintaxe: declaração inesperada " + currentToken);
             }
-        } else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
-            new VariableStatement(this).assignValue();
+        }
+        else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
+            String variableName = currentToken.getValue();
+            advance();
+            if (currentToken.getType() == Token.TokenType.OPERATOR &&
+                    (currentToken.getValue().equals("++") || currentToken.getValue().equals("--"))) {
+                String operator = currentToken.getValue();
+                advance();
+                if (variableValues.containsKey(variableName)) {
+                    Number value = (Number) variableValues.get(variableName);
+                    if (operator.equals("++")) {
+                        value = value.doubleValue() + 1;
+                    } else if (operator.equals("--")) {
+                        value = value.doubleValue() - 1;
+                    }
+                    variableValues.put(variableName, value);
+                } else {
+                    throw new RuntimeException("Variável não declarada: " + variableName);
+                }
+            } else {
+                new VariableStatement(this).assignValue();
+            }
+        } else if (currentToken.getType() == Token.TokenType.DELIMITER &&
+                (currentToken.getValue().equals("}") || currentToken.getValue().equals(";"))) {
+            advance();
         } else {
             throw new RuntimeException("Erro de sintaxe: esperado KEYWORD ou IDENTIFIER mas encontrado " + currentToken.getType());
         }
     }
+
+
     public void parse() {
          while (currentToken.getType() != Token.TokenType.EOF && currentToken.getValue().equals("main")) {
+             System.out.println(getCurrentToken());
                 statement();
             }
         if(!mainFound) {
             throw new RuntimeException("Main method not definied");
-
         }
     }
     public static void main(String[] args) {
