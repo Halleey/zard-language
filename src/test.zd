@@ -19,11 +19,23 @@ while (contador < 9) {
     contador++;
     print(contador);
     if(contador == 4)  {
-    print("teste");
+    print("4");
     }
+      else if(contador == 6)  {
+        print("6");
+        }
+          else if(contador == 7)  {
+                print("7");
+                }
+                  else if(contador == 8)  {
+                        print("8");
+                        }
+        else if(contador == 9) {
+        print("9");
+        }
 }
 string teste;
-print(contador);
+print("Insira um texto");
 input teste;
 print(teste);
 }

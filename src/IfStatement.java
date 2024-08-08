@@ -93,7 +93,7 @@ public class IfStatement {
         }
     }
 
-    private void skipElseBlock() {
+    public void skipElseBlock() {
 
         while (parser.getCurrentToken().getValue().equals("else")) {
             parser.eat(Token.TokenType.KEYWORD); // Consome 'else'

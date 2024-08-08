@@ -16,6 +16,7 @@ public class WhileStatement {
             throw new RuntimeException("Condição de 'while' deve ser um valor booleano.");
         }
 
+
         parser.eat(Token.TokenType.DELIMITER);
         parser.eat(Token.TokenType.DELIMITER);
 
@@ -24,21 +25,31 @@ public class WhileStatement {
 
             condition = checkWhileCondition();
             if (!(boolean) condition) {
-                while (!parser.getCurrentToken().getValue().equals("}")) {
-                    parser.advance();
-                    System.out.println("skiped "+ parser.getCurrentToken());
-                }
+                skipToEndOfFunction();
+                System.out.println("log" + parser.getCurrentToken());
             }
         }
+
         parser.eat(Token.TokenType.DELIMITER);
+        parser.advance();
         parser.advance();
     }
 
-
     private void processWhileBlock() {
+        int braceLevel = 0;
         while (!(parser.getCurrentToken().getType() == Token.TokenType.DELIMITER &&
-                "}".equals(parser.getCurrentToken().getValue()))) {
+                "}".equals(parser.getCurrentToken().getValue()) && braceLevel == 0)) {
+            if (parser.getCurrentToken().getType() == Token.TokenType.DELIMITER) {
+                if ("{".equals(parser.getCurrentToken().getValue())) {
+                    braceLevel++;
+                } else if ("}".equals(parser.getCurrentToken().getValue())) {
+                    braceLevel--;
+                }
+            }
             parser.statement();
+            if (parser.getCurrentToken().getType() == Token.TokenType.EOF) {
+                throw new RuntimeException("Erro de sintaxe: bloco não terminado");
+            }
         }
     }
 
@@ -53,4 +64,21 @@ public class WhileStatement {
         return condition;
     }
 
+    private void skipToEndOfFunction() {
+        int braceLevel = 0;
+        while (!(parser.getCurrentToken().getType() == Token.TokenType.EOF)) {
+            if (parser.getCurrentToken().getType() == Token.TokenType.DELIMITER) {
+                if ("{".equals(parser.getCurrentToken().getValue())) {
+                    braceLevel++;
+                } else if ("}".equals(parser.getCurrentToken().getValue())) {
+                    if (braceLevel == 0) {
+                        return;
+                    } else {
+                        braceLevel--;
+                    }
+                }
+            }
+            parser.advance();
+        }
+    }
 }
