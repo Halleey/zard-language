@@ -14,8 +14,16 @@ if (idade > 16) {
 } else {
     print("Você é menor de idade.");
 }
-while (contador < 10) {
+while (contador < 9) {
     print(contador);
     contador++;
+    print(contador);
+    if(contador == 4)  {
+    print("teste");
+    }
 }
+string teste;
+print(contador);
+input teste;
+print(teste);
 }

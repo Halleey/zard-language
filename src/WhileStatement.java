@@ -1,5 +1,3 @@
-
-//need fixed bugs
 public class WhileStatement {
     private final Parser parser;
 
@@ -8,39 +6,51 @@ public class WhileStatement {
     }
 
     public void execute() {
-        // Consome o keyword 'while'
-        parser.eat(Token.TokenType.KEYWORD);
 
-        // Consome o delimitador '('
+        parser.eat(Token.TokenType.KEYWORD);
         parser.eat(Token.TokenType.DELIMITER);
 
-        // Avalia a condição do loop
+
         Object condition = parser.expression();
         if (!(condition instanceof Boolean)) {
             throw new RuntimeException("Condição de 'while' deve ser um valor booleano.");
         }
 
-        // Consome o delimitador ')'
+        parser.eat(Token.TokenType.DELIMITER);
         parser.eat(Token.TokenType.DELIMITER);
 
-        // Consome o delimitador '{'
-        parser.eat(Token.TokenType.DELIMITER);
-
-        // Executa o bloco de código enquanto a condição for verdadeira
         while ((boolean) condition) {
-            parser.parseBlock(); // Executa o bloco de código
+            processWhileBlock();
 
-            // Avalia novamente a condição do loop após a execução do bloco
-            parser.eat(Token.TokenType.KEYWORD); // Consome o keyword 'while'
-            parser.eat(Token.TokenType.DELIMITER); // Consome o delimitador '('
-            condition = parser.expression();
-            if (!(condition instanceof Boolean)) {
-                throw new RuntimeException("Condição de 'while' deve ser um valor booleano.");
+            condition = checkWhileCondition();
+            if (!(boolean) condition) {
+                while (!parser.getCurrentToken().getValue().equals("}")) {
+                    parser.advance();
+                    System.out.println("skiped "+ parser.getCurrentToken());
+                }
             }
-            parser.eat(Token.TokenType.DELIMITER); // Consome o delimitador ')'
         }
-
-        // Consome o delimitador '}' após o bloco de código
         parser.eat(Token.TokenType.DELIMITER);
+        parser.advance();
     }
+
+
+    private void processWhileBlock() {
+        while (!(parser.getCurrentToken().getType() == Token.TokenType.DELIMITER &&
+                "}".equals(parser.getCurrentToken().getValue()))) {
+            parser.statement();
+        }
+    }
+
+    private Object checkWhileCondition() {
+        parser.backToWhile();
+        parser.eat(Token.TokenType.KEYWORD);
+        parser.eat(Token.TokenType.DELIMITER);
+
+        Object condition = parser.expression();
+        parser.eat(Token.TokenType.DELIMITER);
+        parser.eat(Token.TokenType.DELIMITER);
+        return condition;
+    }
+
 }

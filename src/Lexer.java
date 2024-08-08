@@ -21,7 +21,6 @@ public class Lexer {
         }
     }
 
-    // Método para avançar para o próximo caractere
     private void advance() {
         pos++; // Avança para o próximo caractere
         if (pos > input.length() - 1) { // Se a posição atual for maior que o último índice da entrada
@@ -174,10 +173,4 @@ public class Lexer {
         tokens.add(new Token(Token.TokenType.EOF, ""));
         return tokens;
     }
-
-//    public static void main(String[] args) {
-//        String input = "int a = 2; if (3 > 2) { print(true); }";
-//        Lexer lexer = new Lexer(input);
-//        List<Token> tokens = lexer.tokenize();
-//    }
 }

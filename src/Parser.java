@@ -1,21 +1,38 @@
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 public class Parser {
-    private List<Token> tokens;
+    private final List<Token> tokens;
     private int pos;
     private Token currentToken;
-    private Map<String, Object> variableValues;
-    private Map<String, FunctionStatement> functions;
+    private final Map<String, Object> variableValues;
+    private final Map<String, FunctionStatement> functions;
     private boolean mainFound;
+    private int whilePosition;
+
+    public void backToWhile() {
+        while (pos >= 0) {
+            if (currentToken.getType() == Token.TokenType.KEYWORD &&
+                    "while".equals(currentToken.getValue())) {
+                whilePosition = pos;
+                System.out.println("Encontrado o token 'while': " + currentToken);
+                return;
+            }
+            back();
+        }
+
+        System.out.println("Token 'while' não encontrado. Chegou ao início.");
+    }
+
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
         this.pos = 0;
         this.currentToken = tokens.get(pos);
         this.variableValues = new HashMap<>();
+        this.functions = new HashMap<>();
+        this.mainFound = false;
     }
 
     public Map<String, FunctionStatement> getFunctions() {
@@ -47,6 +64,15 @@ public class Parser {
         }
     }
 
+    public void back() {
+        pos--;
+        if (pos >= 0) {
+            currentToken = tokens.get(pos);
+        } else {
+            currentToken = new Token(Token.TokenType.EOF, "");
+        }
+    }
+
     public void eat(Token.TokenType type) {
         if (currentToken.getType() == type) {
             advance();
@@ -54,6 +80,8 @@ public class Parser {
             throw new RuntimeException("Erro de sintaxe: esperado " + type + " mas encontrado " + currentToken.getType());
         }
     }
+
+
 
     public void parseBlock() {
         System.out.println("Parsing block start");
@@ -165,7 +193,7 @@ public class Parser {
                 break;
             case BOOLEAN:
                 advance();
-                return  Boolean.valueOf(token.getValue());
+                return Boolean.valueOf(token.getValue());
             default:
                 throw new RuntimeException("Erro de sintaxe: esperado IDENTIFIER, NUMBER, STRING ou '(' mas encontrado " + token.getType());
         }
@@ -220,6 +248,7 @@ public class Parser {
                     break;
                 case "while":
                     new WhileStatement(this).execute();
+                    break;
                 case "}":
                 case ";":
                     advance();
@@ -227,8 +256,7 @@ public class Parser {
                 default:
                     throw new RuntimeException("Erro de sintaxe: declaração inesperada " + currentToken);
             }
-        }
-        else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
+        } else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
             String variableName = currentToken.getValue();
             advance();
             if (currentToken.getType() == Token.TokenType.OPERATOR &&
@@ -257,16 +285,20 @@ public class Parser {
         }
     }
 
-
     public void parse() {
-         while (currentToken.getType() != Token.TokenType.EOF && currentToken.getValue().equals("main")) {
-             System.out.println(getCurrentToken());
+        while (currentToken.getType() != Token.TokenType.EOF) {
+            if (currentToken.getValue().equals("main")) {
+                System.out.println(getCurrentToken());
                 statement();
+            } else {
+                advance(); // Avança para o próximo token se não for o início do método main
             }
-        if(!mainFound) {
-            throw new RuntimeException("Main method not definied");
+        }
+        if (!mainFound) {
+            throw new RuntimeException("Main method not defined");
         }
     }
+
     public static void main(String[] args) {
         try {
             String input = new String(Files.readAllBytes(Paths.get("src/test.zd")));
