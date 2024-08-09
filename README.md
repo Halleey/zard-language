@@ -9,7 +9,7 @@
 
 📝 Exemplo de Código
 
-main() {
+    main() {
     int idade = 15;
     int peso;
     double preco = 13.2;
@@ -36,7 +36,7 @@ main() {
         else if (contador == 6) {
             print("6");
         }
-        # Outros ifs...
+        // Outros ifs...
     }
 
     if (idade == 15) {
@@ -49,7 +49,7 @@ main() {
     print("Insira um texto");
     input teste;
     print(teste);
-}
+    }
 
 🔧 Uso
 
