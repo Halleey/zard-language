@@ -36,7 +36,7 @@
         else if (contador == 6) {
             print("6");
         }
-        // Outros ifs...
+        # Outros ifs...
     }
 
     if (idade == 15) {
