@@ -1,4 +1,4 @@
- public class IfStatement {
+public class IfStatement {
     private final Parser parser;
 
     public IfStatement(Parser parser) {
