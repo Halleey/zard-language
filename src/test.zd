@@ -14,25 +14,30 @@ if (idade > 16) {
 } else {
     print("Você é menor de idade.");
 }
-while (contador < 9) {
+while (contador < 15) {
     print(contador);
     contador++;
     print(contador);
     if(contador == 4)  {
-    print("4");
+        print("4");
     }
-      else if(contador == 6)  {
+    else if(contador == 6)  {
         print("6");
-        }
-          else if(contador == 7)  {
-                print("7");
-                }
-                  else if(contador == 8)  {
-                        print("8");
-                        }
-        else if(contador == 9) {
+    }
+    else if(contador == 7)  {
+        print("7");
+    }
+    else if(contador == 8)  {
+        print("8");
+    }
+    else if(contador == 9) {
         print("9");
-        }
+    }
+}
+if  (idade == 15) {print("teste");
+}
+else{
+print("menor de idade");
 }
 string teste;
 print("Insira um texto");

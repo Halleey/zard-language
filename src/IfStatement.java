@@ -6,17 +6,11 @@ public class IfStatement {
     }
 
     public void execute() {
-        System.out.println("Executing IfStatement, current token: " + parser.getCurrentToken());
-
-        System.out.println("Consuming 'if'");
         parser.eat(Token.TokenType.KEYWORD);
-
-
-        System.out.println("Consuming '('");
         parser.eat(Token.TokenType.DELIMITER);
 
 
-        System.out.println("Evaluating condition");
+
         Object condition = parser.expression();
         System.out.println("Condition evaluated: " + condition);
 
@@ -31,12 +25,12 @@ public class IfStatement {
         System.out.println("Condition activation: " + conditionActivation);
 
         if (conditionActivation) {
-            System.out.println("Executing block for 'if'");
+
             parser.parseBlock();
             skipElseBlock();
             return;
         } else {
-            System.out.println("Skipping block for 'if'");
+
             while (!parser.getCurrentToken().getValue().equals("}")) {
                 parser.advance();
             }
@@ -67,7 +61,6 @@ public class IfStatement {
                     } else {
 
                         while (!parser.getCurrentToken().getValue().equals("}")) {
-                            System.out.println("Current token while skipping 'else if': " + parser.getCurrentToken());
                             parser.advance();
                         }
 
@@ -111,9 +104,7 @@ public class IfStatement {
                 parser.eat(Token.TokenType.DELIMITER);
 
                 boolean elseIfConditionActivation = (boolean) elseIfCondition;
-                System.out.println("'else if' condition activation: " + elseIfConditionActivation);
                 if (elseIfConditionActivation) {
-                    System.out.println("Executing block for 'else if'");
                     parser.parseBlock();
                     return;
                 } else {
