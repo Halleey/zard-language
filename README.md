@@ -9,6 +9,48 @@
 
 📝 Exemplo de Código
 
+main() {
+    int idade = 15;
+    int peso;
+    double preco = 13.2;
+    string nome = "hallyson";
+    boolean teste = true;
+    peso++;
+    idade--;
+    print(idade " " peso " " preco " " nome " " teste);
+
+    int contador = 0;
+    if (idade > 16) {
+        print("Você é maior de idade.");
+    } else {
+        print("Você é menor de idade.");
+    }
+
+    while (contador < 15) {
+        print(contador);
+        contador++;
+        print(contador);
+        if (contador == 15) {
+            print("4");
+        }
+        else if (contador == 6) {
+            print("6");
+        }
+        # Outros ifs...
+    }
+
+    if (idade == 15) {
+        print("teste");
+    } else {
+        print("menor de idade");
+    }
+
+    string teste;
+    print("Insira um texto");
+    input teste;
+    print(teste);
+}
+
 🔧 Uso
 
 🌟#Características
