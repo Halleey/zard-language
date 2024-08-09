@@ -1,4 +1,4 @@
-🚀 Zard Language.
+🚀 Zard.
 Zard é uma linguagem de programação ao qual estou construindo baseada no java. Bem, ela no momento é só para caso de estudo, mas continuarei atualizando a mesma.
 
 
