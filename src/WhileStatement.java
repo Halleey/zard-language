@@ -4,6 +4,7 @@ public class WhileStatement {
     public WhileStatement(Parser parser) {
         this.parser = parser;
     }
+
     public void execute() {
         parser.eat(Token.TokenType.KEYWORD);
         parser.eat(Token.TokenType.DELIMITER);
@@ -20,6 +21,7 @@ public class WhileStatement {
             processWhileBlock();
 
             condition = checkWhileCondition();
+
             if (!(boolean) condition) {
                 skipToEndOfFunction();
                 break;
@@ -30,7 +32,6 @@ public class WhileStatement {
         }
         System.out.println("    " + parser.getCurrentToken());
     }
-
 
     private void processWhileBlock() {
         int braceLevel = 0;
@@ -76,7 +77,6 @@ public class WhileStatement {
                 }
             }
             parser.advance();
-
         }
     }
 }
