@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class Lexer {
     private final String input; // Armazena a entrada do código fonte
     private int pos = 0; // Posição atual no input
@@ -22,7 +21,7 @@ public class Lexer {
     }
 
     private void advance() {
-        pos++; // Avança para o próximo caractere
+        pos++;
         if (pos > input.length() - 1) { // Se a posição atual for maior que o último índice da entrada
             currentChar = '\0'; // Define o caractere atual como '\0' para indicar o fim da entrada
         } else {
@@ -168,7 +167,7 @@ public class Lexer {
                 tokens.add(readOperator());
                 continue;
             }
-            error(); // Lança um erro se o caractere não for reconhecido
+            error();
         }
         tokens.add(new Token(Token.TokenType.EOF, ""));
         return tokens;

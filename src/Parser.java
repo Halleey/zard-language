@@ -8,7 +8,6 @@ public class Parser {
     private int pos;
     private Token currentToken;
     private final Map<String, Object> variableValues;
-    private final Map<String, FunctionStatement> functions;
     private boolean mainFound;
     private int whilePosition;
 
@@ -31,12 +30,7 @@ public class Parser {
         this.pos = 0;
         this.currentToken = tokens.get(pos);
         this.variableValues = new HashMap<>();
-        this.functions = new HashMap<>();
         this.mainFound = false;
-    }
-
-    public Map<String, FunctionStatement> getFunctions() {
-        return functions;
     }
 
     public Token getCurrentToken() {

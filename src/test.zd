@@ -1,36 +1,25 @@
-main(){
-int idade = 15;
-int peso;
-double preco = 13.2;
-string nome = "hallyson";
-boolean teste = true;
-peso++;
-idade --;
-print(idade " " peso " " preco " " nome " " teste);
-int contador = 0;
+main() {
+    int a;
+    input a;
+    print(a);
 
-if (idade > 16) {
-    print("Você é maior  de idade.");
-} else {
-    print("Você é menor de idade.");
-}
-while (contador < 6) {
-    print(contador);
-    contador++;
-    print(contador);
-    if(contador == 4)  {
-        print("4");
+    while (a < 8) {
+        if (a == 3) {
+            print("A é igual a 3");
+        } else if (a == 5) {
+            print("A é igual a 5");
+        } else if (a == 7) {
+            print("A é igual a 7");
+        } else {
+            print("A é diferente de 3, 5 e 7");
+        }
+        a++;
+        print(a);
     }
-    if(contador == 3) {
-    print("teste");}
-}
-if  (idade == 15) {print("teste");
-}
-else{
-print("menor de idade");
-}
-string teste;
-print("Insira um texto");
-input teste;
-print(teste);
+    if (a == 9) {
+        print("A chegou a 10");
+    } else
+     {
+        print("A não é 10, é " + a);
+    }
 }

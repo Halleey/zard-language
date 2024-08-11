@@ -4,76 +4,117 @@ public class IfStatement {
     public IfStatement(Parser parser) {
         this.parser = parser;
     }
+
     public void execute() {
         parser.eat(Token.TokenType.KEYWORD);
         parser.eat(Token.TokenType.DELIMITER);
 
         Object condition = parser.expression();
-        if (!(condition instanceof Boolean)) {
-            throw new RuntimeException("Condição de 'if' deve ser um valor booleano.");
-        }
+        System.out.println("Condition evaluated: " + condition);
 
-        parser.eat(Token.TokenType.DELIMITER);
+        System.out.println("Consuming ')'");
         parser.eat(Token.TokenType.DELIMITER);
 
-        if ((Boolean) condition) {
+        System.out.println("Consuming '{'");
+        parser.eat(Token.TokenType.DELIMITER);
+
+        boolean conditionActivation = (boolean) condition;
+        System.out.println("Condition activation: " + conditionActivation);
+
+        if (conditionActivation) {
             parser.parseBlock();
+            skipElseBlock();
+            return;
         } else {
-            skipBlock();
+            while (!parser.getCurrentToken().getValue().equals("}")) {
+                parser.advance();
+            }
+            parser.eat(Token.TokenType.DELIMITER); // Consome '}'
         }
 
-        while (parser.getCurrentToken().getType() == Token.TokenType.KEYWORD &&
-                "else".equals(parser.getCurrentToken().getValue())) {
+        while (parser.getCurrentToken().getType() == Token.TokenType.KEYWORD) {
+            String value = parser.getCurrentToken().getValue();
 
-            parser.eat(Token.TokenType.KEYWORD);
+            if (value.equals("else")) {
+                if (parser.peekNextToken().getValue().equals("if")) {
+                    // Se for 'else if', processa
+                    parser.eat(Token.TokenType.KEYWORD);
+                    parser.eat(Token.TokenType.KEYWORD);
+                    parser.eat(Token.TokenType.DELIMITER);
+
+                    Object elseIfCondition = parser.expression();
+
+                    parser.eat(Token.TokenType.DELIMITER);
+                    parser.eat(Token.TokenType.DELIMITER);
+
+                    boolean elseIfConditionActivation = (boolean) elseIfCondition;
+                    if (elseIfConditionActivation) {
+                        parser.parseBlock();
+
+                        skipElseBlock();
+                        return;
+                    } else {
+                        while (!parser.getCurrentToken().getValue().equals("}")) {
+                            parser.advance();
+                        }
+                        parser.eat(Token.TokenType.DELIMITER);
+                    }
+                } else {
+                    parser.eat(Token.TokenType.KEYWORD); // Consome 'else'
+
+                    if (parser.getCurrentToken().getValue().equals("{")) {
+                        parser.eat(Token.TokenType.DELIMITER);
+                        parser.parseBlock();
+                        return;
+                    } else {
+                        throw new RuntimeException("Erro de sintaxe: esperado '{' após 'else' mas encontrado " + parser.getCurrentToken());
+                    }
+                }
+            }
+        }
+    }
+
+    public void skipElseBlock() {
+        while (parser.getCurrentToken().getValue().equals("else")) {
+            parser.eat(Token.TokenType.KEYWORD); // Consome 'else'
 
             if (parser.getCurrentToken().getType() == Token.TokenType.KEYWORD &&
-                    "if".equals(parser.getCurrentToken().getValue())) {
+                    parser.getCurrentToken().getValue().equals("if")) {
 
                 parser.eat(Token.TokenType.KEYWORD);
                 parser.eat(Token.TokenType.DELIMITER);
 
-                condition = parser.expression();
-                if (!(condition instanceof Boolean)) {
-                    throw new RuntimeException("Condição de 'else if' deve ser um valor booleano.");
-                }
-
+                Object elseIfCondition = parser.expression();
                 parser.eat(Token.TokenType.DELIMITER);
                 parser.eat(Token.TokenType.DELIMITER);
 
-                if ((Boolean) condition) {
+                boolean elseIfConditionActivation = (boolean) elseIfCondition;
+                if (elseIfConditionActivation) {
                     parser.parseBlock();
+                    return;
                 } else {
-                    skipBlock();
-                }
-            } else {
-                // 'else' bloco
-                if (parser.getCurrentToken().getValue().equals("{")) {
-                    parser.eat(Token.TokenType.DELIMITER);
-                    parser.parseBlock();
-                }
-                break;
-            }
-        }
-    }
+                    while (!parser.getCurrentToken().getValue().equals("}")) {
+                        parser.advance();
+                    }
 
-    private void skipBlock() {
-        int braceLevel = 0;
-        while (parser.getCurrentToken().getType() != Token.TokenType.EOF &&
-                !(parser.getCurrentToken().getType() == Token.TokenType.DELIMITER &&
-                        "}".equals(parser.getCurrentToken().getValue()) && braceLevel == 0)) {
-            if (parser.getCurrentToken().getType() == Token.TokenType.DELIMITER) {
-                if ("{".equals(parser.getCurrentToken().getValue())) {
-                    braceLevel++;
-                } else if ("}".equals(parser.getCurrentToken().getValue())) {
-                    braceLevel--;
+                    parser.eat(Token.TokenType.DELIMITER); // Consome '}'
                 }
+            } else if (parser.getCurrentToken().getType() == Token.TokenType.DELIMITER &&
+                    parser.getCurrentToken().getValue().equals("{")) {
+
+                parser.eat(Token.TokenType.DELIMITER);
+
+                while (parser.getCurrentToken().getType() != Token.TokenType.DELIMITER ||
+                        !parser.getCurrentToken().getValue().equals("}")) {
+                    parser.advance();
+                }
+
+                parser.eat(Token.TokenType.DELIMITER);
+                return;
+            } else {
+                throw new RuntimeException("Erro de sintaxe: esperado '{' ou 'if' após 'else' mas encontrado " + parser.getCurrentToken());
             }
-            parser.advance();
-        }
-        if (parser.getCurrentToken().getType() == Token.TokenType.DELIMITER &&
-                "}".equals(parser.getCurrentToken().getValue())) {
-            parser.eat(Token.TokenType.DELIMITER);
         }
     }
 }
+
