@@ -16,8 +16,8 @@ main() {
         a++;
         print(a);
     }
-    if (a == 9) {
-        print("A chegou a 10");
+    if (a == 8) {
+        print("A chegou a 8");
     } else
      {
         print("A não é 10, é " + a);
