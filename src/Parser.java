@@ -160,7 +160,11 @@ public class Parser {
                 return variableValues.get(token.getValue());
             case NUMBER:
                 advance();
-                return Double.valueOf(token.getValue());
+                if (token.getValue().contains(".")) {
+                    return Double.valueOf(token.getValue());
+                } else {
+                    return Integer.valueOf(token.getValue());
+                }
             case STRING:
                 advance();
                 return token.getValue();
@@ -186,18 +190,24 @@ public class Parser {
 
     public Object calc() {
         Object result = term();
-
         while (currentToken.getType() == Token.TokenType.OPERATOR &&
                 (currentToken.getValue().equals("+") || currentToken.getValue().equals("-"))) {
             String operator = currentToken.getValue();
             eat(Token.TokenType.OPERATOR);
             Object right = term();
-
             if (result instanceof Number && right instanceof Number) {
-                if (operator.equals("+")) {
-                    result = ((Number) result).doubleValue() + ((Number) right).doubleValue();
-                } else if (operator.equals("-")) {
-                    result = ((Number) result).doubleValue() - ((Number) right).doubleValue();
+                if (result instanceof Double || right instanceof Double) {
+                    if (operator.equals("+")) {
+                        result = ((Number) result).doubleValue() + ((Number) right).doubleValue();
+                    } else if (operator.equals("-")) {
+                        result = ((Number) result).doubleValue() - ((Number) right).doubleValue();
+                    }
+                } else {
+                    if (operator.equals("+")) {
+                        result = ((Integer) result) + ((Integer) right);
+                    } else if (operator.equals("-")) {
+                        result = ((Integer) result) - ((Integer) right);
+                    }
                 }
             } else {
                 throw new RuntimeException("Erro de sintaxe: operações aritméticas suportadas apenas para números");
@@ -235,6 +245,7 @@ public class Parser {
                     break;
                 case "function":
                     new FunctionStatement(this).definirFuncao();
+                    break;
                 case "}":
                 case ";":
                     advance();
@@ -245,16 +256,26 @@ public class Parser {
         } else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
             String variableName = currentToken.getValue();
             advance();
+
             if (currentToken.getType() == Token.TokenType.OPERATOR &&
                     (currentToken.getValue().equals("++") || currentToken.getValue().equals("--"))) {
                 String operator = currentToken.getValue();
                 advance();
+
                 if (variableValues.containsKey(variableName)) {
                     Number value = (Number) variableValues.get(variableName);
                     if (operator.equals("++")) {
-                        value = value.doubleValue() + 1;
+                        if (value instanceof Double) {
+                            value = value.doubleValue() + 1.0;
+                        } else if (value instanceof Integer) {
+                            value = value.intValue() + 1;
+                        }
                     } else if (operator.equals("--")) {
-                        value = value.doubleValue() - 1;
+                        if (value instanceof Double) {
+                            value = value.doubleValue() - 1.0;
+                        } else if (value instanceof Integer) {
+                            value = value.intValue() - 1;
+                        }
                     }
                     variableValues.put(variableName, value);
                 } else {

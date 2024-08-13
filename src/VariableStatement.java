@@ -13,7 +13,7 @@ public class VariableStatement {
 
         if (parser.getCurrentToken().getType() == Token.TokenType.OPERATOR && parser.getCurrentToken().getValue().equals("=")) {
             parser.eat(Token.TokenType.OPERATOR);
-            Object value = parser.calc(); // Processa a expressão para obter o valor da variável
+            Object value = parser.calc();
             parser.getVariableValues().put(variableName, value);
         } else {
             parser.getVariableValues().put(variableName, getDefault(type));
@@ -43,7 +43,7 @@ public class VariableStatement {
         parser.eat(Token.TokenType.IDENTIFIER);
         parser.eat(Token.TokenType.OPERATOR);
 
-        Object value = parser.calc(); // Processa a expressão para atribuição
+        Object value = parser.calc();
         parser.getVariableValues().put(variableName, value);
         parser.eat(Token.TokenType.DELIMITER);
     }
