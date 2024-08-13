@@ -4,18 +4,14 @@ main() {
     print(a);
 
     while (a < 8) {
-        if (a == 3) {
-            print("A é igual a 3");
-        } else if (a == 5) {
-            print("A é igual a 5");
-        } else if (a == 7) {
-            print("A é igual a 7");
-        } else {
-            print("A é diferente de 3, 5 e 7");
-        }
         a++;
         print(a);
     }
+     function teste(string zard string nome int teste) {
+     print("hello");
+     int teste = 5;
+     }
+    print(teste);
     if (a == 8) {
         print("A chegou a 8");
     } else
@@ -23,3 +19,4 @@ main() {
         print("A não é 10, é " + a);
     }
 }
+

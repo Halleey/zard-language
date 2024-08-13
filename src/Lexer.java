@@ -2,14 +2,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Lexer {
-    private final String input; // Armazena a entrada do código fonte
-    private int pos = 0; // Posição atual no input
-    private char currentChar; // Caractere atual sendo analisado
+    private final String input;
+    private int pos = 0;
+    private char currentChar;
 
-    // Construtor do Lexer
     public Lexer(String input) {
         this.input = input;
-        this.currentChar = input.charAt(pos); // Inicializa o caractere atual
+        this.currentChar = input.charAt(pos);
     }
 
     private void error() {
@@ -134,7 +133,7 @@ public class Lexer {
         return new Token(Token.TokenType.STRING, result.toString());
     }
 
-    // Método principal para tokenizar a entrada
+
     public List<Token> tokenize() {
         List<Token> tokens = new ArrayList<>();
         while (currentChar != '\0') {

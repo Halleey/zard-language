@@ -11,6 +11,7 @@ public class Parser {
     private boolean mainFound;
     private int whilePosition;
 
+
     public void backToWhile() {
         while (pos >= 0) {
             if (currentToken.getType() == Token.TokenType.KEYWORD &&
@@ -76,7 +77,6 @@ public class Parser {
     }
 
 
-
     public void parseBlock() {
         System.out.println("Parsing block start");
         while (currentToken.getType() != Token.TokenType.DELIMITER || !currentToken.getValue().equals("}")) {
@@ -110,33 +110,23 @@ public class Parser {
 
                 double leftValue = ((Number) result).doubleValue();
                 double rightValue = ((Number) right).doubleValue();
-                switch (operator) {
-                    case "==":
-                        return leftValue == rightValue;
-                    case "!=":
-                        return leftValue != rightValue;
-                    case "<":
-                        return leftValue < rightValue;
-                    case ">":
-                        return leftValue > rightValue;
-                    case "<=":
-                        return leftValue <= rightValue;
-                    case ">=":
-                        return leftValue >= rightValue;
-                    default:
-                        throw new RuntimeException("Operador de comparação desconhecido: " + operator);
-                }
+                return switch (operator) {
+                    case "==" -> leftValue == rightValue;
+                    case "!=" -> leftValue != rightValue;
+                    case "<" -> leftValue < rightValue;
+                    case ">" -> leftValue > rightValue;
+                    case "<=" -> leftValue <= rightValue;
+                    case ">=" -> leftValue >= rightValue;
+                    default -> throw new RuntimeException("Operador de comparação desconhecido: " + operator);
+                };
             } else if (result instanceof Boolean && right instanceof Boolean) {
                 boolean leftValue = (Boolean) result;
                 boolean rightValue = (Boolean) right;
-                switch (operator) {
-                    case "==":
-                        return leftValue == rightValue;
-                    case "!=":
-                        return leftValue != rightValue;
-                    default:
-                        throw new RuntimeException("Operadores de comparação suportados para booleanos: ==, !=");
-                }
+                return switch (operator) {
+                    case "==" -> leftValue == rightValue;
+                    case "!=" -> leftValue != rightValue;
+                    default -> throw new RuntimeException("Operadores de comparação suportados para booleanos: ==, !=");
+                };
             } else {
                 throw new RuntimeException("Erro de sintaxe: operadores de comparação são suportados apenas para números e booleanos");
             }
@@ -243,6 +233,8 @@ public class Parser {
                 case "while":
                     new WhileStatement(this).execute();
                     break;
+                case "function":
+                    new FunctionStatement(this).definirFuncao();
                 case "}":
                 case ";":
                     advance();
@@ -285,7 +277,7 @@ public class Parser {
                 System.out.println(getCurrentToken());
                 statement();
             } else {
-                advance(); // Avança para o próximo token se não for o início do método main
+                advance();
             }
         }
         if (!mainFound) {
@@ -293,15 +285,43 @@ public class Parser {
         }
     }
 
-    public static void main(String[] args) {
-        try {
-            String input = new String(Files.readAllBytes(Paths.get("src/test.zd")));
-            Lexer lexer = new Lexer(input);
-            List<Token> tokens = lexer.tokenize();
-            Parser parser = new Parser(tokens);
-            parser.parse();
-        } catch (IOException e) {
-            e.printStackTrace();
+        public static void main(String[] args) {
+            try {
+                String input = new String(Files.readAllBytes(Paths.get("src/test.zd")));
+                Lexer lexer = new Lexer(input);
+                List<Token> tokens = lexer.tokenize();
+                Parser parser = new Parser(tokens);
+
+                FunctionStatement func = new FunctionStatement(parser);
+
+                func.salvarFuncao("saudacao", List.of("nome", "idade", "profissão"), argumentos -> {
+                    if (!argumentos.isEmpty()) {
+                        String nome = (String) argumentos.get(0);
+                        Integer idade = (Integer) argumentos.get(1);
+                        String profissao = (String) argumentos.get(2);
+                        System.out.println("Olá, " + nome + ". Você tem " + idade + " anos e trabalha como " + profissao);
+                    } else {
+                        System.out.println("Número insuficiente de argumentos.");
+                    }
+                });
+
+                // Executar a função "saudacao"
+                FunctionStatement.callFunction("saudacao", List.of("Hallyson", 17, "Engenheiro de Software"));
+
+                // Definir e executar outra função
+                FunctionStatement functionStatement = new FunctionStatement(parser);
+                functionStatement.salvarFuncao("myFunction", Arrays.asList("arg1", "arg2"), argumentos -> {
+                    // Corpo da função
+                    System.out.println("Executando a função com argumentos: " + argumentos);
+                });
+
+                // Chamar a função "myFunction"
+                FunctionStatement.callFunction("myFunction", Arrays.asList(1, 2));
+
+                parser.parse();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
-}
+
