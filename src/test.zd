@@ -1,28 +1,8 @@
 main() {
-    int a;
-    input a;
-    print(a);
-    int b = 3;
-    double testando = 3.4;
-    double mais = testando + b;
-    print(testando);
-    print(mais);
-    print(b);
-
-    while (a < 8) {
-        a++;
+    function teste(string testando) {
+        int a= 5;
         print(a);
     }
-     function teste(string zard string nome int teste) {
-     print("hello");
-     int teste = 5;
-     }
-    print(teste);
-    if (a == 8) {
-        print("A chegou a 8");
-    } else
-     {
-        print("A não é 10, é " + a);
-    }
-}
+    call teste("hallyson");
 
+}

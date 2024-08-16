@@ -11,6 +11,9 @@ public class Parser {
     private boolean mainFound;
     private int whilePosition;
 
+    public void setCurrentToken(Token currentToken) {
+        this.currentToken = currentToken;
+    }
 
     public void backToWhile() {
         while (pos >= 0) {
@@ -217,37 +220,84 @@ public class Parser {
     }
 
     public void statement() {
+        System.out.println("Current token in statement: " + currentToken);
+
         if (currentToken.getType() == Token.TokenType.KEYWORD) {
             switch (currentToken.getValue()) {
                 case "print":
+                    System.out.println("Executing print statement.");
                     new PrintStatement(this).execute();
                     break;
                 case "int":
                 case "double":
                 case "string":
                 case "boolean":
+                    System.out.println("Executing variable statement.");
                     new VariableStatement(this).execute();
                     break;
                 case "main":
+                    System.out.println("Executing main statement.");
                     new MainStatement(this).execute();
                     mainFound = true;
                     break;
                 case "if":
                 case "else if":
                 case "else":
+                    System.out.println("Executing if/else statement.");
                     new IfStatement(this).execute();
                     break;
                 case "input":
+                    System.out.println("Executing input statement.");
                     new InputStatement(this).execute();
                     break;
                 case "while":
+                    System.out.println("Executing while statement.");
                     new WhileStatement(this).execute();
                     break;
                 case "function":
+                    System.out.println("Defining function.");
                     new FunctionStatement(this).definirFuncao();
                     break;
+                case "call":
+                    advance();
+                    String functionName = getCurrentToken().getValue(); // Captura o nome da função
+                    System.out.println("INVOC FUNCTION: " + functionName);
+                    advance();
+
+                    if (!getCurrentToken().getValue().equals("(")) {
+                        throw new RuntimeException("Erro de sintaxe: esperado '(' mas encontrado " + getCurrentToken().getValue());
+
+                    }
+
+                    eat(Token.TokenType.DELIMITER);
+                    List<Object> argumentos = new ArrayList<>();
+                    while (!(getCurrentToken().getType() == Token.TokenType.DELIMITER && getCurrentToken().getValue().equals(")"))) {
+                        if (getCurrentToken().getType() == Token.TokenType.STRING || getCurrentToken().getType() == Token.TokenType.IDENTIFIER) {
+                            argumentos.add(getCurrentToken().getValue());
+                        } else {
+                            System.out.println("Token inesperado ao processar argumentos: " + getCurrentToken());
+                        }
+                        advance();
+                    }
+                    eat(Token.TokenType.DELIMITER); // Consome ')'
+
+
+                    FunctionStatement func = FunctionStatement.getFunction(functionName);
+                   System.out.println(" Função encontrada" + functionName);
+                    if (func != null) {
+                        func.consumir(argumentos);
+                        System.out.println("teste" +getCurrentToken());
+                    } else {
+                        throw new RuntimeException("Função não encontrada: " + functionName);
+                    }
+
+                    advance();
+
+                    break;
+
                 case "}":
                 case ";":
+                    System.out.println("Advancing through delimiter: " + currentToken.getValue());
                     advance();
                     break;
                 default:
@@ -255,11 +305,13 @@ public class Parser {
             }
         } else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
             String variableName = currentToken.getValue();
+            System.out.println("Processing identifier: " + variableName);
             advance();
 
             if (currentToken.getType() == Token.TokenType.OPERATOR &&
                     (currentToken.getValue().equals("++") || currentToken.getValue().equals("--"))) {
                 String operator = currentToken.getValue();
+                System.out.println("Processing operator: " + operator);
                 advance();
 
                 if (variableValues.containsKey(variableName)) {
@@ -282,13 +334,48 @@ public class Parser {
                     throw new RuntimeException("Variável não declarada: " + variableName);
                 }
             } else {
+                System.out.println("Assigning value to variable.");
                 new VariableStatement(this).assignValue();
             }
         } else if (currentToken.getType() == Token.TokenType.DELIMITER &&
                 (currentToken.getValue().equals("}") || currentToken.getValue().equals(";"))) {
+            System.out.println("Advancing through delimiter: " + currentToken.getValue());
             advance();
         } else {
             throw new RuntimeException("Erro de sintaxe: esperado KEYWORD ou IDENTIFIER mas encontrado " + currentToken.getType());
+        }
+    }
+    public void executeStatement(Object instrucao) {
+        if (instrucao instanceof String instrucaoStr) {
+            if (instrucaoStr.startsWith("print")) {
+                System.out.println(instrucaoStr);
+                String valorImprimir = instrucaoStr.substring(instrucaoStr.indexOf('(') + 1, instrucaoStr.lastIndexOf(')')).trim();
+                System.out.println("Token inesperado ao processar argumentos: " + getCurrentToken());
+                eat(Token.TokenType.DELIMITER);
+                new PrintStatement(this).execute();
+
+            } else {
+                throw new RuntimeException("Instrução de string desconhecida: " + instrucaoStr);
+            }
+        }
+        else if (instrucao instanceof Map) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> functionCallData = (Map<String, Object>) instrucao;
+            String functionName = (String) functionCallData.get("functionName");
+            List<Object> argumentos = (List<Object>) functionCallData.get("argumentos");
+
+            System.out.println("Executando chamada de função: " + functionName);
+            System.out.println("Argumentos: " + argumentos);
+
+            FunctionStatement func = FunctionStatement.getFunction(functionName);
+            if (func != null) {
+                System.out.println("Corpo da função: " + func.getCorpo());
+                func.consumir(argumentos);
+            } else {
+                throw new RuntimeException("Função não encontrada: " + functionName);
+            }
+        } else {
+            throw new RuntimeException("Tipo de instrução desconhecido: " + instrucao.getClass().getName());
         }
     }
 
@@ -313,36 +400,10 @@ public class Parser {
                 List<Token> tokens = lexer.tokenize();
                 Parser parser = new Parser(tokens);
 
-                FunctionStatement func = new FunctionStatement(parser);
-
-                func.salvarFuncao("saudacao", List.of("nome", "idade", "profissão"), argumentos -> {
-                    if (!argumentos.isEmpty()) {
-                        String nome = (String) argumentos.get(0);
-                        Integer idade = (Integer) argumentos.get(1);
-                        String profissao = (String) argumentos.get(2);
-                        System.out.println("Olá, " + nome + ". Você tem " + idade + " anos e trabalha como " + profissao);
-                    } else {
-                        System.out.println("Número insuficiente de argumentos.");
-                    }
-                });
-
-                // Executar a função "saudacao"
-                FunctionStatement.callFunction("saudacao", List.of("Hallyson", 17, "Engenheiro de Software"));
-
-                // Definir e executar outra função
-                FunctionStatement functionStatement = new FunctionStatement(parser);
-                functionStatement.salvarFuncao("myFunction", Arrays.asList("arg1", "arg2"), argumentos -> {
-                    // Corpo da função
-                    System.out.println("Executando a função com argumentos: " + argumentos);
-                });
-
-                // Chamar a função "myFunction"
-                FunctionStatement.callFunction("myFunction", Arrays.asList(1, 2));
-
                 parser.parse();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-    }
+}
 

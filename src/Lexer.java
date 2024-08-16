@@ -68,6 +68,7 @@ public class Lexer {
             case "return":
             case "main":
             case "while":
+            case "call":
                 return new Token(Token.TokenType.KEYWORD, identifier);
             case "boolean":
                 return new Token(Token.TokenType.KEYWORD, identifier); // BOOLEAN como KEYWORD para declaração
@@ -171,4 +172,5 @@ public class Lexer {
         tokens.add(new Token(Token.TokenType.EOF, ""));
         return tokens;
     }
+
 }
