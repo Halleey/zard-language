@@ -1,8 +1,6 @@
 main() {
-    function teste(string testando) {
-        int a= 5;
-        print(a);
+    function teste() {
+        print("teste"  5);
     }
-    call teste("hallyson");
-
+    call teste();
 }

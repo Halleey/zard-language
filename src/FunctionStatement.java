@@ -33,7 +33,7 @@ public class FunctionStatement {
             }
         }
         if (corpo != null) {
-            System.out.println("Executando corpo da função " + nome + ": " + corpo);
+            System.out.println("Executando corpo da função" + corpo);
             for (Object statement : corpo) {
                 parser.executeStatement(statement);
             }

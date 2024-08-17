@@ -345,12 +345,13 @@ public class Parser {
             throw new RuntimeException("Erro de sintaxe: esperado KEYWORD ou IDENTIFIER mas encontrado " + currentToken.getType());
         }
     }
+
+
     public void executeStatement(Object instrucao) {
         if (instrucao instanceof String instrucaoStr) {
             if (instrucaoStr.startsWith("print")) {
-                System.out.println(instrucaoStr);
                 String valorImprimir = instrucaoStr.substring(instrucaoStr.indexOf('(') + 1, instrucaoStr.lastIndexOf(')')).trim();
-                System.out.println("Token inesperado ao processar argumentos: " + getCurrentToken());
+                System.out.println(valorImprimir);
                 eat(Token.TokenType.DELIMITER);
                 new PrintStatement(this).execute();
 
@@ -378,6 +379,7 @@ public class Parser {
             throw new RuntimeException("Tipo de instrução desconhecido: " + instrucao.getClass().getName());
         }
     }
+
 
     public void parse() {
         while (currentToken.getType() != Token.TokenType.EOF) {
