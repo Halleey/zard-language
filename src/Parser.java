@@ -277,20 +277,22 @@ public class Parser {
                         } else {
                             System.out.println("Token inesperado ao processar argumentos: " + getCurrentToken());
                         }
+
                         advance();
                     }
+
                     eat(Token.TokenType.DELIMITER); // Consome ')'
 
 
                     FunctionStatement func = FunctionStatement.getFunction(functionName);
                    System.out.println(" Função encontrada" + functionName);
                     if (func != null) {
+                        System.out.println("token atual processado" + getCurrentToken());
                         func.consumir(argumentos);
-                        System.out.println("teste" +getCurrentToken());
+
                     } else {
                         throw new RuntimeException("Função não encontrada: " + functionName);
                     }
-
                     advance();
 
                     break;

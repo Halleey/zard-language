@@ -1,8 +1,12 @@
 main() {
     function teste() {
-    int a =  5;
+    int a = 5;
     double b = 5.3;
-        print("teste"  a);
+        print("teste" a);
+        print("lets");
+        print("ok, isso funciona");
     }
-    call teste();
+   call teste();
+   int a = 5;
+   print("pos função "a);
 }

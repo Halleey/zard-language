@@ -107,9 +107,6 @@ public class FunctionStatement {
                 String valorImprimir = instrucaoStr.substring(instrucaoStr.indexOf('(') + 1, instrucaoStr.lastIndexOf(')')).trim();
                 valorImprimir = substituirVariaveis(valorImprimir);
                 System.out.println(valorImprimir);
-                parser.eat(Token.TokenType.DELIMITER);
-                new PrintStatement(parser).execute();
-
             } else if (instrucaoStr.startsWith("int")) {
                 processarVariavel(instrucaoStr, "int");
 
@@ -161,6 +158,8 @@ public class FunctionStatement {
         String nomeVariavel = partes[0].trim();
 
         Object valor = null;
+        
+
         switch (tipo) {
             case "int":
                 valor = Integer.parseInt(partes[1].trim());
