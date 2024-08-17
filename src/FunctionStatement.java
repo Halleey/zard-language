@@ -35,7 +35,7 @@ public class FunctionStatement {
         if (corpo != null) {
             System.out.println("Executando corpo da função" + corpo);
             for (Object statement : corpo) {
-                parser.executeStatement(statement);
+                executeStatement(statement);
             }
         } else {
             throw new RuntimeException("Corpo da função não definido para: " + nome);
@@ -99,5 +99,77 @@ public class FunctionStatement {
         }
         parser.advance();
         return corpo;
+    }
+
+    public void executeStatement(Object instrucao) {
+        if (instrucao instanceof String instrucaoStr) {
+            if (instrucaoStr.startsWith("print")) {
+                String valorImprimir = instrucaoStr.substring(instrucaoStr.indexOf('(') + 1, instrucaoStr.lastIndexOf(')')).trim();
+                valorImprimir = substituirVariaveis(valorImprimir);
+                System.out.println(valorImprimir);
+                parser.eat(Token.TokenType.DELIMITER);
+                new PrintStatement(parser).execute();
+
+            } else if (instrucaoStr.startsWith("int")) {
+                processarVariavel(instrucaoStr, "int");
+
+            } else if (instrucaoStr.startsWith("double")) {
+                processarVariavel(instrucaoStr, "double");
+
+            } else if (instrucaoStr.startsWith("string")) {
+                processarVariavel(instrucaoStr, "string");
+
+            } else {
+                throw new RuntimeException("Instrução de string desconhecida: " + instrucaoStr);
+            }
+        } else if (instrucao instanceof Map) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> functionCallData = (Map<String, Object>) instrucao;
+            String functionName = (String) functionCallData.get("functionName");
+            List<Object> argumentos = (List<Object>) functionCallData.get("argumentos");
+
+            System.out.println("Executando chamada de função: " + functionName);
+            System.out.println("Argumentos: " + argumentos);
+
+            FunctionStatement func = FunctionStatement.getFunction(functionName);
+            if (func != null) {
+                System.out.println("Corpo da função: " + func.getCorpo());
+                func.consumir(argumentos);
+            } else {
+                throw new RuntimeException("Função não encontrada: " + functionName);
+            }
+        } else {
+            throw new RuntimeException("Tipo de instrução desconhecido: " + instrucao.getClass().getName());
+        }
+    }
+
+    private String substituirVariaveis(String instrucoes) {
+        // percorrer o mapa de chaves e valores  (variaveis e seus valores)
+        for (Map.Entry<String, Object> entry : parser.getVariableValues().entrySet()) {
+            String nomeVariavel = entry.getKey();
+            Object valor = entry.getValue();
+            // Substitui todas as referencias do nome da variavel pelo seu valor atribuido
+            instrucoes = instrucoes.replace(nomeVariavel, valor.toString());
+        }
+        // Retorna a string 'instrucoes' com as variáveis substituídas pelos seus valores correspondentes.
+        return instrucoes;
+    }
+
+    private void processarVariavel(String instrucaoStr, String tipo) {
+        String resto = instrucaoStr.substring(tipo.length()).trim();
+        String[] partes = resto.split("=");
+        String nomeVariavel = partes[0].trim();
+
+        Object valor = null;
+        switch (tipo) {
+            case "int":
+                valor = Integer.parseInt(partes[1].trim());
+                break;
+            case "double":
+                valor = Double.parseDouble(partes[1].trim());
+                break;
+        }
+        parser.getVariableValues().put(nomeVariavel, valor);
+        System.out.println("Variável " + nomeVariavel + " armazenada com valor " + valor);
     }
 }

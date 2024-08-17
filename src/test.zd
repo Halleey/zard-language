@@ -1,6 +1,8 @@
 main() {
     function teste() {
-        print("teste"  5);
+    int a =  5;
+    double b = 5.3;
+        print("teste"  a);
     }
     call teste();
 }
