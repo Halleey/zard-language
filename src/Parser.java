@@ -138,7 +138,7 @@ public class Parser {
         return result;
     }
 
-    private Object term() {
+    public Object term() {
         Object result = factor();
         while (currentToken.getType() == Token.TokenType.OPERATOR &&
                 (currentToken.getValue().equals("*") || currentToken.getValue().equals("/"))) {

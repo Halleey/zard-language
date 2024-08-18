@@ -116,7 +116,9 @@ public class FunctionStatement {
             } else if (instrucaoStr.startsWith("string")) {
                 processarVariavel(instrucaoStr, "string");
 
-            } else {
+            }
+
+            else {
                 throw new RuntimeException("Instrução de string desconhecida: " + instrucaoStr);
             }
         } else if (instrucao instanceof Map) {
@@ -157,18 +159,59 @@ public class FunctionStatement {
         String[] partes = resto.split("=");
         String nomeVariavel = partes[0].trim();
 
+        String expressao = partes[1].trim();
         Object valor = null;
-        
 
-        switch (tipo) {
-            case "int":
-                valor = Integer.parseInt(partes[1].trim());
-                break;
-            case "double":
-                valor = Double.parseDouble(partes[1].trim());
-                break;
+
+        if (expressao.contains("+") || expressao.contains("-") || expressao.contains("*") || expressao.contains("/")) {
+            valor = calcularExpressao(expressao, tipo);
+        } else {
+
+            valor = switch (tipo) {
+                case "int" -> Integer.parseInt(expressao);
+                case "double" -> Double.parseDouble(expressao);
+                default -> valor;
+            };
         }
         parser.getVariableValues().put(nomeVariavel, valor);
         System.out.println("Variável " + nomeVariavel + " armazenada com valor " + valor);
     }
-}
+
+
+    private Object calcularExpressao(String expressao, String tipo) {
+        String[] operandos = expressao.split("\\s*([+\\-*/])\\s*");
+        String operador = expressao.replaceAll("[^+\\-*/]", "").trim();
+
+        double resultado = switch (tipo) {
+            case "int", "double" -> {
+                double op1 = obterValorComoDouble(operandos[0].trim());
+                System.out.println("debug " + tipo);
+                double op2 = obterValorComoDouble(operandos[1].trim());
+                System.out.println("debug " + tipo);
+                yield  calcularResultado(op1, op2, operador);
+            }
+            default -> 0;
+        };
+
+        return tipo.equals("int") ? (int) resultado : resultado;
+    }
+
+    private double obterValorComoDouble(String operando) {
+        // Se o operando é uma variável, pegue seu valor; caso contrário, converta diretamente
+        if (parser.getVariableValues().containsKey(operando)) {
+            return ((Number) parser.getVariableValues().get(operando)).doubleValue();
+        } else {
+            return Double.parseDouble(operando);
+        }
+    }
+
+    private double calcularResultado(double op1, double op2, String operador) {
+        return switch (operador) {
+            case "+" -> op1 + op2;
+            case "-" -> op1 - op2;
+            case "*" -> op1 * op2;
+            case "/" -> op1 / op2;
+            default -> 0;
+        };
+    }
+    }
