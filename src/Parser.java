@@ -103,7 +103,8 @@ public class Parser {
                         currentToken.getValue().equals("<") ||
                         currentToken.getValue().equals(">") ||
                         currentToken.getValue().equals("<=") ||
-                        currentToken.getValue().equals(">="))) {
+                        currentToken.getValue().equals(">=") || 
+                        currentToken.getValue().equals("&&"))) {
 
             String operator = currentToken.getValue();
             eat(Token.TokenType.OPERATOR);
@@ -120,6 +121,7 @@ public class Parser {
                     case ">" -> leftValue > rightValue;
                     case "<=" -> leftValue <= rightValue;
                     case ">=" -> leftValue >= rightValue;
+                    case "&&" -> leftValue && rightValue;
                     default -> throw new RuntimeException("Operador de comparação desconhecido: " + operator);
                 };
             } else if (result instanceof Boolean && right instanceof Boolean) {
@@ -128,6 +130,7 @@ public class Parser {
                 return switch (operator) {
                     case "==" -> leftValue == rightValue;
                     case "!=" -> leftValue != rightValue;
+                    case "&&" -> leftValue && rightValue;
                     default -> throw new RuntimeException("Operadores de comparação suportados para booleanos: ==, !=");
                 };
             } else {
