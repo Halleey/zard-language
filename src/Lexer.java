@@ -98,7 +98,7 @@ public class Lexer {
             }
         } else if ((result.toString().equals("=") && currentChar == '=') ||
                 (result.toString().equals("<") && (currentChar == '=' || currentChar == '>')) ||
-                (result.toString().equals(">") && currentChar == '=')) {
+                (result.toString().equals(">") && currentChar == '=') || (result.toString().equals("&") && currentChar == "&")) {
             result.append(currentChar);
             advance();
         }
