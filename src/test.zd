@@ -5,6 +5,7 @@ function print() {
     int b = a + a;
     double c = 5.3;
     double d = c + c;
+    d++;
     print(a);
     print (d);
     }

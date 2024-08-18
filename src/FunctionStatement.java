@@ -103,6 +103,15 @@ public class FunctionStatement {
 
     public void executeStatement(Object instrucao) {
         if (instrucao instanceof String instrucaoStr) {
+            if (instrucaoStr.endsWith("++") || instrucaoStr.endsWith("--")) {
+                String nomeVariavel = instrucaoStr.substring(0, instrucaoStr.length() - 2).trim();
+                int incremento = instrucaoStr.endsWith("++") ? 1 : -1;
+                Object novoValor = calcularIncremento(nomeVariavel, incremento);
+                parser.getVariableValues().put(nomeVariavel, novoValor);
+                System.out.println("Variável " + nomeVariavel + " atualizada para " + novoValor);
+                return;
+            }
+
             if (instrucaoStr.startsWith("print")) {
                 String valorImprimir = instrucaoStr.substring(instrucaoStr.indexOf('(') + 1, instrucaoStr.lastIndexOf(')')).trim();
                 valorImprimir = substituirVariaveis(valorImprimir);
@@ -115,7 +124,6 @@ public class FunctionStatement {
 
             } else if (instrucaoStr.startsWith("string")) {
                 processarVariavel(instrucaoStr, "string");
-
             }
 
             else {
@@ -159,22 +167,41 @@ public class FunctionStatement {
         String[] partes = resto.split("=");
         String nomeVariavel = partes[0].trim();
 
-        String expressao = partes[1].trim();
         Object valor = null;
 
+        //int a = 5;
+        if (partes.length == 2) {
+            String expressao = partes[1].trim();
 
-        if (expressao.contains("+") || expressao.contains("-") || expressao.contains("*") || expressao.contains("/")) {
-            valor = calcularExpressao(expressao, tipo);
-        } else {
-
-            valor = switch (tipo) {
-                case "int" -> Integer.parseInt(expressao);
-                case "double" -> Double.parseDouble(expressao);
-                default -> valor;
-            };
+            if (expressao.contains("+") || expressao.contains("-") || expressao.contains("*") || expressao.contains("/")) {
+                valor = calcularExpressao(expressao, tipo);
+            } else if (expressao.equals(nomeVariavel + "++") || expressao.equals("++" + nomeVariavel)) {
+                valor = calcularIncremento(nomeVariavel, 1);
+            } else if (expressao.equals(nomeVariavel + "--") || expressao.equals("--" + nomeVariavel)) {
+                valor = calcularIncremento(nomeVariavel, -1);
+            } else {
+                valor = switch (tipo) {
+                    case "int" -> Integer.parseInt(expressao);
+                    case "double" -> Double.parseDouble(expressao);
+                    default -> valor;
+                };
+            }
         }
-        parser.getVariableValues().put(nomeVariavel, valor);
-        System.out.println("Variável " + nomeVariavel + " armazenada com valor " + valor);
+        //  operação `a++;` ou `a--;`
+        else if (partes.length == 1) {
+            if (nomeVariavel.endsWith("++")) {
+                nomeVariavel = nomeVariavel.substring(0, nomeVariavel.length() - 2).trim();
+                valor = calcularIncremento(nomeVariavel, 1);
+            } else if (nomeVariavel.endsWith("--")) {
+                nomeVariavel = nomeVariavel.substring(0, nomeVariavel.length() - 2).trim();
+                valor = calcularIncremento(nomeVariavel, -1);
+            }
+        }
+
+        if (valor != null) {
+            parser.getVariableValues().put(nomeVariavel, valor);
+            System.out.println("Variável " + nomeVariavel + " armazenada com valor " + valor);
+        }
     }
 
 
@@ -185,10 +212,10 @@ public class FunctionStatement {
         double resultado = switch (tipo) {
             case "int", "double" -> {
                 double op1 = obterValorComoDouble(operandos[0].trim());
-                System.out.println("debug " + tipo);
+
                 double op2 = obterValorComoDouble(operandos[1].trim());
-                System.out.println("debug " + tipo);
-                yield  calcularResultado(op1, op2, operador);
+
+                yield calcularResultado(op1, op2, operador);
             }
             default -> 0;
         };
@@ -206,6 +233,7 @@ public class FunctionStatement {
     }
 
     private double calcularResultado(double op1, double op2, String operador) {
+
         return switch (operador) {
             case "+" -> op1 + op2;
             case "-" -> op1 - op2;
@@ -214,4 +242,14 @@ public class FunctionStatement {
             default -> 0;
         };
     }
+
+    private Object calcularIncremento(String variavel, int plus) {
+        Object valorAtual = parser.getVariableValues().get(variavel);
+        if (valorAtual instanceof Integer) {
+            return (Integer) valorAtual + plus;
+        } else if (valorAtual instanceof Double) {
+            return (Double) valorAtual + plus;
+        }
+        return null;
     }
+}
