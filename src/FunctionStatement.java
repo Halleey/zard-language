@@ -126,6 +126,9 @@ public class FunctionStatement {
                 processarVariavel(instrucaoStr, "string");
             }
 
+            else if (instrucaoStr.startsWith("boolean")) {
+                processarVariavel(instrucaoStr, "boolean");
+            }
             else {
                 throw new RuntimeException("Instrução de string desconhecida: " + instrucaoStr);
             }
@@ -155,10 +158,8 @@ public class FunctionStatement {
         for (Map.Entry<String, Object> entry : parser.getVariableValues().entrySet()) {
             String nomeVariavel = entry.getKey();
             Object valor = entry.getValue();
-            // Substitui todas as referencias do nome da variavel pelo seu valor atribuido
             instrucoes = instrucoes.replace(nomeVariavel, valor.toString());
         }
-        // Retorna a string 'instrucoes' com as variáveis substituídas pelos seus valores correspondentes.
         return instrucoes;
     }
 
@@ -169,7 +170,6 @@ public class FunctionStatement {
 
         Object valor = null;
 
-        //int a = 5;
         if (partes.length == 2) {
             String expressao = partes[1].trim();
 
@@ -183,19 +183,43 @@ public class FunctionStatement {
                 valor = switch (tipo) {
                     case "int" -> Integer.parseInt(expressao);
                     case "double" -> Double.parseDouble(expressao);
+                    case "string" -> expressao;
+                    case "boolean" -> Boolean.parseBoolean(expressao);
                     default -> valor;
                 };
             }
         }
-        //  operação `a++;` ou `a--;`
         else if (partes.length == 1) {
-            if (nomeVariavel.endsWith("++")) {
+            if (tipo.equals("boolean")) {
+                valor = false;
+            } else if (nomeVariavel.endsWith("++")) {
                 nomeVariavel = nomeVariavel.substring(0, nomeVariavel.length() - 2).trim();
                 valor = calcularIncremento(nomeVariavel, 1);
             } else if (nomeVariavel.endsWith("--")) {
                 nomeVariavel = nomeVariavel.substring(0, nomeVariavel.length() - 2).trim();
                 valor = calcularIncremento(nomeVariavel, -1);
             }
+        }
+        if (valor != null) {
+            parser.getVariableValues().put(nomeVariavel, valor);
+            System.out.println("Variável " + nomeVariavel + " armazenada com valor " + valor);
+        }
+
+
+        //  operação `a++;` ou `a--;`
+        else if (partes.length == 1) {
+            if(nomeVariavel.equals("boolean")) {
+                valor = false;
+            }
+            if (nomeVariavel.endsWith("++")) {
+                nomeVariavel = nomeVariavel.substring(0, nomeVariavel.length() - 2).trim();
+                valor = calcularIncremento(nomeVariavel, 1);
+
+            } else if (nomeVariavel.endsWith("--")) {
+                nomeVariavel = nomeVariavel.substring(0, nomeVariavel.length() - 2).trim();
+                valor = calcularIncremento(nomeVariavel, -1);
+            }
+
         }
 
         if (valor != null) {
