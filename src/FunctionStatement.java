@@ -153,6 +153,8 @@ public class FunctionStatement {
         }
     }
 
+    //invocar if's, whiles dentro das funções
+
     private String substituirVariaveis(String instrucoes) {
         // percorrer o mapa de chaves e valores  (variaveis e seus valores)
         for (Map.Entry<String, Object> entry : parser.getVariableValues().entrySet()) {
