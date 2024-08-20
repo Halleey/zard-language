@@ -117,6 +117,7 @@ public class FunctionStatement {
                 valorImprimir = substituirVariaveis(valorImprimir);
                 System.out.println(valorImprimir);
             } else if (instrucaoStr.startsWith("int")) {
+                System.out.println("consumindo int");
                 processarVariavel(instrucaoStr, "int");
 
             } else if (instrucaoStr.startsWith("double")) {
@@ -129,6 +130,11 @@ public class FunctionStatement {
             else if (instrucaoStr.startsWith("boolean")) {
                 processarVariavel(instrucaoStr, "boolean");
             }
+
+//            else if(instrucaoStr.startsWith("if")) {
+//                System.out.println("consumindo IF");
+// implementar outra hora            }
+
             else {
                 throw new RuntimeException("Instrução de string desconhecida: " + instrucaoStr);
             }
@@ -153,7 +159,7 @@ public class FunctionStatement {
         }
     }
 
-    //invocar if's, whiles dentro das funções
+
 
     private String substituirVariaveis(String instrucoes) {
         // percorrer o mapa de chaves e valores  (variaveis e seus valores)
