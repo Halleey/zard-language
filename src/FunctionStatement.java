@@ -151,14 +151,13 @@ public class FunctionStatement {
     }
 
     private String substituirVariaveis(String instrucoes) {
-        // percorrer o mapa de chaves e valores  (variaveis e seus valores)
+
         for (Map.Entry<String, Object> entry : parser.getVariableValues().entrySet()) {
             String nomeVariavel = entry.getKey();
             Object valor = entry.getValue();
-            // Substitui todas as referencias do nome da variavel pelo seu valor atribuido
             instrucoes = instrucoes.replace(nomeVariavel, valor.toString());
         }
-        // Retorna a string 'instrucoes' com as variáveis substituídas pelos seus valores correspondentes.
+
         return instrucoes;
     }
 

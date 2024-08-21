@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List; // Importando a classe correta
+import java.util.List;
 
 public class CodeEditor extends JFrame {
 

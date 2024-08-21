@@ -1,5 +1,9 @@
+import java.util.HashMap;
+import java.util.Map;
+
 public class VariableStatement {
     private Parser parser;
+    private static final Map<String, String> variableTypes = new HashMap<>(); // Mapeia variáveis para seus tipos
 
     public VariableStatement(Parser parser) {
         this.parser = parser;
@@ -11,14 +15,16 @@ public class VariableStatement {
         String variableName = parser.getCurrentToken().getValue();
         parser.eat(Token.TokenType.IDENTIFIER);
 
+        variableTypes.put(variableName, type); // Armazena o tipo da variável
+
         if (parser.getCurrentToken().getType() == Token.TokenType.OPERATOR &&
                 parser.getCurrentToken().getValue().equals("=")) {
             parser.eat(Token.TokenType.OPERATOR);
             Object value = parser.calc();
+            validateValueType(variableName, value); // Valida o tipo do valor
             parser.getVariableValues().put(variableName, value);
 
         } else if (parser.getCurrentToken().getType() == Token.TokenType.IDENTIFIER) {
-            System.out.println("log atual: " + parser.getCurrentToken());
             atribuir(variableName);  // Passa o nome da variável para o método atribuir
         } else {
             parser.getVariableValues().put(variableName, getDefault(type));
@@ -43,25 +49,34 @@ public class VariableStatement {
         }
     }
 
+    private void validateValueType(String variableName, Object value) {
+        String variableType = variableTypes.get(variableName);
+
+        if ("int".equals(variableType) && !(value instanceof Integer)) {
+            throw new RuntimeException("Erro de tipo: Esperado int mas encontrado " + value.getClass().getSimpleName());
+        } else if ("double".equals(variableType) && !(value instanceof Double)) {
+            throw new RuntimeException("Erro de tipo: Esperado double mas encontrado " + value.getClass().getSimpleName());
+        } else if ("string".equals(variableType) && !(value instanceof String)) {
+            throw new RuntimeException("Erro de tipo: Esperado string mas encontrado " + value.getClass().getSimpleName());
+        } else if ("boolean".equals(variableType) && !(value instanceof Boolean)) {
+            throw new RuntimeException("Erro de tipo: Esperado boolean mas encontrado " + value.getClass().getSimpleName());
+        }
+    }
+
     public void atribuir(String variableName) {
-        // Verificar e consumir o operador de atribuição '='
         if (parser.getCurrentToken().getType() == Token.TokenType.OPERATOR &&
                 parser.getCurrentToken().getValue().equals("=")) {
             parser.eat(Token.TokenType.OPERATOR);
 
-            // Calcular o novo valor da variável
             Object value = parser.calc();
+            validateValueType(variableName, value); // Valida o tipo do valor
 
-            // Verificar se a variável já foi declarada
             if (parser.getVariableValues().containsKey(variableName)) {
-                // Atualizar o valor da variável existente
                 parser.getVariableValues().put(variableName, value);
             } else {
-                // Se a variável não foi declarada, lançar uma exceção
                 throw new RuntimeException("Variável não declarada: " + variableName);
             }
 
-            // Consumir o delimitador que encerra a atribuição
             if (parser.getCurrentToken().getType() == Token.TokenType.DELIMITER) {
                 parser.eat(Token.TokenType.DELIMITER);
             } else {
@@ -71,8 +86,6 @@ public class VariableStatement {
             throw new RuntimeException("Erro de sintaxe: esperado operador de atribuição '=' mas encontrado " + parser.getCurrentToken().getValue());
         }
     }
-
-
 
     public void assignValue() {
         String variableName = parser.getCurrentToken().getValue();

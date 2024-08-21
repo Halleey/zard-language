@@ -1,7 +1,7 @@
 main() {
 
-int a;
-a = 5;
+int a = 5;
+print(a);
 string teste;
 teste = "hallyson";
 
