@@ -27,12 +27,11 @@ public class CodeEditor extends JFrame {
         codeArea.setCaretColor(Color.WHITE); // Cor do cursor
         JScrollPane codeScrollPane = new JScrollPane(codeArea);
 
-        // Configurações do console
         consoleArea = new JTextArea(10, 60);
         consoleArea.setEditable(false);
         consoleArea.setBackground(new Color(20, 20, 20)); // Fundo escuro
         consoleArea.setForeground(Color.LIGHT_GRAY); // Texto claro
-        consoleArea.setCaretColor(Color.WHITE); // Cor do cursor
+        consoleArea.setCaretColor(Color.BLACK); // Cor do cursor
         JScrollPane consoleScrollPane = new JScrollPane(consoleArea);
 
         // Configurações do botão
@@ -46,7 +45,7 @@ public class CodeEditor extends JFrame {
             }
         });
 
-        // Configurações do painel
+
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
         panel.add(codeScrollPane, BorderLayout.CENTER);
@@ -62,18 +61,17 @@ public class CodeEditor extends JFrame {
 
     private void executeCode() {
         try {
-            // Caminho do arquivo
             String filePath = "src/editor/test.zd";
 
-            // Lê o código do arquivo
+
             String code = new String(Files.readAllBytes(Paths.get(filePath)));
 
-            // Cria o lexer e o parser
+
             Lexer lexer = new Lexer(code);
             List<Token> tokens = lexer.tokenize();
             Parser parser = new Parser(tokens, consoleArea); // Passa a referência do editor
 
-            // Executa o código
+
             parser.parse();
 
             appendToConsole("Código executado com sucesso!");
