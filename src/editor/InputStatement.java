@@ -1,3 +1,7 @@
+package editor;
+
+import editor.translate.Parser;
+
 import java.util.Scanner;
 
 public class InputStatement {

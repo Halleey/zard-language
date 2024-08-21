@@ -1,3 +1,7 @@
+package editor;
+
+import editor.translate.Parser;
+
 import java.util.*;
 public class FunctionStatement {
     private final Parser parser;
@@ -113,8 +117,13 @@ public class FunctionStatement {
             }
 
             if (instrucaoStr.startsWith("print")) {
+                // Extrair e limpar a string dentro dos parênteses
                 String valorImprimir = instrucaoStr.substring(instrucaoStr.indexOf('(') + 1, instrucaoStr.lastIndexOf(')')).trim();
+
+                // Substituir variáveis
                 valorImprimir = substituirVariaveis(valorImprimir);
+
+                // Imprimir resultado
                 System.out.println(valorImprimir);
             } else if (instrucaoStr.startsWith("int")) {
                 processarVariavel(instrucaoStr, "int");
@@ -124,9 +133,7 @@ public class FunctionStatement {
 
             } else if (instrucaoStr.startsWith("string")) {
                 processarVariavel(instrucaoStr, "string");
-            }
-
-            else {
+            } else {
                 throw new RuntimeException("Instrução de string desconhecida: " + instrucaoStr);
             }
         } else if (instrucao instanceof Map) {
@@ -151,15 +158,18 @@ public class FunctionStatement {
     }
 
     private String substituirVariaveis(String instrucoes) {
-
+        // Verificar o conteúdo das variáveis antes da substituição
         for (Map.Entry<String, Object> entry : parser.getVariableValues().entrySet()) {
             String nomeVariavel = entry.getKey();
-            Object valor = entry.getValue();
-            instrucoes = instrucoes.replace(nomeVariavel, valor.toString());
-        }
+            String valor = entry.getValue().toString();
+            System.out.println("Substituindo variável: " + nomeVariavel + " com valor: " + valor);
 
+            // Substituir todas as ocorrências da variável pelo seu valor
+            instrucoes = instrucoes.replace(nomeVariavel, valor);
+        }
         return instrucoes;
     }
+
 
     private void processarVariavel(String instrucaoStr, String tipo) {
         String resto = instrucaoStr.substring(tipo.length()).trim();

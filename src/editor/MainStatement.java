@@ -1,3 +1,7 @@
+package editor;
+
+import editor.translate.Parser;
+
 public class MainStatement {
     Parser parser;
     public MainStatement(Parser parser) {

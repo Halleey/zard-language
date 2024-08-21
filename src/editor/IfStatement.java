@@ -1,3 +1,7 @@
+package editor;
+
+import editor.translate.Parser;
+
 public class IfStatement {
     private final Parser parser;
 

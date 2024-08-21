@@ -1,3 +1,7 @@
+package editor;
+
+import editor.translate.Parser;
+
 public class PrintStatement {
 
     private final Parser parser;

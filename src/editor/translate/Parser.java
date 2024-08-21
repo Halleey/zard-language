@@ -1,3 +1,9 @@
+package editor.translate;
+
+import editor.*;
+import editor.ide.CodeEditor;
+
+import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -10,7 +16,23 @@ public class Parser {
     private final Map<String, Object> variableValues;
     private boolean mainFound;
     private int whilePosition;
+    private JTextArea logArea; // Adicione um campo para JTextArea
 
+    public Parser(List<Token> tokens, JTextArea logArea) {
+        this.tokens = tokens;
+        this.pos = 0;
+        this.currentToken = tokens.get(pos);
+        this.variableValues = new HashMap<>();
+        this.mainFound = false;
+        this.logArea = logArea; // Inicialize o JTextArea
+    }
+
+
+    private void log(String message) {
+        if (logArea != null) {
+            logArea.append(message + "\n");
+        }
+    }
     public void setCurrentToken(Token currentToken) {
         this.currentToken = currentToken;
     }
@@ -81,17 +103,17 @@ public class Parser {
 
 
     public void parseBlock() {
-        System.out.println("Parsing block start");
+        log("Parsing block start");
         while (currentToken.getType() != Token.TokenType.DELIMITER || !currentToken.getValue().equals("}")) {
-            System.out.println("Inside block, current token: " + currentToken);
+            log("Inside block, current token: " + currentToken);
             statement();
             if (currentToken.getType() == Token.TokenType.EOF) {
                 throw new RuntimeException("Erro de sintaxe: bloco não terminado");
             }
         }
-        System.out.println("End of block");
+        log("End of block");
         eat(Token.TokenType.DELIMITER); // Consome '}'
-        System.out.println("Post-block token: " + currentToken);
+       log("Post-block token: " + currentToken);
     }
 
     public Object expression() {
@@ -255,13 +277,13 @@ public class Parser {
                     new WhileStatement(this).execute();
                     break;
                 case "function":
-                    System.out.println("Defining function.");
+                   log("Defining function.");
                     new FunctionStatement(this).definirFuncao();
                     break;
                 case "call":
                     advance();
                     String functionName = getCurrentToken().getValue(); // Captura o nome da função
-                    System.out.println("INVOC FUNCTION: " + functionName);
+                   log("INVOC FUNCTION: " + functionName);
                     advance();
 
                     if (!getCurrentToken().getValue().equals("(")) {
@@ -364,7 +386,7 @@ public class Parser {
 
         public static void main(String[] args) {
             try {
-                String input = new String(Files.readAllBytes(Paths.get("src/test.zd")));
+                String input = new String(Files.readAllBytes(Paths.get("src/editor/test.zd")));
                 Lexer lexer = new Lexer(input);
                 List<Token> tokens = lexer.tokenize();
                 Parser parser = new Parser(tokens);
