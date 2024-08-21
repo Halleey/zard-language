@@ -11,10 +11,15 @@ public class VariableStatement {
         String variableName = parser.getCurrentToken().getValue();
         parser.eat(Token.TokenType.IDENTIFIER);
 
-        if (parser.getCurrentToken().getType() == Token.TokenType.OPERATOR && parser.getCurrentToken().getValue().equals("=")) {
+        if (parser.getCurrentToken().getType() == Token.TokenType.OPERATOR &&
+                parser.getCurrentToken().getValue().equals("=")) {
             parser.eat(Token.TokenType.OPERATOR);
             Object value = parser.calc();
             parser.getVariableValues().put(variableName, value);
+
+        } else if (parser.getCurrentToken().getType() == Token.TokenType.IDENTIFIER) {
+            System.out.println("log atual: " + parser.getCurrentToken());
+            atribuir(variableName);  // Passa o nome da variável para o método atribuir
         } else {
             parser.getVariableValues().put(variableName, getDefault(type));
         }
@@ -37,6 +42,37 @@ public class VariableStatement {
                 throw new RuntimeException("Tipo desconhecido: " + type);
         }
     }
+
+    public void atribuir(String variableName) {
+        // Verificar e consumir o operador de atribuição '='
+        if (parser.getCurrentToken().getType() == Token.TokenType.OPERATOR &&
+                parser.getCurrentToken().getValue().equals("=")) {
+            parser.eat(Token.TokenType.OPERATOR);
+
+            // Calcular o novo valor da variável
+            Object value = parser.calc();
+
+            // Verificar se a variável já foi declarada
+            if (parser.getVariableValues().containsKey(variableName)) {
+                // Atualizar o valor da variável existente
+                parser.getVariableValues().put(variableName, value);
+            } else {
+                // Se a variável não foi declarada, lançar uma exceção
+                throw new RuntimeException("Variável não declarada: " + variableName);
+            }
+
+            // Consumir o delimitador que encerra a atribuição
+            if (parser.getCurrentToken().getType() == Token.TokenType.DELIMITER) {
+                parser.eat(Token.TokenType.DELIMITER);
+            } else {
+                throw new RuntimeException("Erro de sintaxe: esperado delimitador após atribuição mas encontrado " + parser.getCurrentToken().getValue());
+            }
+        } else {
+            throw new RuntimeException("Erro de sintaxe: esperado operador de atribuição '=' mas encontrado " + parser.getCurrentToken().getValue());
+        }
+    }
+
+
 
     public void assignValue() {
         String variableName = parser.getCurrentToken().getValue();

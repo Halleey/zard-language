@@ -305,13 +305,20 @@ public class Parser {
                 default:
                     throw new RuntimeException("Erro de sintaxe: declaração inesperada " + currentToken);
             }
-        } else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
+        }
+
+        else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
+            // Processa identificadores e atribuições
             String variableName = currentToken.getValue();
             System.out.println("Processing identifier: " + variableName);
             advance();
-
+            System.out.println("Processing : " + getCurrentToken());
             if (currentToken.getType() == Token.TokenType.OPERATOR &&
+                    currentToken.getValue().equals("=")) {
+                new VariableStatement(this).atribuir(variableName);
+            } else if (currentToken.getType() == Token.TokenType.OPERATOR &&
                     (currentToken.getValue().equals("++") || currentToken.getValue().equals("--"))) {
+                // Processa operadores de incremento/decremento
                 String operator = currentToken.getValue();
                 System.out.println("Processing operator: " + operator);
                 advance();
@@ -319,23 +326,16 @@ public class Parser {
                 if (variableValues.containsKey(variableName)) {
                     Number value = (Number) variableValues.get(variableName);
                     if (operator.equals("++")) {
-                        if (value instanceof Double) {
-                            value = value.doubleValue() + 1.0;
-                        } else if (value instanceof Integer) {
-                            value = value.intValue() + 1;
-                        }
+                        value = (value instanceof Double) ? value.doubleValue() + 1.0 : value.intValue() + 1;
                     } else if (operator.equals("--")) {
-                        if (value instanceof Double) {
-                            value = value.doubleValue() - 1.0;
-                        } else if (value instanceof Integer) {
-                            value = value.intValue() - 1;
-                        }
+                        value = (value instanceof Double) ? value.doubleValue() - 1.0 : value.intValue() - 1;
                     }
                     variableValues.put(variableName, value);
                 } else {
                     throw new RuntimeException("Variável não declarada: " + variableName);
                 }
             } else {
+                // Atribui valor padrão se não for um operador
                 System.out.println("Assigning value to variable.");
                 new VariableStatement(this).assignValue();
             }

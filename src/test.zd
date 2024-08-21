@@ -1,17 +1,10 @@
 main() {
-function print() {
-    print("hello, my name is Hallyson");
-    int a = 5;
-    int b = a + a;
-    double c = 5.3;
-    double d = c + c;
-    d++;
-    print(a);
-    print (d);
-    }
-    call print();
-    int a = 5;
-    int b = a + a;
-    print(b);
 
+int a;
+a = 5;
+string teste;
+teste = "hallyson";
+
+a++;
+print(a " " teste);
 }
