@@ -50,13 +50,34 @@ public class FunctionStatement {
         parser.advance();
 
         List<String> parametros = functionParametros();
+
         parser.eat(Token.TokenType.DELIMITER);
-        List<Object> corpo = functionBody();
+        int braceLevel = 1;
+        List<Object> corpo = new ArrayList<>();
+
+        // Processar o corpo da função
+        while (braceLevel > 0) {
+            Token currentToken = parser.getCurrentToken();
+
+            if (parser.getCurrentToken().getType() == Token.TokenType.DELIMITER) {
+                if (parser.getCurrentToken().getValue().equals("{")) {
+                    braceLevel++;
+                } else if (parser.getCurrentToken().getValue().equals("}")) {
+                    braceLevel--;
+                }
+            }
+            parser.advance();
+        }
+
         salvarFuncao(nomeFunction, parametros, corpo);
-        parser.log("function name  " + getNome());
-        parser.log("parametros " + getParametros());
-        parser.log("corpo " + getCorpo());
+        System.out.println("function name"+ nomeFunction);
+        System.out.println("function parametro"+ getParametros());
+        System.out.println("function corpo"+ getCorpo());
+        parser.log("Function name: " + nomeFunction);
+        parser.log("Parameters: " + parametros);
+        parser.log("Body: " + corpo);
     }
+
 
     private List<String> functionParametros() {
         parser.eat(Token.TokenType.DELIMITER);
@@ -118,10 +139,8 @@ public class FunctionStatement {
                 // Extrair e limpar a string dentro dos parênteses
                 String valorImprimir = instrucaoStr.substring(instrucaoStr.indexOf('(') + 1, instrucaoStr.lastIndexOf(')')).trim();
 
-                // Substituir variáveis no texto a ser impresso
                 valorImprimir = substituirVariaveis(valorImprimir);
 
-                // Imprimir resultado
                 parser.log(valorImprimir);
             } else if (instrucaoStr.startsWith("int") || instrucaoStr.startsWith("double") || instrucaoStr.startsWith("string")) {
                 processarVariavel(instrucaoStr, instrucaoStr.split(" ")[0]);

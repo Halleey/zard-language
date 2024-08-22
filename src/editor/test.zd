@@ -1,11 +1,23 @@
 main() {
 function teste(){
-string lol = "hallyson";
+string lol ="hallyson";
 int a =5;
 int b =5;
-print(lol " " a);
+print(a "" lol);
+if(a ==5) {
+print(teste);
 }
+}
+print("teste");
 call teste();
 string tente ="loco";
 print(tente);
+int a = 0;
+
+while(a < 10) {
+print("teste");
+a++;
+print(a);
 }
+}
+

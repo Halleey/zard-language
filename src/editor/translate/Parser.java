@@ -42,6 +42,7 @@ public class Parser {
             if (currentToken.getType() == Token.TokenType.KEYWORD &&
                     "while".equals(currentToken.getValue())) {
                 whilePosition = pos;
+                System.out.println("Encontrado o token 'while': " + currentToken);
                log("Encontrado o token 'while': " + currentToken);
                 return;
             }
@@ -61,6 +62,7 @@ public class Parser {
 
     public Token getCurrentToken() {
         return currentToken;
+
     }
 
     public Map<String, Object> getVariableValues() {
@@ -72,6 +74,7 @@ public class Parser {
         if (nextPos < tokens.size()) {
             return tokens.get(nextPos);
         }
+        System.out.println(getCurrentToken());
         return null; // Retorna null se não houver próximo token
     }
 
@@ -248,6 +251,7 @@ public class Parser {
             switch (currentToken.getValue()) {
                 case "print":
                     log("Executing print statement.");
+                    System.out.println("print");
                     new PrintStatement(this).execute();
                     break;
                 case "int":
@@ -283,6 +287,7 @@ public class Parser {
                 case "call":
                     advance();
                     String functionName = getCurrentToken().getValue(); // Captura o nome da função
+                    System.out.println("call function " + functionName);
                    log("INVOC FUNCTION: " + functionName);
                     advance();
 
@@ -321,6 +326,7 @@ public class Parser {
 
                 case "}":
                 case ";":
+                    System.out.println("Advancing through delimiter: " + currentToken.getValue());
                     log("Advancing through delimiter: " + currentToken.getValue());
                     advance();
                     break;
@@ -332,9 +338,10 @@ public class Parser {
         else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
             // Processa identificadores e atribuições
             String variableName = currentToken.getValue();
+            System.out.println("Processing identifier: " + variableName);
             log("Processing identifier: " + variableName);
             advance();
-            System.out.println("Processing : " + getCurrentToken());
+
             if (currentToken.getType() == Token.TokenType.OPERATOR &&
                     currentToken.getValue().equals("=")) {
                 new VariableStatement(this).atribuir(variableName);
@@ -342,6 +349,7 @@ public class Parser {
                     (currentToken.getValue().equals("++") || currentToken.getValue().equals("--"))) {
                 // Processa operadores de incremento/decremento
                 String operator = currentToken.getValue();
+
                 log("Processing operator: " + operator);
                 advance();
 
@@ -363,6 +371,7 @@ public class Parser {
             }
         } else if (currentToken.getType() == Token.TokenType.DELIMITER &&
                 (currentToken.getValue().equals("}") || currentToken.getValue().equals(";"))) {
+            System.out.println("Advancing through delimiter: " + currentToken.getValue());;
            log("Advancing through delimiter: " + currentToken.getValue());
             advance();
         } else {
