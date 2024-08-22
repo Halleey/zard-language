@@ -9,8 +9,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 
 public class CodeEditor extends JFrame {
@@ -18,26 +16,29 @@ public class CodeEditor extends JFrame {
     private JTextArea codeArea;
     private JTextArea consoleArea;
     private JButton runButton;
+    private JButton clearButton;
+    private JButton toggleConsoleButton;
+    private boolean isConsoleVisible = true;
 
     public CodeEditor() {
         // Configurações do editor de código
         codeArea = new JTextArea(20, 60);
-        codeArea.setBackground(new Color(30, 30, 30)); // Fundo escuro
-        codeArea.setForeground(Color.LIGHT_GRAY); // Texto claro
-        codeArea.setCaretColor(Color.WHITE); // Cor do cursor
+        codeArea.setBackground(new Color(30, 30, 30));
+        codeArea.setForeground(Color.LIGHT_GRAY);
+        codeArea.setCaretColor(Color.WHITE);
         JScrollPane codeScrollPane = new JScrollPane(codeArea);
 
         consoleArea = new JTextArea(10, 60);
         consoleArea.setEditable(false);
-        consoleArea.setBackground(new Color(20, 20, 20)); // Fundo escuro
+        consoleArea.setBackground(new Color(20, 20, 20));
         consoleArea.setForeground(Color.LIGHT_GRAY); // Texto claro
         consoleArea.setCaretColor(Color.BLACK); // Cor do cursor
         JScrollPane consoleScrollPane = new JScrollPane(consoleArea);
 
-        // Configurações do botão
+        // Configurações dos botões
         runButton = new JButton("Executar");
-        runButton.setBackground(new Color(50, 150, 50)); // Fundo verde
-        runButton.setForeground(Color.WHITE); // Texto branco
+        runButton.setBackground(new Color(8, 13, 114));
+        runButton.setForeground(Color.WHITE);
         runButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -45,12 +46,36 @@ public class CodeEditor extends JFrame {
             }
         });
 
+        clearButton = new JButton("Limpar");
+        clearButton.setBackground(new Color(221, 1, 1)); // Fundo vermelho
+        clearButton.setForeground(Color.WHITE);
+        clearButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                clearConsole();
+            }
+        });
+
+        toggleConsoleButton = new JButton("Exibir/Esconder Console");
+        toggleConsoleButton.setBackground(new Color(60, 60, 60)); // Fundo cinza
+        toggleConsoleButton.setForeground(Color.WHITE); // Texto branco
+        toggleConsoleButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                toggleConsoleVisibility(consoleScrollPane);
+            }
+        });
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(runButton);
+        buttonPanel.add(clearButton);
+        buttonPanel.add(toggleConsoleButton);
 
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
         panel.add(codeScrollPane, BorderLayout.CENTER);
-        panel.add(runButton, BorderLayout.NORTH); // Botão no topo
-        panel.add(consoleScrollPane, BorderLayout.SOUTH); // Console na parte inferior
+        panel.add(buttonPanel, BorderLayout.NORTH);
+        panel.add(consoleScrollPane, BorderLayout.SOUTH);
 
         add(panel);
         setTitle("Zard Editor");
@@ -59,29 +84,33 @@ public class CodeEditor extends JFrame {
         setLocationRelativeTo(null);
     }
 
+    private void clearConsole() {
+        consoleArea.setText("");
+    }
+
+    private void toggleConsoleVisibility(JScrollPane consoleScrollPane) {
+        isConsoleVisible = !isConsoleVisible;
+        consoleScrollPane.setVisible(isConsoleVisible);
+        pack();
+    }
+
     private void executeCode() {
         try {
-            String filePath = "src/editor/test.zd";
-
-
-            String code = new String(Files.readAllBytes(Paths.get(filePath)));
-
+            String code = codeArea.getText();
 
             Lexer lexer = new Lexer(code);
             List<Token> tokens = lexer.tokenize();
-            Parser parser = new Parser(tokens, consoleArea); // Passa a referência do editor
-
+            Parser parser = new Parser(tokens, consoleArea);
 
             parser.parse();
 
             appendToConsole("Código executado com sucesso!");
 
-        } catch (IOException e) {
-            appendToConsole("Erro ao ler o arquivo: " + e.getMessage());
+        } catch (Exception e) {
+            appendToConsole("Erro ao executar o código: " + e.getMessage());
             e.printStackTrace();
         }
     }
-
 
     private void appendToConsole(String message) {
         consoleArea.append(message + "\n");

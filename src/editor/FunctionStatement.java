@@ -1,7 +1,5 @@
 package editor;
-
 import editor.translate.Parser;
-
 import java.util.*;
 public class FunctionStatement {
     private final Parser parser;
@@ -120,19 +118,13 @@ public class FunctionStatement {
                 // Extrair e limpar a string dentro dos parênteses
                 String valorImprimir = instrucaoStr.substring(instrucaoStr.indexOf('(') + 1, instrucaoStr.lastIndexOf(')')).trim();
 
-                // Substituir variáveis
+                // Substituir variáveis no texto a ser impresso
                 valorImprimir = substituirVariaveis(valorImprimir);
 
                 // Imprimir resultado
                 System.out.println(valorImprimir);
-            } else if (instrucaoStr.startsWith("int")) {
-                processarVariavel(instrucaoStr, "int");
-
-            } else if (instrucaoStr.startsWith("double")) {
-                processarVariavel(instrucaoStr, "double");
-
-            } else if (instrucaoStr.startsWith("string")) {
-                processarVariavel(instrucaoStr, "string");
+            } else if (instrucaoStr.startsWith("int") || instrucaoStr.startsWith("double") || instrucaoStr.startsWith("string")) {
+                processarVariavel(instrucaoStr, instrucaoStr.split(" ")[0]);
             } else {
                 throw new RuntimeException("Instrução de string desconhecida: " + instrucaoStr);
             }
@@ -158,16 +150,19 @@ public class FunctionStatement {
     }
 
     private String substituirVariaveis(String instrucoes) {
-        // Verificar o conteúdo das variáveis antes da substituição
-        for (Map.Entry<String, Object> entry : parser.getVariableValues().entrySet()) {
-            String nomeVariavel = entry.getKey();
-            String valor = entry.getValue().toString();
-            System.out.println("Substituindo variável: " + nomeVariavel + " com valor: " + valor);
+        StringBuilder resultado = new StringBuilder();
+        String[] partes = instrucoes.split("\\s+");
 
-            // Substituir todas as ocorrências da variável pelo seu valor
-            instrucoes = instrucoes.replace(nomeVariavel, valor);
+        for (String parte : partes) {
+            if (parser.getVariableValues().containsKey(parte)) {
+                resultado.append(parser.getVariableValues().get(parte));
+            } else {
+                resultado.append(parte);
+            }
+            resultado.append(" ");
         }
-        return instrucoes;
+
+        return resultado.toString().trim();
     }
 
 
@@ -178,7 +173,6 @@ public class FunctionStatement {
 
         Object valor = null;
 
-        //int a = 5;
         if (partes.length == 2) {
             String expressao = partes[1].trim();
 
@@ -192,11 +186,20 @@ public class FunctionStatement {
                 valor = switch (tipo) {
                     case "int" -> Integer.parseInt(expressao);
                     case "double" -> Double.parseDouble(expressao);
+                    case "boolean" -> Boolean.parseBoolean(expressao);
+                    case "string" -> {
+                        // Remover aspas caso estejam presentes
+                        String valorStr = expressao;
+                        if (expressao.startsWith("\"") && expressao.endsWith("\"")) {
+                            valorStr = expressao.substring(1, expressao.length() - 1);
+                        }
+                        yield valorStr;
+                    }
                     default -> valor;
                 };
             }
         }
-        //  operação `a++;` ou `a--;`
+        // operação `a++;` ou `a--;`
         else if (partes.length == 1) {
             if (nomeVariavel.endsWith("++")) {
                 nomeVariavel = nomeVariavel.substring(0, nomeVariavel.length() - 2).trim();
