@@ -17,7 +17,7 @@ public class FunctionStatement {
         this.parametros = parametros;
         this.corpo = corpo;
         functionMap.put(nome, this);
-        System.out.println("Função '" + nome + "' salva. Funções disponíveis: " + functionMap.keySet());
+        parser.log("Função '" + nome + "' salva. Funções disponíveis: " + functionMap.keySet());
     }
 
     // No método getFunction
@@ -35,7 +35,7 @@ public class FunctionStatement {
             }
         }
         if (corpo != null) {
-            System.out.println("Executando corpo da função" + corpo);
+            parser.log("Executando corpo da função" + corpo);
             for (Object statement : corpo) {
                 executeStatement(statement);
             }
@@ -53,9 +53,9 @@ public class FunctionStatement {
         parser.eat(Token.TokenType.DELIMITER);
         List<Object> corpo = functionBody();
         salvarFuncao(nomeFunction, parametros, corpo);
-        System.out.println("function name  " + getNome());
-        System.out.println("parametros " + getParametros());
-        System.out.println("corpo " + getCorpo());
+        parser.log("function name  " + getNome());
+        parser.log("parametros " + getParametros());
+        parser.log("corpo " + getCorpo());
     }
 
     private List<String> functionParametros() {
@@ -110,7 +110,7 @@ public class FunctionStatement {
                 int incremento = instrucaoStr.endsWith("++") ? 1 : -1;
                 Object novoValor = calcularIncremento(nomeVariavel, incremento);
                 parser.getVariableValues().put(nomeVariavel, novoValor);
-                System.out.println("Variável " + nomeVariavel + " atualizada para " + novoValor);
+                parser.log("Variável " + nomeVariavel + " atualizada para " + novoValor);
                 return;
             }
 
@@ -122,7 +122,7 @@ public class FunctionStatement {
                 valorImprimir = substituirVariaveis(valorImprimir);
 
                 // Imprimir resultado
-                System.out.println(valorImprimir);
+                parser.log(valorImprimir);
             } else if (instrucaoStr.startsWith("int") || instrucaoStr.startsWith("double") || instrucaoStr.startsWith("string")) {
                 processarVariavel(instrucaoStr, instrucaoStr.split(" ")[0]);
             } else {

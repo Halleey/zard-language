@@ -16,7 +16,7 @@ public class Parser {
     private final Map<String, Object> variableValues;
     private boolean mainFound;
     private int whilePosition;
-    private JTextArea logArea; // Adicione um campo para JTextArea
+    private JTextArea logArea;
 
     public Parser(List<Token> tokens, JTextArea logArea) {
         this.tokens = tokens;
@@ -24,11 +24,11 @@ public class Parser {
         this.currentToken = tokens.get(pos);
         this.variableValues = new HashMap<>();
         this.mainFound = false;
-        this.logArea = logArea; // Inicialize o JTextArea
+        this.logArea = logArea;
     }
 
 
-    private void log(String message) {
+    public void log(String message) {
         if (logArea != null) {
             logArea.append(message + "\n");
         }
@@ -42,13 +42,13 @@ public class Parser {
             if (currentToken.getType() == Token.TokenType.KEYWORD &&
                     "while".equals(currentToken.getValue())) {
                 whilePosition = pos;
-                System.out.println("Encontrado o token 'while': " + currentToken);
+               log("Encontrado o token 'while': " + currentToken);
                 return;
             }
             back();
         }
 
-        System.out.println("Token 'while' não encontrado. Chegou ao início.");
+        log("Token 'while' não encontrado. Chegou ao início.");
     }
 
     public Parser(List<Token> tokens) {
@@ -247,25 +247,25 @@ public class Parser {
         if (currentToken.getType() == Token.TokenType.KEYWORD) {
             switch (currentToken.getValue()) {
                 case "print":
-                    System.out.println("Executing print statement.");
+                    log("Executing print statement.");
                     new PrintStatement(this).execute();
                     break;
                 case "int":
                 case "double":
                 case "string":
                 case "boolean":
-                    System.out.println("Executing variable statement.");
+                    log("Executing variable statement.");
                     new VariableStatement(this).execute();
                     break;
                 case "main":
-                    System.out.println("Executing main statement.");
+                    log("Executing main statement.");
                     new MainStatement(this).execute();
                     mainFound = true;
                     break;
                 case "if":
                 case "else if":
                 case "else":
-                    System.out.println("Executing if/else statement.");
+                    log("Executing if/else statement.");
                     new IfStatement(this).execute();
                     break;
                 case "input":
@@ -273,7 +273,7 @@ public class Parser {
                     new InputStatement(this).execute();
                     break;
                 case "while":
-                    System.out.println("Executing while statement.");
+                    log("Executing while statement.");
                     new WhileStatement(this).execute();
                     break;
                 case "function":
@@ -307,7 +307,7 @@ public class Parser {
 
 
                     FunctionStatement func = FunctionStatement.getFunction(functionName);
-                   System.out.println(" Função encontrada" + functionName);
+                    log(" Função encontrada" + functionName);
                     if (func != null) {
                         System.out.println("token atual processado" + getCurrentToken());
                         func.consumir(argumentos);
@@ -321,7 +321,7 @@ public class Parser {
 
                 case "}":
                 case ";":
-                    System.out.println("Advancing through delimiter: " + currentToken.getValue());
+                    log("Advancing through delimiter: " + currentToken.getValue());
                     advance();
                     break;
                 default:
@@ -332,7 +332,7 @@ public class Parser {
         else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
             // Processa identificadores e atribuições
             String variableName = currentToken.getValue();
-            System.out.println("Processing identifier: " + variableName);
+            log("Processing identifier: " + variableName);
             advance();
             System.out.println("Processing : " + getCurrentToken());
             if (currentToken.getType() == Token.TokenType.OPERATOR &&
@@ -342,7 +342,7 @@ public class Parser {
                     (currentToken.getValue().equals("++") || currentToken.getValue().equals("--"))) {
                 // Processa operadores de incremento/decremento
                 String operator = currentToken.getValue();
-                System.out.println("Processing operator: " + operator);
+                log("Processing operator: " + operator);
                 advance();
 
                 if (variableValues.containsKey(variableName)) {
@@ -363,7 +363,7 @@ public class Parser {
             }
         } else if (currentToken.getType() == Token.TokenType.DELIMITER &&
                 (currentToken.getValue().equals("}") || currentToken.getValue().equals(";"))) {
-            System.out.println("Advancing through delimiter: " + currentToken.getValue());
+           log("Advancing through delimiter: " + currentToken.getValue());
             advance();
         } else {
             throw new RuntimeException("Erro de sintaxe: esperado KEYWORD ou IDENTIFIER mas encontrado " + currentToken.getType());
@@ -374,12 +374,14 @@ public class Parser {
         while (currentToken.getType() != Token.TokenType.EOF) {
             if (currentToken.getValue().equals("main")) {
                 System.out.println(getCurrentToken());
+
                 statement();
             } else {
                 advance();
             }
         }
         if (!mainFound) {
+            log("main method not definied");
             throw new RuntimeException("Main method not defined");
         }
     }
