@@ -79,7 +79,7 @@ public class Parser {
     public void advance() {
         pos++;
         if (pos < tokens.size()) {
-            System.out.println("----- token processado"+ getCurrentToken());
+           
             currentToken = tokens.get(pos);
         } else {
             currentToken = new Token(Token.TokenType.EOF, "");

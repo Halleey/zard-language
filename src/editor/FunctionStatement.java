@@ -117,6 +117,12 @@ public class FunctionStatement {
                 return;
             }
 
+            if(instrucaoStr.startsWith("if")) {
+                System.out.println("LOOOGICA PARA DEBUGAR");
+
+            }
+
+
             if (instrucaoStr.startsWith("print")) {
                 // Extrair e limpar a string dentro dos parênteses
                 String valorImprimir = instrucaoStr.substring(instrucaoStr.indexOf('(') + 1, instrucaoStr.lastIndexOf(')')).trim();
