@@ -1,6 +1,7 @@
 package editor;
 import editor.translate.Parser;
 import java.util.*;
+
 public class FunctionStatement {
     private final Parser parser;
     private String nome;
@@ -43,56 +44,6 @@ public class FunctionStatement {
             throw new RuntimeException("Corpo da função não definido para: " + nome);
         }
     }
-
-    public void definirFuncao() {
-        parser.eat(Token.TokenType.KEYWORD);
-        String nomeFunction = parser.getCurrentToken().getValue();
-        parser.advance();
-
-        List<String> parametros = functionParametros();
-
-        parser.eat(Token.TokenType.DELIMITER);
-        int braceLevel = 1;
-        List<Object> corpo = new ArrayList<>();
-
-        // Processar o corpo da função
-        while (braceLevel > 0) {
-            Token currentToken = parser.getCurrentToken();
-
-            if (parser.getCurrentToken().getType() == Token.TokenType.DELIMITER) {
-                if (parser.getCurrentToken().getValue().equals("{")) {
-                    braceLevel++;
-                } else if (parser.getCurrentToken().getValue().equals("}")) {
-                    braceLevel--;
-                }
-            }
-            parser.advance();
-        }
-
-        salvarFuncao(nomeFunction, parametros, corpo);
-        System.out.println("function name"+ nomeFunction);
-        System.out.println("function parametro"+ getParametros());
-        System.out.println("function corpo"+ getCorpo());
-        parser.log("Function name: " + nomeFunction);
-        parser.log("Parameters: " + parametros);
-        parser.log("Body: " + corpo);
-    }
-
-
-    private List<String> functionParametros() {
-        parser.eat(Token.TokenType.DELIMITER);
-        List<String> parametros = new ArrayList<>();
-        while (!(parser.getCurrentToken().getType() == Token.TokenType.DELIMITER && parser.getCurrentToken().getValue().equals(")"))) {
-            if (parser.getCurrentToken().getType() == Token.TokenType.IDENTIFIER) {
-                parametros.add(parser.getCurrentToken().getValue());
-            }
-            parser.advance();
-        }
-        parser.eat(Token.TokenType.DELIMITER);
-
-        return parametros;
-    }
-
     public String getNome() {
         return nome;
     }
@@ -105,24 +56,66 @@ public class FunctionStatement {
         return corpo;
     }
 
+
+    public void definirFuncao() {
+        parser.eat(Token.TokenType.KEYWORD);
+        String nomeFunction = parser.getCurrentToken().getValue();
+        parser.advance();
+
+        List<String> parametros = functionParametros();
+        List<Object> corpo = functionBody();
+        salvarFuncao(nomeFunction, parametros, corpo);
+        parser.log("function name  " + getNome());
+        parser.log("parametros " + getParametros());
+        parser.log("corpo " + getCorpo());
+    }
+
+
     private List<Object> functionBody() {
         List<Object> corpo = new ArrayList<>();
-        while (!(parser.getCurrentToken().getType() == Token.TokenType.DELIMITER &&
-                parser.getCurrentToken().getValue().equals("}"))) {
-            StringBuilder instrucaoCompleta = new StringBuilder();
+        int chave = 0;
 
-            while (!(parser.getCurrentToken().getType() == Token.TokenType.DELIMITER &&
-                    parser.getCurrentToken().getValue().equals(";"))) {
-                instrucaoCompleta.append(parser.getCurrentToken().getValue()).append(" ");
-                parser.advance();
+        if (parser.getCurrentToken().getValue().equals("{")) {
+            chave++;
+            parser.advance(); // Avança para o próximo token
+
+            StringBuilder instrucaoCompleta = new StringBuilder();
+            while (chave > 0) { // Continua enquanto houver chaves abertas
+                String tokenValue = parser.getCurrentToken().getValue();
+
+                // Verifica se o token atual é uma chave de abertura
+                if (tokenValue.equals("{")) {
+                    chave++; // Incrementa a contagem de chaves abertas
+                }
+
+                // Verifica se o token atual é uma chave de fechamento
+                if (tokenValue.equals("}")) {
+                    chave--; // Decrementa a contagem de chaves abertas
+                }
+
+                // Adiciona o token atual à instrução
+                instrucaoCompleta.append(tokenValue).append(" ");
+                parser.advance(); // Avança para o próximo token
+
+                // Se chegamos ao final de uma instrução (delimitada por ';'), adicionamos ao corpo
+                if (parser.getCurrentToken().getType() == Token.TokenType.DELIMITER &&
+                        parser.getCurrentToken().getValue().equals(";")) {
+                    corpo.add(instrucaoCompleta.toString().trim());
+                    instrucaoCompleta.setLength(0); // Limpa o StringBuilder para a próxima instrução
+                    parser.advance(); // Avança após o delimitador
+                }
             }
 
-            corpo.add(instrucaoCompleta.toString().trim());
-            parser.advance();
+            // Adiciona a última instrução capturada
+            if (instrucaoCompleta.length() > 0) {
+                corpo.add(instrucaoCompleta.toString().trim());
+            }
         }
-        parser.advance();
+
+        System.out.println("corpo" + corpo);
         return corpo;
     }
+
 
     public void executeStatement(Object instrucao) {
         if (instrucao instanceof String instrucaoStr) {
@@ -139,34 +132,34 @@ public class FunctionStatement {
                 // Extrair e limpar a string dentro dos parênteses
                 String valorImprimir = instrucaoStr.substring(instrucaoStr.indexOf('(') + 1, instrucaoStr.lastIndexOf(')')).trim();
 
+                // Substituir variáveis no texto a ser impresso
                 valorImprimir = substituirVariaveis(valorImprimir);
 
+                // Imprimir resultado
                 parser.log(valorImprimir);
             } else if (instrucaoStr.startsWith("int") || instrucaoStr.startsWith("double") || instrucaoStr.startsWith("string")) {
                 processarVariavel(instrucaoStr, instrucaoStr.split(" ")[0]);
             } else {
                 throw new RuntimeException("Instrução de string desconhecida: " + instrucaoStr);
             }
-        } else if (instrucao instanceof Map) {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> functionCallData = (Map<String, Object>) instrucao;
-            String functionName = (String) functionCallData.get("functionName");
-            List<Object> argumentos = (List<Object>) functionCallData.get("argumentos");
-
-            System.out.println("Executando chamada de função: " + functionName);
-            System.out.println("Argumentos: " + argumentos);
-
-            FunctionStatement func = FunctionStatement.getFunction(functionName);
-            if (func != null) {
-                System.out.println("Corpo da função: " + func.getCorpo());
-                func.consumir(argumentos);
-            } else {
-                throw new RuntimeException("Função não encontrada: " + functionName);
-            }
-        } else {
-            throw new RuntimeException("Tipo de instrução desconhecido: " + instrucao.getClass().getName());
         }
     }
+
+    private List<String> functionParametros() {
+        parser.eat(Token.TokenType.DELIMITER);
+        List<String> parametros = new ArrayList<>();
+        while (!(parser.getCurrentToken().getType() == Token.TokenType.DELIMITER && parser.getCurrentToken().getValue().equals(")"))) {
+            if (parser.getCurrentToken().getType() == Token.TokenType.IDENTIFIER) {
+                parametros.add(parser.getCurrentToken().getValue());
+            }
+            parser.advance();
+        }
+        parser.eat(Token.TokenType.DELIMITER);
+
+        return parametros;
+    }
+
+
 
     private String substituirVariaveis(String instrucoes) {
         StringBuilder resultado = new StringBuilder();

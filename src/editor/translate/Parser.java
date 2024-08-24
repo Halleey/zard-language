@@ -1,8 +1,5 @@
 package editor.translate;
-
 import editor.*;
-import editor.ide.CodeEditor;
-
 import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -74,7 +71,6 @@ public class Parser {
         if (nextPos < tokens.size()) {
             return tokens.get(nextPos);
         }
-        System.out.println(getCurrentToken());
         return null; // Retorna null se não houver próximo token
     }
 
@@ -82,6 +78,7 @@ public class Parser {
         pos++;
         if (pos < tokens.size()) {
             currentToken = tokens.get(pos);
+
         } else {
             currentToken = new Token(Token.TokenType.EOF, "");
         }
@@ -109,6 +106,7 @@ public class Parser {
         log("Parsing block start");
         while (currentToken.getType() != Token.TokenType.DELIMITER || !currentToken.getValue().equals("}")) {
             log("Inside block, current token: " + currentToken);
+
             statement();
             if (currentToken.getType() == Token.TokenType.EOF) {
                 throw new RuntimeException("Erro de sintaxe: bloco não terminado");
@@ -117,6 +115,7 @@ public class Parser {
         log("End of block");
         eat(Token.TokenType.DELIMITER); // Consome '}'
        log("Post-block token: " + currentToken);
+
     }
 
     public Object expression() {
@@ -295,12 +294,13 @@ public class Parser {
                         throw new RuntimeException("Erro de sintaxe: esperado '(' mas encontrado " + getCurrentToken().getValue());
 
                     }
-
+                    System.out.println("{VERIFY}" + getCurrentToken());
                     eat(Token.TokenType.DELIMITER);
                     List<Object> argumentos = new ArrayList<>();
                     while (!(getCurrentToken().getType() == Token.TokenType.DELIMITER && getCurrentToken().getValue().equals(")"))) {
                         if (getCurrentToken().getType() == Token.TokenType.STRING || getCurrentToken().getType() == Token.TokenType.IDENTIFIER) {
                             argumentos.add(getCurrentToken().getValue());
+
                         } else {
                             System.out.println("Token inesperado ao processar argumentos: " + getCurrentToken());
                         }
