@@ -25,6 +25,7 @@ public class Lexer {
 
     private void advance() {
         pos++;
+
         if (pos > input.length() - 1) { // Se a posição atual for maior que o último índice da entrada
             currentChar = '\0'; // Define o caractere atual como '\0' para indicar o fim da entrada
         } else {

@@ -23,6 +23,7 @@ public class Parser {
         this.variableValues = new HashMap<>();
         this.mainFound = false;
         this.logArea = logArea;
+
     }
 
 
@@ -58,7 +59,9 @@ public class Parser {
     }
 
     public Token getCurrentToken() {
+
         return currentToken;
+
     }
 
     public Map<String, Object> getVariableValues() {
@@ -76,6 +79,7 @@ public class Parser {
     public void advance() {
         pos++;
         if (pos < tokens.size()) {
+            System.out.println("----- token processado"+ getCurrentToken());
             currentToken = tokens.get(pos);
         } else {
             currentToken = new Token(Token.TokenType.EOF, "");
@@ -287,7 +291,6 @@ public class Parser {
 
                     if (!getCurrentToken().getValue().equals("(")) {
                         throw new RuntimeException("Erro de sintaxe: esperado '(' mas encontrado " + getCurrentToken().getValue());
-
                     }
 
                     eat(Token.TokenType.DELIMITER);
@@ -298,24 +301,17 @@ public class Parser {
                         } else {
                             System.out.println("Token inesperado ao processar argumentos: " + getCurrentToken());
                         }
-
                         advance();
                     }
-
                     eat(Token.TokenType.DELIMITER); // Consome ')'
-
-
                     FunctionStatement func = FunctionStatement.getFunction(functionName);
-                    log(" Função encontrada" + functionName);
-//                    if (func != null) {
-//                        System.out.println("token atual processado" + getCurrentToken());
-//                        func.consumir(argumentos);
-//
-//                    } else {
-//                        throw new RuntimeException("Função não encontrada: " + functionName);
-//                    }
-//                    advance();
-
+                    log(" Função encontrada: " + functionName);
+                    if (func != null) {
+                        func.consumir(argumentos);
+                    } else {
+                        throw new RuntimeException("Função não encontrada: " + functionName);
+                    }
+                    advance();
                     break;
 
                 case "}":
@@ -370,6 +366,7 @@ public class Parser {
     }
 
     public void parse() {
+
         while (currentToken.getType() != Token.TokenType.EOF) {
             if (currentToken.getValue().equals("main")) {
                 System.out.println(getCurrentToken());

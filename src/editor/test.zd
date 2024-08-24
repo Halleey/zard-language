@@ -2,12 +2,12 @@ main() {
     function teste(){
         string lol = "hallyson";
         int a =5;
-        int b =5;
-        print (a "" lol);
-        if(a == 5) {
-        print("lets go gang");
-        }
+        double b =10.44;
+
+        print("teste" b  "" loco);
     }
-    print("fim do programa!!!");
+    call teste();
+    print("testando");
 }
+
 

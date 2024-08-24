@@ -43,6 +43,7 @@ public class FunctionStatement {
         } else {
             throw new RuntimeException("Corpo da função não definido para: " + nome);
         }
+
     }
     public String getNome() {
         return nome;
@@ -96,21 +97,20 @@ public class FunctionStatement {
                 instrucaoCompleta.append(tokenValue).append(" ");
                 parser.advance(); // Avança para o próximo token
 
-                // Se chegamos ao final de uma instrução (delimitada por ';'), adicionamos ao corpo
                 if (parser.getCurrentToken().getType() == Token.TokenType.DELIMITER &&
                         parser.getCurrentToken().getValue().equals(";")) {
                     corpo.add(instrucaoCompleta.toString().trim());
-                    instrucaoCompleta.setLength(0); // Limpa o StringBuilder para a próxima instrução
-                    parser.advance(); // Avança após o delimitador
+                    System.out.println(instrucaoCompleta + "debug");
+                    //instrucaoCompleta.setLength(0); se der ruim, reintroduzir e verificar um novo meio p/ processar fim de função
+                    parser.advance();
                 }
             }
-
-            // Adiciona a última instrução capturada
-            if (instrucaoCompleta.length() > 0) {
+            if (!instrucaoCompleta.isEmpty()) {
                 corpo.add(instrucaoCompleta.toString().trim());
+                System.out.println("DEBUGANDO " + instrucaoCompleta );
+
             }
         }
-
         System.out.println("Corpo da função salvo: " + corpo);
         return corpo;
     }
@@ -119,6 +119,7 @@ public class FunctionStatement {
 
     public void executeStatement(Object instrucao) {
         if (instrucao instanceof String instrucaoStr) {
+            // Trata operações de incremento/decremento
             if (instrucaoStr.endsWith("++") || instrucaoStr.endsWith("--")) {
                 String nomeVariavel = instrucaoStr.substring(0, instrucaoStr.length() - 2).trim();
                 int incremento = instrucaoStr.endsWith("++") ? 1 : -1;
@@ -128,22 +129,34 @@ public class FunctionStatement {
                 return;
             }
 
+            // Trata instruções de impressão
             if (instrucaoStr.startsWith("print")) {
-                // Extrair e limpar a string dentro dos parênteses
-                String valorImprimir = instrucaoStr.substring(instrucaoStr.indexOf('(') + 1, instrucaoStr.lastIndexOf(')')).trim();
-
-                // Substituir variáveis no texto a ser impresso
+                String valorImprimir = instrucaoStr.substring(instrucaoStr.indexOf('(') + 1,
+                        instrucaoStr.lastIndexOf(')')).trim();
                 valorImprimir = substituirVariaveis(valorImprimir);
-
-                // Imprimir resultado
                 parser.log(valorImprimir);
-            } else if (instrucaoStr.startsWith("int") || instrucaoStr.startsWith("double") || instrucaoStr.startsWith("string")) {
-                processarVariavel(instrucaoStr, instrucaoStr.split(" ")[0]);
-            } else {
-                throw new RuntimeException("Instrução de string desconhecida: " + instrucaoStr);
+                System.out.println(valorImprimir);
+                return;
             }
+
+            // Trata declarações de variáveis
+            if (instrucaoStr.startsWith("int") || instrucaoStr.startsWith("double") || instrucaoStr.startsWith("string")) {
+                processarVariavel(instrucaoStr, instrucaoStr.split(" ")[0]);
+                return;
+            }
+
+            // Ignora tokens desconhecidos que são apenas delimitadores como ";"
+            if (instrucaoStr.equals(";")) {
+                return;
+            }
+
+            // Trata instruções desconhecidas
+            throw new RuntimeException("Instrução de string desconhecida: " + parser.getCurrentToken().getValue());
         }
+
+        throw new RuntimeException("Instrução desconhecida: " + instrucao);
     }
+
 
     private List<String> functionParametros() {
         parser.eat(Token.TokenType.DELIMITER);
