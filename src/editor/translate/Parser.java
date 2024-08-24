@@ -1,4 +1,5 @@
 package editor.translate;
+
 import editor.*;
 import javax.swing.*;
 import java.io.IOException;
@@ -39,8 +40,7 @@ public class Parser {
             if (currentToken.getType() == Token.TokenType.KEYWORD &&
                     "while".equals(currentToken.getValue())) {
                 whilePosition = pos;
-                System.out.println("Encontrado o token 'while': " + currentToken);
-               log("Encontrado o token 'while': " + currentToken);
+                log("Encontrado o token 'while': " + currentToken);
                 return;
             }
             back();
@@ -59,7 +59,6 @@ public class Parser {
 
     public Token getCurrentToken() {
         return currentToken;
-
     }
 
     public Map<String, Object> getVariableValues() {
@@ -78,7 +77,6 @@ public class Parser {
         pos++;
         if (pos < tokens.size()) {
             currentToken = tokens.get(pos);
-
         } else {
             currentToken = new Token(Token.TokenType.EOF, "");
         }
@@ -106,7 +104,6 @@ public class Parser {
         log("Parsing block start");
         while (currentToken.getType() != Token.TokenType.DELIMITER || !currentToken.getValue().equals("}")) {
             log("Inside block, current token: " + currentToken);
-
             statement();
             if (currentToken.getType() == Token.TokenType.EOF) {
                 throw new RuntimeException("Erro de sintaxe: bloco não terminado");
@@ -114,8 +111,7 @@ public class Parser {
         }
         log("End of block");
         eat(Token.TokenType.DELIMITER); // Consome '}'
-       log("Post-block token: " + currentToken);
-
+        log("Post-block token: " + currentToken);
     }
 
     public Object expression() {
@@ -250,7 +246,7 @@ public class Parser {
             switch (currentToken.getValue()) {
                 case "print":
                     log("Executing print statement.");
-                    System.out.println("print");
+                    System.out.println("Executing print statement.");
                     new PrintStatement(this).execute();
                     break;
                 case "int":
@@ -280,27 +276,25 @@ public class Parser {
                     new WhileStatement(this).execute();
                     break;
                 case "function":
-                   log("Defining function.");
+                    log("Defining function.");
                     new FunctionStatement(this).definirFuncao();
                     break;
                 case "call":
                     advance();
                     String functionName = getCurrentToken().getValue(); // Captura o nome da função
-                    System.out.println("call function " + functionName);
-                   log("INVOC FUNCTION: " + functionName);
+                    log("INVOC FUNCTION: " + functionName);
                     advance();
 
                     if (!getCurrentToken().getValue().equals("(")) {
                         throw new RuntimeException("Erro de sintaxe: esperado '(' mas encontrado " + getCurrentToken().getValue());
 
                     }
-                    System.out.println("{VERIFY}" + getCurrentToken());
+
                     eat(Token.TokenType.DELIMITER);
                     List<Object> argumentos = new ArrayList<>();
                     while (!(getCurrentToken().getType() == Token.TokenType.DELIMITER && getCurrentToken().getValue().equals(")"))) {
                         if (getCurrentToken().getType() == Token.TokenType.STRING || getCurrentToken().getType() == Token.TokenType.IDENTIFIER) {
                             argumentos.add(getCurrentToken().getValue());
-
                         } else {
                             System.out.println("Token inesperado ao processar argumentos: " + getCurrentToken());
                         }
@@ -313,20 +307,19 @@ public class Parser {
 
                     FunctionStatement func = FunctionStatement.getFunction(functionName);
                     log(" Função encontrada" + functionName);
-                    if (func != null) {
-                        System.out.println("token atual processado" + getCurrentToken());
-                        func.consumir(argumentos);
-
-                    } else {
-                        throw new RuntimeException("Função não encontrada: " + functionName);
-                    }
-                    advance();
+//                    if (func != null) {
+//                        System.out.println("token atual processado" + getCurrentToken());
+//                        func.consumir(argumentos);
+//
+//                    } else {
+//                        throw new RuntimeException("Função não encontrada: " + functionName);
+//                    }
+//                    advance();
 
                     break;
 
                 case "}":
                 case ";":
-                    System.out.println("Advancing through delimiter: " + currentToken.getValue());
                     log("Advancing through delimiter: " + currentToken.getValue());
                     advance();
                     break;
@@ -338,10 +331,9 @@ public class Parser {
         else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
             // Processa identificadores e atribuições
             String variableName = currentToken.getValue();
-            System.out.println("Processing identifier: " + variableName);
             log("Processing identifier: " + variableName);
             advance();
-
+            System.out.println("Processing : " + getCurrentToken());
             if (currentToken.getType() == Token.TokenType.OPERATOR &&
                     currentToken.getValue().equals("=")) {
                 new VariableStatement(this).atribuir(variableName);
@@ -349,7 +341,6 @@ public class Parser {
                     (currentToken.getValue().equals("++") || currentToken.getValue().equals("--"))) {
                 // Processa operadores de incremento/decremento
                 String operator = currentToken.getValue();
-
                 log("Processing operator: " + operator);
                 advance();
 
@@ -371,11 +362,10 @@ public class Parser {
             }
         } else if (currentToken.getType() == Token.TokenType.DELIMITER &&
                 (currentToken.getValue().equals("}") || currentToken.getValue().equals(";"))) {
-            System.out.println("Advancing through delimiter: " + currentToken.getValue());;
-           log("Advancing through delimiter: " + currentToken.getValue());
+            log("Advancing through delimiter: " + currentToken.getValue());
             advance();
         } else {
-            throw new RuntimeException("Erro de sintaxe: esperado KEYWORD ou IDENTIFIER mas encontrado " + currentToken.getType());
+            throw new RuntimeException("Erro de sintaxe: esperado KEYWORD ou IDENTIFIER mas encontrado " + currentToken.getType() + " " + currentToken.getValue());
         }
     }
 
@@ -395,17 +385,16 @@ public class Parser {
         }
     }
 
-        public static void main(String[] args) {
-            try {
-                String input = new String(Files.readAllBytes(Paths.get("src/editor/test.zd")));
-                Lexer lexer = new Lexer(input);
-                List<Token> tokens = lexer.tokenize();
-                Parser parser = new Parser(tokens);
+    public static void main(String[] args) {
+        try {
+            String input = new String(Files.readAllBytes(Paths.get("src/editor/test.zd")));
+            Lexer lexer = new Lexer(input);
+            List<Token> tokens = lexer.tokenize();
+            Parser parser = new Parser(tokens);
 
-                parser.parse();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            parser.parse();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+    }
 }
-

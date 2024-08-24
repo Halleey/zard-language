@@ -61,7 +61,6 @@ public class FunctionStatement {
         parser.eat(Token.TokenType.KEYWORD);
         String nomeFunction = parser.getCurrentToken().getValue();
         parser.advance();
-
         List<String> parametros = functionParametros();
         List<Object> corpo = functionBody();
         salvarFuncao(nomeFunction, parametros, corpo);
@@ -112,9 +111,10 @@ public class FunctionStatement {
             }
         }
 
-        System.out.println("corpo" + corpo);
+        System.out.println("Corpo da função salvo: " + corpo);
         return corpo;
     }
+
 
 
     public void executeStatement(Object instrucao) {

@@ -1,13 +1,13 @@
 main() {
     function teste(){
-        string lol ="hallyson";
+        string lol = "hallyson";
         int a =5;
         int b =5;
-        print(a "" lol);
+        print (a "" lol);
         if(a == 5) {
-        print(a);}
+        print("lets go gang");
+        }
     }
-    call teste();
     print("fim do programa!!!");
 }
 
