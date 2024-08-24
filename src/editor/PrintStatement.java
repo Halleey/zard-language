@@ -14,6 +14,7 @@ public class PrintStatement {
         parser.eat(Token.TokenType.KEYWORD);
         parser.eat(Token.TokenType.DELIMITER);
        Object result = printExpression();
+       System.out.println(result);
       parser.log((String) result);
        parser.eat(Token.TokenType.DELIMITER);
         parser.eat(Token.TokenType.DELIMITER);

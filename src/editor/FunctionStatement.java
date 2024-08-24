@@ -43,120 +43,22 @@ public class FunctionStatement {
         } else {
             throw new RuntimeException("Corpo da função não definido para: " + nome);
         }
-
     }
-    public String getNome() {
-        return nome;
-    }
-
-    public List<String> getParametros() {
-        return parametros;
-    }
-
-    public List<Object> getCorpo() {
-        return corpo;
-    }
-
 
     public void definirFuncao() {
         parser.eat(Token.TokenType.KEYWORD);
         String nomeFunction = parser.getCurrentToken().getValue();
         parser.advance();
+
         List<String> parametros = functionParametros();
+        parser.eat(Token.TokenType.DELIMITER);
         List<Object> corpo = functionBody();
         salvarFuncao(nomeFunction, parametros, corpo);
+        System.out.println("corpo salvo" + getCorpo());
         parser.log("function name  " + getNome());
         parser.log("parametros " + getParametros());
         parser.log("corpo " + getCorpo());
     }
-
-
-    private List<Object> functionBody() {
-        List<Object> corpo = new ArrayList<>();
-        int chave = 0;
-
-        if (parser.getCurrentToken().getValue().equals("{")) {
-            chave++;
-            parser.advance(); // Avança para o próximo token
-
-            StringBuilder instrucaoCompleta = new StringBuilder();
-            while (chave > 0) { // Continua enquanto houver chaves abertas
-                String tokenValue = parser.getCurrentToken().getValue();
-
-                // Verifica se o token atual é uma chave de abertura
-                if (tokenValue.equals("{")) {
-                    chave++; // Incrementa a contagem de chaves abertas
-                }
-
-                // Verifica se o token atual é uma chave de fechamento
-                if (tokenValue.equals("}")) {
-                    chave--; // Decrementa a contagem de chaves abertas
-                }
-
-                // Adiciona o token atual à instrução
-                instrucaoCompleta.append(tokenValue).append(" ");
-                parser.advance(); // Avança para o próximo token
-
-                if (parser.getCurrentToken().getType() == Token.TokenType.DELIMITER &&
-                        parser.getCurrentToken().getValue().equals(";")) {
-                    corpo.add(instrucaoCompleta.toString().trim());
-                    System.out.println(instrucaoCompleta + "debug");
-                    //instrucaoCompleta.setLength(0); se der ruim, reintroduzir e verificar um novo meio p/ processar fim de função
-                    parser.advance();
-                }
-            }
-            if (!instrucaoCompleta.isEmpty()) {
-                corpo.add(instrucaoCompleta.toString().trim());
-                System.out.println("DEBUGANDO " + instrucaoCompleta );
-
-            }
-        }
-        System.out.println("Corpo da função salvo: " + corpo);
-        return corpo;
-    }
-
-
-
-    public void executeStatement(Object instrucao) {
-        if (instrucao instanceof String instrucaoStr) {
-            // Trata operações de incremento/decremento
-            if (instrucaoStr.endsWith("++") || instrucaoStr.endsWith("--")) {
-                String nomeVariavel = instrucaoStr.substring(0, instrucaoStr.length() - 2).trim();
-                int incremento = instrucaoStr.endsWith("++") ? 1 : -1;
-                Object novoValor = calcularIncremento(nomeVariavel, incremento);
-                parser.getVariableValues().put(nomeVariavel, novoValor);
-                parser.log("Variável " + nomeVariavel + " atualizada para " + novoValor);
-                return;
-            }
-
-            // Trata instruções de impressão
-            if (instrucaoStr.startsWith("print")) {
-                String valorImprimir = instrucaoStr.substring(instrucaoStr.indexOf('(') + 1,
-                        instrucaoStr.lastIndexOf(')')).trim();
-                valorImprimir = substituirVariaveis(valorImprimir);
-                parser.log(valorImprimir);
-                System.out.println(valorImprimir);
-                return;
-            }
-
-            // Trata declarações de variáveis
-            if (instrucaoStr.startsWith("int") || instrucaoStr.startsWith("double") || instrucaoStr.startsWith("string")) {
-                processarVariavel(instrucaoStr, instrucaoStr.split(" ")[0]);
-                return;
-            }
-
-            // Ignora tokens desconhecidos que são apenas delimitadores como ";"
-            if (instrucaoStr.equals(";")) {
-                return;
-            }
-
-            // Trata instruções desconhecidas
-            throw new RuntimeException("Instrução de string desconhecida: " + parser.getCurrentToken().getValue());
-        }
-
-        throw new RuntimeException("Instrução desconhecida: " + instrucao);
-    }
-
 
     private List<String> functionParametros() {
         parser.eat(Token.TokenType.DELIMITER);
@@ -172,7 +74,84 @@ public class FunctionStatement {
         return parametros;
     }
 
+    public String getNome() {
+        return nome;
+    }
 
+    public List<String> getParametros() {
+        return parametros;
+    }
+
+    public List<Object> getCorpo() {
+        return corpo;
+    }
+
+    private List<Object> functionBody() {
+        List<Object> corpo = new ArrayList<>();
+        while (!(parser.getCurrentToken().getType() == Token.TokenType.DELIMITER &&
+                parser.getCurrentToken().getValue().equals("}"))) {
+            StringBuilder instrucaoCompleta = new StringBuilder();
+
+            while (!(parser.getCurrentToken().getType() == Token.TokenType.DELIMITER &&
+                    parser.getCurrentToken().getValue().equals(";"))) {
+                instrucaoCompleta.append(parser.getCurrentToken().getValue()).append(" ");
+                parser.advance();
+            }
+            corpo.add(instrucaoCompleta.toString().trim());
+            parser.advance();
+            System.out.println("corpo salvo dentro do método" + instrucaoCompleta);
+        }
+        parser.advance();
+
+        return corpo;
+    }
+
+    public void executeStatement(Object instrucao) {
+        if (instrucao instanceof String instrucaoStr) {
+            if (instrucaoStr.endsWith("++") || instrucaoStr.endsWith("--")) {
+                String nomeVariavel = instrucaoStr.substring(0, instrucaoStr.length() - 2).trim();
+                int incremento = instrucaoStr.endsWith("++") ? 1 : -1;
+                Object novoValor = calcularIncremento(nomeVariavel, incremento);
+                parser.getVariableValues().put(nomeVariavel, novoValor);
+                parser.log("Variável " + nomeVariavel + " atualizada para " + novoValor);
+                return;
+            }
+
+            if (instrucaoStr.startsWith("print")) {
+                // Extrair e limpar a string dentro dos parênteses
+                String valorImprimir = instrucaoStr.substring(instrucaoStr.indexOf('(') + 1, instrucaoStr.lastIndexOf(')')).trim();
+
+                // Substituir variáveis no texto a ser impresso
+                valorImprimir = substituirVariaveis(valorImprimir);
+
+                // Imprimir resultado
+                parser.log(valorImprimir);
+                System.out.println(valorImprimir);
+            } else if (instrucaoStr.startsWith("int") || instrucaoStr.startsWith("double") || instrucaoStr.startsWith("string")) {
+                processarVariavel(instrucaoStr, instrucaoStr.split(" ")[0]);
+            } else {
+                throw new RuntimeException("Instrução de string desconhecida: " + instrucaoStr);
+            }
+        } else if (instrucao instanceof Map) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> functionCallData = (Map<String, Object>) instrucao;
+            String functionName = (String) functionCallData.get("functionName");
+            List<Object> argumentos = (List<Object>) functionCallData.get("argumentos");
+
+            System.out.println("Executando chamada de função: " + functionName);
+            System.out.println("Argumentos: " + argumentos);
+
+            FunctionStatement func = FunctionStatement.getFunction(functionName);
+            if (func != null) {
+                System.out.println("Corpo da função: " + func.getCorpo());
+                func.consumir(argumentos);
+            } else {
+                throw new RuntimeException("Função não encontrada: " + functionName);
+            }
+        } else {
+            throw new RuntimeException("Tipo de instrução desconhecido: " + instrucao.getClass().getName());
+        }
+    }
 
     private String substituirVariaveis(String instrucoes) {
         StringBuilder resultado = new StringBuilder();

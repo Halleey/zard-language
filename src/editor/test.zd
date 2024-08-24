@@ -7,7 +7,7 @@ main() {
         print("teste" b  "" loco);
     }
     call teste();
-    print("testando");
+    print("testando passou aqui");
 }
 
 
