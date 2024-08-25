@@ -1,14 +1,18 @@
 main() {
-    function teste(){
+
+    function teste()
+    {
         string lol = "hallyson";
         int a =5;
         double b =10.44;
-        print("teste" b  "" loco);
-        if(a ==5) {
-        print("testando");}
-    }
+        print(lol " " b  " retorno das variaveis" );
+        int tentei = 44;
+        print(tentei);
+        }
+
     call teste();
-    print("testando passou aqui");
+    print("aaaaaaaaaaa");
+
 }
 
 
