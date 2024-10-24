@@ -1,5 +1,4 @@
 package editor;
-
 import editor.translate.Parser;
 
 public class WhileStatement {
@@ -21,12 +20,18 @@ public class WhileStatement {
         parser.eat(Token.TokenType.DELIMITER);
         parser.eat(Token.TokenType.DELIMITER);
 
-
         while ((boolean) condition) {
-            processWhileBlock();
-            condition = checkWhileCondition();
-            if (!(condition instanceof Boolean) || !(boolean) condition) {
-                break;
+            try {
+                processWhileBlock();
+                condition = checkWhileCondition();
+                if (!(condition instanceof Boolean) || !(boolean) condition) {
+                    break;
+                }
+
+            } catch (RuntimeException e) {
+                System.out.println(parser.getCurrentToken().getValue() + "token para debugar");
+
+                break; // Interrompe o loop, mas não encerra o programa.
             }
         }
 
@@ -40,6 +45,11 @@ public class WhileStatement {
         int braceLevel = 0;
         while (!(parser.getCurrentToken().getType() == Token.TokenType.DELIMITER &&
                 "}".equals(parser.getCurrentToken().getValue()) && braceLevel == 0)) {
+
+            if(parser.getCurrentToken().getValue().equals("return"))  {
+                skipToEndOfFunction();
+            }
+
             if (parser.getCurrentToken().getType() == Token.TokenType.DELIMITER) {
                 if ("{".equals(parser.getCurrentToken().getValue())) {
                     braceLevel++;
@@ -47,6 +57,7 @@ public class WhileStatement {
                     braceLevel--;
                 }
             }
+            // Executa a próxima instrução
             parser.statement();
             if (parser.getCurrentToken().getType() == Token.TokenType.EOF) {
                 throw new RuntimeException("Erro de sintaxe: bloco não terminado");
@@ -68,6 +79,11 @@ public class WhileStatement {
         parser.eat(Token.TokenType.DELIMITER);
         parser.eat(Token.TokenType.DELIMITER); // Consome '{'
         return condition;
+    }
+
+
+    public void findReturn() {
+
     }
 
     private void skipToEndOfFunction() {

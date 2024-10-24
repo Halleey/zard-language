@@ -1,18 +1,12 @@
 main() {
-
-    function teste()
-    {
-        string lol = "hallyson";
-        int a =5;
-        double b =10.44;
-        print(lol " " b  " retorno das variaveis" );
-        int tentei = 44;
-        print(tentei);
+    int a = 0;
+    while (a < 10) {
+        print(a);
+        if (a == 6) {
+            return;
         }
-
-    call teste();
-    print("aaaaaaaaaaa");
-
+        else if(a == 3) { return; }
+        a++;
+    }
+    print("Fim do loop");
 }
-
-

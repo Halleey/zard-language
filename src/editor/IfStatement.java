@@ -26,6 +26,10 @@ public class IfStatement {
         System.out.println("Condition activation: " + conditionActivation);
 
         if (conditionActivation) {
+            if(parser.getCurrentToken().getValue().equals("return")) {
+                System.out.println("TENTEI POR AQUI)");
+                return;
+            }
             parser.parseBlock();
             skipElseBlock();
             return;
@@ -53,6 +57,11 @@ public class IfStatement {
 
                     boolean elseIfConditionActivation = (boolean) elseIfCondition;
                     if (elseIfConditionActivation) {
+                        if(parser.getCurrentToken().getValue().equals("return")) {
+                            System.out.println("TENTEI POR AQUI)");
+                            return;
+                        }
+
                         parser.parseBlock();
 
                         skipElseBlock();
@@ -121,4 +130,3 @@ public class IfStatement {
         }
     }
 }
-

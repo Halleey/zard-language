@@ -79,7 +79,7 @@ public class Parser {
     public void advance() {
         pos++;
         if (pos < tokens.size()) {
-           
+          // System.out.println("Token current for debug "+ getCurrentToken().getValue());
             currentToken = tokens.get(pos);
         } else {
             currentToken = new Token(Token.TokenType.EOF, "");
@@ -313,7 +313,9 @@ public class Parser {
                     }
                     advance();
                     break;
-
+                case "return":
+                    log("Processing return statement.");
+                    break;
                 case "}":
                 case ";":
                     log("Advancing through delimiter: " + currentToken.getValue());
@@ -394,4 +396,6 @@ public class Parser {
             e.printStackTrace();
         }
     }
+
+
 }

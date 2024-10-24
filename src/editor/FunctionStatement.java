@@ -142,7 +142,6 @@ public class FunctionStatement {
                 throw new RuntimeException("TOKEN ATUAL INCORRETO PARA PROCESSAMENTO  " + parser.getCurrentToken().getValue());
             }
         }
-
     }
 
 
