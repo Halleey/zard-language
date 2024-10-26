@@ -4,6 +4,8 @@ import editor.translate.Parser;
 public class WhileStatement {
     private final Parser parser;
 
+
+
     public WhileStatement(Parser parser) {
         this.parser = parser;
     }
@@ -34,12 +36,12 @@ public class WhileStatement {
                 break; // Interrompe o loop, mas não encerra o programa.
             }
         }
-
         if (parser.getCurrentToken().getType() != Token.TokenType.EOF) {
             skipToEndOfFunction();
             parser.advance();
         }
     }
+
 
     private void processWhileBlock() {
         int braceLevel = 0;
@@ -82,10 +84,6 @@ public class WhileStatement {
     }
 
 
-    public void findReturn() {
-
-    }
-
     private void skipToEndOfFunction() {
         int braceLevel = 0;
         while (parser.getCurrentToken().getType() != Token.TokenType.EOF) {
@@ -103,4 +101,5 @@ public class WhileStatement {
             parser.advance();
         }
     }
+
 }

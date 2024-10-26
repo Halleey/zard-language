@@ -1,5 +1,4 @@
 package editor;
-
 import editor.translate.Parser;
 
 public class IfStatement {

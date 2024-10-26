@@ -1,12 +1,29 @@
 main() {
     int a = 0;
-    while (a < 10) {
-        print(a);
-        if (a == 6) {
+    int tentativa;
+
+    while (a < 5) {
+        print("Solicitando input...");
+        input tentativa;
+        print("Tentativa: " + tentativa);
+
+        if (tentativa < 3) {
+            print("numero é maior!");
+        }
+
+        else if (tentativa == 3) {
             return;
         }
-        else if(a == 3) { return; }
-        a++;
+
+        else if (tentativa > 3) {
+            print("O número é menor.");
+        }
+        else if(a == 5) {
+        print("voce perdeu");
+        return;
+        }
+        a ++;
     }
     print("Fim do loop");
+    print("não era maior");
 }
