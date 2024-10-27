@@ -107,6 +107,9 @@ public class Parser {
     public void parseBlock() {
         log("Parsing block start");
         while (currentToken.getType() != Token.TokenType.DELIMITER || !currentToken.getValue().equals("}")) {
+            if(currentToken.getValue().equals("return")) {
+                return;
+            }
             log("Inside block, current token: " + currentToken);
             statement();
             if (currentToken.getType() == Token.TokenType.EOF) {

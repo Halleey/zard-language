@@ -50,6 +50,7 @@ public class WhileStatement {
 
             if(parser.getCurrentToken().getValue().equals("return"))  {
                 skipToEndOfFunction();
+
             }
 
             if (parser.getCurrentToken().getType() == Token.TokenType.DELIMITER) {
