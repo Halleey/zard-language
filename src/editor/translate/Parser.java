@@ -7,7 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class Parser {
+public class Parser extends  GlobalClass {
     private final List<Token> tokens;
     private int pos;
     private Token currentToken;
@@ -25,7 +25,6 @@ public class Parser {
         this.logArea = logArea;
 
     }
-
 
     public void log(String message) {
         if (logArea != null) {
@@ -79,7 +78,7 @@ public class Parser {
     public void advance() {
         pos++;
         if (pos < tokens.size()) {
-          // System.out.println("Token current for debug "+ getCurrentToken().getValue());
+            // System.out.println("Token current for debug "+ getCurrentToken().getValue());
             currentToken = tokens.get(pos);
         } else {
             currentToken = new Token(Token.TokenType.EOF, "");
@@ -108,11 +107,14 @@ public class Parser {
         log("Parsing block start");
         while (currentToken.getType() != Token.TokenType.DELIMITER || !currentToken.getValue().equals("}")) {
             if(currentToken.getValue().equals("return")) {
+                setFoundReturn(true);
+                System.out.println("condition is " + isFoundReturn());
                 return;
             }
             log("Inside block, current token: " + currentToken);
             statement();
             if (currentToken.getType() == Token.TokenType.EOF) {
+                System.out.println("LAST CHAR" + getCurrentToken());
                 throw new RuntimeException("Erro de sintaxe: bloco não terminado");
             }
         }
@@ -161,7 +163,6 @@ public class Parser {
                 throw new RuntimeException("Erro de sintaxe: operadores de comparação são suportados apenas para números e booleanos");
             }
         }
-
         return result;
     }
 
@@ -247,7 +248,7 @@ public class Parser {
     }
 
     public void statement() {
-        System.out.println("Current token in statement: " + currentToken);
+       // System.out.println("Current token in statement: " + currentToken);
 
         if (currentToken.getType() == Token.TokenType.KEYWORD) {
             switch (currentToken.getValue()) {

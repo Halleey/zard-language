@@ -1,7 +1,7 @@
 package editor;
 import editor.translate.Parser;
 
-public class IfStatement {
+public class IfStatement  {
     private final Parser parser;
 
     public IfStatement(Parser parser) {
@@ -25,12 +25,16 @@ public class IfStatement {
         System.out.println("Condition activation: " + conditionActivation);
 
         if (conditionActivation) {
-            if(parser.getCurrentToken().getValue().equals("return")) {
-                System.out.println("TENTEI POR AQUI)");
-                return;
-            }
+//            if(parser.getCurrentToken().getValue().equals("return")) {
+//                System.out.println("TENTEI POR AQUI)");
+//                setFoundReturn(true);
+//                System.out.println("condition is"+ isFoundReturn());
+//                return;
+//            }
             parser.parseBlock();
             skipElseBlock();
+//            setFoundReturn(true);
+//            System.out.println("condition is"+ isFoundReturn());
             return;
         } else {
             while (!parser.getCurrentToken().getValue().equals("}")) {
@@ -60,9 +64,7 @@ public class IfStatement {
                             System.out.println("TENTEI POR AQUI)");
                             return;
                         }
-
                         parser.parseBlock();
-
                         skipElseBlock();
                         return;
                     } else {

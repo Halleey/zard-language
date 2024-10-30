@@ -239,7 +239,7 @@ public class FunctionStatement {
 
                 double op2 = obterValorComoDouble(operandos[1].trim());
 
-                yield calcularResultado(op1, op2, operador);
+                yield  calcularResultado(op1, op2, operador);
             }
             default -> 0;
         };
