@@ -292,14 +292,16 @@ public class Parser extends  GlobalClass {
                     String functionName = getCurrentToken().getValue(); // Captura o nome da função
                     log("INVOC FUNCTION: " + functionName);
                     advance();
-
                     if (!getCurrentToken().getValue().equals("(")) {
                         throw new RuntimeException("Erro de sintaxe: esperado '(' mas encontrado " + getCurrentToken().getValue());
                     }
-
                     eat(Token.TokenType.DELIMITER);
                     List<Object> argumentos = new ArrayList<>();
                     while (!(getCurrentToken().getType() == Token.TokenType.DELIMITER && getCurrentToken().getValue().equals(")"))) {
+                        if (getCurrentToken().getType() == Token.TokenType.DELIMITER && getCurrentToken().getValue().equals(",")) {
+                            advance(); // Ignora a vírgula e passa para o próximo token
+                            continue;
+                        }
                         if (getCurrentToken().getType() == Token.TokenType.STRING || getCurrentToken().getType() == Token.TokenType.IDENTIFIER) {
                             argumentos.add(getCurrentToken().getValue());
                         } else {
@@ -307,6 +309,7 @@ public class Parser extends  GlobalClass {
                         }
                         advance();
                     }
+
                     eat(Token.TokenType.DELIMITER); // Consome ')'
                     FunctionStatement func = FunctionStatement.getFunction(functionName);
                     log(" Função encontrada: " + functionName);

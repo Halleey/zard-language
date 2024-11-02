@@ -1,7 +1,6 @@
 package editor;
 
 import editor.translate.Parser;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,13 +58,16 @@ public class VariableStatement {
         if ("int".equals(variableType) && !(value instanceof Integer)) {
             parser.log("Erro de tipo: Esperado int mas encontrado " + value.getClass().getSimpleName());
             throw new RuntimeException("Erro de tipo: Esperado int mas encontrado " + value.getClass().getSimpleName());
-        } else if ("double".equals(variableType) && !(value instanceof Double)) {
+        }
+        else if ("double".equals(variableType) && !(value instanceof Double)) {
             parser.log("Erro de tipo: Esperado double mas encontrado " + value.getClass().getSimpleName());
             throw new RuntimeException("Erro de tipo: Esperado double mas encontrado " + value.getClass().getSimpleName());
-        } else if ("string".equals(variableType) && !(value instanceof String)) {
+        }
+        else if ("string".equals(variableType) && !(value instanceof String)) {
             parser.log("Erro de tipo: Esperado string mas encontrado " + value.getClass().getSimpleName());
             throw new RuntimeException("Erro de tipo: Esperado string mas encontrado " + value.getClass().getSimpleName());
-        } else if ("boolean".equals(variableType) && !(value instanceof Boolean)) {
+        }
+        else if ("boolean".equals(variableType) && !(value instanceof Boolean)) {
             parser.log("Erro de tipo: Esperado boolean mas encontrado " + value.getClass().getSimpleName());
             throw new RuntimeException("Erro de tipo: Esperado boolean mas encontrado " + value.getClass().getSimpleName());
         }

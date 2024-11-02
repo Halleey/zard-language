@@ -29,22 +29,25 @@ public class FunctionStatement {
 
 
     public void consumir(List<Object> argumentos) {
-
         if (parametros != null && parametros.size() == argumentos.size()) {
             for (int i = 0; i < parametros.size(); i++) {
                 parser.getVariableValues().put(parametros.get(i), argumentos.get(i));
             }
+        } else {
+            throw new RuntimeException("Número de argumentos incorreto para a função: " + nome);
         }
+
         if (corpo != null) {
-            parser.log("Executando corpo da função" + corpo);
+            System.out.println("Executando corpo da função: " + corpo);
             for (Object statement : corpo) {
                 executeStatement(statement);
             }
         } else {
             throw new RuntimeException("Corpo da função não definido para: " + nome);
         }
-
     }
+
+
     public String getNome() {
         return nome;
     }
@@ -65,9 +68,9 @@ public class FunctionStatement {
         List<String> parametros = functionParametros();
         List<Object> corpo = functionBody();
         salvarFuncao(nomeFunction, parametros, corpo);
-        parser.log("function name  " + getNome());
-        parser.log("parametros " + getParametros());
-        parser.log("corpo " + getCorpo());
+        System.out.println("function name  " + getNome());
+        System.out.println("parametros " + getParametros());
+        System.out.println("corpo " + getCorpo());
     }
 
     private List<Object> functionBody() {
@@ -134,7 +137,7 @@ public class FunctionStatement {
             }
             // Trata declarações de variáveis
             if (instrucaoStr.startsWith("int") || instrucaoStr.startsWith("double") || instrucaoStr.startsWith("string")) {
-                processarVariavel(instrucaoStr, instrucaoStr.split(" ")[0]);
+                processarVariavel(instrucaoStr, instrucaoStr.split("")[0]);
             }
 
             else
@@ -176,6 +179,12 @@ public class FunctionStatement {
 
         return resultado.toString().trim();
     }
+
+
+
+
+
+
 
 
     private void processarVariavel(String instrucaoStr, String tipo) {
