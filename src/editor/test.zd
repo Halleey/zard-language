@@ -1,6 +1,13 @@
 main() {
- function teste(int a, int b){
-    print("teste" a  b);
- }
- call teste("3" "3");
+ function teste(int a string nome){
+    print("Tenho"  a   "anos e meu nome é"  nome);
+
+}
+
+ call teste("18" "hallyson");
+
+ int a = 4;
+ string teste = "hallyson";
+ print("sou o " teste );
+
 }

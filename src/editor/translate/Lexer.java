@@ -135,6 +135,7 @@ public class Lexer {
         advance();
         while (currentChar != '\0' && currentChar != '"') {
             result.append(currentChar);
+            System.out.println(result);
             advance();
         }
         advance();

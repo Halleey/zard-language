@@ -1,5 +1,10 @@
 package editor;
+
 import editor.translate.Parser;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.*;
 
 public class FunctionStatement {
@@ -8,6 +13,7 @@ public class FunctionStatement {
     private List<String> parametros;
     private List<Object> corpo;
     private static final Map<String, FunctionStatement> functionMap = new HashMap<>();
+
 
     public FunctionStatement(Parser parser) {
         this.parser = parser;
@@ -21,7 +27,6 @@ public class FunctionStatement {
         parser.log("Função '" + nome + "' salva. Funções disponíveis: " + functionMap.keySet());
     }
 
-    // No método getFunction
     public static FunctionStatement getFunction(String nome) {
         System.out.println("Buscando função: " + nome);
         return functionMap.get(nome);
@@ -47,7 +52,6 @@ public class FunctionStatement {
         }
     }
 
-
     public String getNome() {
         return nome;
     }
@@ -59,8 +63,6 @@ public class FunctionStatement {
     public List<Object> getCorpo() {
         return corpo;
     }
-
-
     public void definirFuncao() {
         parser.eat(Token.TokenType.KEYWORD);
         String nomeFunction = parser.getCurrentToken().getValue();
@@ -104,13 +106,10 @@ public class FunctionStatement {
                     parser.advance();
                 }
             }
-
         }
         System.out.println("Corpo da função salvo: " + corpo);
         return corpo;
     }
-
-
 
     public void executeStatement(Object instrucao) {
 
@@ -125,7 +124,6 @@ public class FunctionStatement {
                 parser.log("Variável " + nomeVariavel + " atualizada para " + novoValor);
                 return;
             }
-
             // Trata instruções de impressão
             if (instrucaoStr.startsWith("print")) {
                 String valorImprimir = instrucaoStr.substring(instrucaoStr.indexOf('(') + 1,
@@ -139,14 +137,12 @@ public class FunctionStatement {
             if (instrucaoStr.startsWith("int") || instrucaoStr.startsWith("double") || instrucaoStr.startsWith("string")) {
                 processarVariavel(instrucaoStr, instrucaoStr.split("")[0]);
             }
-
             else
             {
                 throw new RuntimeException("TOKEN ATUAL INCORRETO PARA PROCESSAMENTO  " + parser.getCurrentToken().getValue());
             }
         }
     }
-
 
     private List<String> functionParametros() {
         parser.eat(Token.TokenType.DELIMITER);
@@ -161,8 +157,6 @@ public class FunctionStatement {
 
         return parametros;
     }
-
-
 
     private String substituirVariaveis(String instrucoes) {
         StringBuilder resultado = new StringBuilder();
@@ -179,13 +173,6 @@ public class FunctionStatement {
 
         return resultado.toString().trim();
     }
-
-
-
-
-
-
-
 
     private void processarVariavel(String instrucaoStr, String tipo) {
         String resto = instrucaoStr.substring(tipo.length()).trim();
@@ -220,6 +207,7 @@ public class FunctionStatement {
                 };
             }
         }
+
         // operação `a++;` ou `a--;`
         else if (partes.length == 1) {
             if (nomeVariavel.endsWith("++")) {
@@ -230,13 +218,11 @@ public class FunctionStatement {
                 valor = calcularIncremento(nomeVariavel, -1);
             }
         }
-
         if (valor != null) {
             parser.getVariableValues().put(nomeVariavel, valor);
             System.out.println("Variável " + nomeVariavel + " armazenada com valor " + valor);
         }
     }
-
 
     private Object calcularExpressao(String expressao, String tipo) {
         String[] operandos = expressao.split("\\s*([+\\-*/])\\s*");
@@ -245,9 +231,7 @@ public class FunctionStatement {
         double resultado = switch (tipo) {
             case "int", "double" -> {
                 double op1 = obterValorComoDouble(operandos[0].trim());
-
                 double op2 = obterValorComoDouble(operandos[1].trim());
-
                 yield  calcularResultado(op1, op2, operador);
             }
             default -> 0;

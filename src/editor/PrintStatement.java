@@ -11,46 +11,55 @@ public class PrintStatement {
     }
 
     public void execute() {
-        parser.eat(Token.TokenType.KEYWORD);
-        parser.eat(Token.TokenType.DELIMITER);
-       Object result = printExpression();
-       System.out.println(result);
-      parser.log((String) result);
-       parser.eat(Token.TokenType.DELIMITER);
-        parser.eat(Token.TokenType.DELIMITER);
+        parser.eat(Token.TokenType.KEYWORD); // Consome "print"
+        parser.eat(Token.TokenType.DELIMITER); // Consome "("
+
+        Object result = printExpression(); // Avalia a expressão dentro do print
+        System.out.println(result);
+
+        parser.eat(Token.TokenType.DELIMITER); // Consome ")"
     }
 
     public Object printExpression() {
         StringBuilder sb = new StringBuilder();
 
-        while (!parser.getCurrentToken().getValue().equals(")")) {
-            if (parser.getCurrentToken().getType() == Token.TokenType.STRING) {
-                sb.append(parser.getCurrentToken().getValue());
-                parser.eat(Token.TokenType.STRING);
-            }
+        while (!parser.getCurrentToken().getValue().equals(")")) { // Processa até encontrar o ")"
+            Token currentToken = parser.getCurrentToken();
 
-            else if (parser.getCurrentToken().getType() == Token.TokenType.IDENTIFIER) {
-                String identifier = parser.getCurrentToken().getValue();
-                sb.append(parser.getVariableValues().getOrDefault(identifier, identifier));
-                parser.eat(Token.TokenType.IDENTIFIER);
-            } else if (parser.getCurrentToken().getType() == Token.TokenType.NUMBER) {
-                String number = parser.getCurrentToken().getValue();
-                sb.append(number);
-                parser.eat(Token.TokenType.NUMBER);
-            } else if (parser.getCurrentToken().getType() == Token.TokenType.OPERATOR && parser.getCurrentToken().getValue().equals("+")) {
-                sb.append(" ");
-                parser.eat(Token.TokenType.OPERATOR);
+            switch (currentToken.getType()) {
+                case STRING:
+                    sb.append(currentToken.getValue()); // Adiciona o texto da string
+                    parser.eat(Token.TokenType.STRING);
+                    break;
 
-            } else {
-                throw new RuntimeException("Erro de sintaxe: esperado STRING, IDENTIFIER, NUMBER ou OPERATOR mas encontrado " + parser.getCurrentToken().getType());
-            }
+                case IDENTIFIER:
+                    String identifier = currentToken.getValue();
+                    if (parser.getVariableValues().containsKey(identifier)) {
+                        sb.append(parser.getVariableValues().get(identifier)); // Substitui pelo valor da variável
+                    } else {
+                        throw new RuntimeException("Erro: Variável '" + identifier + "' não definida.");
+                    }
+                    parser.eat(Token.TokenType.IDENTIFIER);
+                    break;
 
-            if (parser.getCurrentToken().getType() == Token.TokenType.DELIMITER && parser.getCurrentToken().getValue().equals(")")) {
-                break;
+                case NUMBER:
+                    sb.append(currentToken.getValue()); // Adiciona o número como string
+                    parser.eat(Token.TokenType.NUMBER);
+                    break;
+
+                case OPERATOR:
+                    if (currentToken.getValue().equals("+")) {
+                        sb.append(" "); // Adiciona espaço em vez de operador
+                        parser.eat(Token.TokenType.OPERATOR);
+                    } else {
+                        throw new RuntimeException("Erro de sintaxe: operador inválido dentro do print.");
+                    }
+                    break;
+
+                default:
+                    throw new RuntimeException("Erro de sintaxe: tipo inesperado " + currentToken.getType());
             }
         }
         return sb.toString();
     }
-
-
 }
