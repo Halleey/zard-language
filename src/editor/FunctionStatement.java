@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.*;
 
-public class FunctionStatement {
+public class FunctionStatement  {
     private final Parser parser;
     private String nome;
     private List<String> parametros;
@@ -31,7 +31,6 @@ public class FunctionStatement {
         System.out.println("Buscando função: " + nome);
         return functionMap.get(nome);
     }
-
 
     public void consumir(List<Object> argumentos) {
         if (parametros != null && parametros.size() == argumentos.size()) {
@@ -150,20 +149,33 @@ public class FunctionStatement {
         }
     }
 
+
     private List<String> functionParametros() {
         parser.eat(Token.TokenType.DELIMITER);
         List<String> parametros = new ArrayList<>();
+        Map<String, String> variablesFunction = new HashMap<>();
+        String currentName = null;
+        String currentType = null;
+
         while (!(parser.getCurrentToken().getType() == Token.TokenType.DELIMITER && parser.getCurrentToken().getValue().equals(")"))) {
+
+            if (parser.getCurrentToken().getType() == Token.TokenType.KEYWORD) {
+                currentType = parser.getCurrentToken().getValue();
+                parser.advance();
+            }
+
+
             if (parser.getCurrentToken().getType() == Token.TokenType.IDENTIFIER) {
-                parametros.add(parser.getCurrentToken().getValue());
+                currentName = parser.getCurrentToken().getValue();  // Captura o nome da variável
+                parametros.add(currentName);  // Adiciona o nome à lista de parâmetros
+                variablesFunction.put(currentName, currentType);  // Salva a variável e seu tipo no Map
+                System.out.println("Nome da variável: " + currentName + ", Tipo: " + currentType);
             }
             parser.advance();
         }
         parser.eat(Token.TokenType.DELIMITER);
-
         return parametros;
     }
-
 
 
     private String substituirVariaveis(String instrucoes) {
