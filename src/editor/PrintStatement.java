@@ -57,7 +57,7 @@ public class PrintStatement {
                     break;
 
                 default:
-                    throw new RuntimeException("Erro de sintaxe: tipo inesperado " + currentToken.getType());
+                    throw new RuntimeException("Erro de sintaxe: '' não encontrada ");
             }
         }
         return sb.toString();

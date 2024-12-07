@@ -403,6 +403,4 @@ public class Parser extends  GlobalClass {
             e.printStackTrace();
         }
     }
-
-
 }

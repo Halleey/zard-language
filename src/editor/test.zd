@@ -1,6 +1,6 @@
 main() {
  function teste(int a string nome){
-    print("Tenho"  a   "anos e meu nome é"  nome);
+    print("Tenho "  a   "anos e meu nome é "nome);
 
 }
 
@@ -8,6 +8,6 @@ main() {
 
  int a = 4;
  string teste = "hallyson";
- print("sou o " teste );
+ print("sou o " teste " e tenho " a  " dias para resolver essa merda" );
 
 }
