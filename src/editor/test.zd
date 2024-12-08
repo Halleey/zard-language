@@ -1,12 +1,9 @@
 main() {
- function teste(int a string nome){
-    print("Tenho "  a   "anos e meu nome é "nome);
+ function teste(int a string nome boolean tentei double flut){
+    print("Tenho "  a   "anos e meu nome é "nome " " tentei " kilos" flut);
 
 }
-
-
-
- call teste(18, hallyson);
+ call teste(18 hallyson false 51.3);
 
  int a = 4;
  string teste = "hallyson";

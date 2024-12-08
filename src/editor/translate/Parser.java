@@ -305,10 +305,23 @@ public class Parser extends  GlobalClass {
                             continue;
                         }
                         if (getCurrentToken().getType() == Token.TokenType.NUMBER) {
-                            argumentos.add(Integer.parseInt(getCurrentToken().getValue())); // Adiciona números como inteiros
+                            String valorToken = getCurrentToken().getValue(); // Obtém o valor do token como string.
+
+                            // Verifica se o número contém um ponto decimal.
+                            if (valorToken.contains(".")) {
+                                // Se sim, interpreta como um número de ponto flutuante (double).
+                                argumentos.add(Double.parseDouble(valorToken));
+                            } else {
+                                // Caso contrário, interpreta como um número inteiro.
+                                argumentos.add(Integer.parseInt(valorToken));
+                            }
                         } else if (getCurrentToken().getType() == Token.TokenType.STRING || getCurrentToken().getType() == Token.TokenType.IDENTIFIER) {
                             argumentos.add(getCurrentToken().getValue()); // Strings e identificadores são adicionados diretamente
-                        } else {
+                        }
+                        else if(getCurrentToken().getType() == Token.TokenType.BOOLEAN) {
+                            argumentos.add(Boolean.parseBoolean(getCurrentToken().getValue()));
+                        }
+                        else {
                             throw new RuntimeException("Token inesperado ao processar argumentos: " + getCurrentToken());
                         }
                         advance();
@@ -331,8 +344,8 @@ public class Parser extends  GlobalClass {
 
                     for (int i = 0; i < parametros.size(); i++) {
                         String nomeParametro = parametros.get(i);
-                        String tipoEsperado = parametrosTipos.get(nomeParametro);
-                        Object argumento = argumentos.get(i);
+                        String tipoEsperado = parametrosTipos.get(nomeParametro); // Busca o tipo esperado do parâmetro com base no nome.
+                        Object argumento = argumentos.get(i); // Obtém o argumento fornecido para o parâmetro atual.
 
                         if (!validarTipo(tipoEsperado, argumento)) {
                             throw new RuntimeException("Tipo incompatível para o parâmetro '" + nomeParametro +
@@ -407,6 +420,8 @@ public class Parser extends  GlobalClass {
                 return argumento instanceof Double;
             case "string":
                 return argumento instanceof String;
+            case "boolean":
+                return  argumento instanceof  Boolean;
             default:
                 throw new RuntimeException("Tipo desconhecido: " + tipoEsperado);
         }
@@ -417,8 +432,6 @@ public class Parser extends  GlobalClass {
 
         while (currentToken.getType() != Token.TokenType.EOF) {
             if (currentToken.getValue().equals("main")) {
-                System.out.println(getCurrentToken());
-
                 statement();
             } else {
                 advance();
@@ -436,6 +449,8 @@ public class Parser extends  GlobalClass {
             Lexer lexer = new Lexer(input);
             List<Token> tokens = lexer.tokenize();
             Parser parser = new Parser(tokens);
+
+
 
             parser.parse();
         } catch (IOException e) {

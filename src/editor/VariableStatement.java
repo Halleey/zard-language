@@ -52,6 +52,9 @@ public class VariableStatement {
         }
     }
 
+
+
+
     private void validateValueType(String variableName, Object value) {
         String variableType = variableTypes.get(variableName);
 
