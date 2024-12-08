@@ -296,30 +296,54 @@ public class Parser extends  GlobalClass {
                         throw new RuntimeException("Erro de sintaxe: esperado '(' mas encontrado " + getCurrentToken().getValue());
                     }
                     eat(Token.TokenType.DELIMITER);
+
+                    // Captura os argumentos fornecidos
                     List<Object> argumentos = new ArrayList<>();
                     while (!(getCurrentToken().getType() == Token.TokenType.DELIMITER && getCurrentToken().getValue().equals(")"))) {
                         if (getCurrentToken().getType() == Token.TokenType.DELIMITER && getCurrentToken().getValue().equals(",")) {
                             advance(); // Ignora a vírgula e passa para o próximo token
                             continue;
                         }
-                        if (getCurrentToken().getType() == Token.TokenType.STRING || getCurrentToken().getType() == Token.TokenType.IDENTIFIER) {
-                            argumentos.add(getCurrentToken().getValue());
+                        if (getCurrentToken().getType() == Token.TokenType.NUMBER) {
+                            argumentos.add(Integer.parseInt(getCurrentToken().getValue())); // Adiciona números como inteiros
+                        } else if (getCurrentToken().getType() == Token.TokenType.STRING || getCurrentToken().getType() == Token.TokenType.IDENTIFIER) {
+                            argumentos.add(getCurrentToken().getValue()); // Strings e identificadores são adicionados diretamente
                         } else {
-                            System.out.println("Token inesperado ao processar argumentos: " + getCurrentToken());
+                            throw new RuntimeException("Token inesperado ao processar argumentos: " + getCurrentToken());
                         }
                         advance();
                     }
 
                     eat(Token.TokenType.DELIMITER); // Consome ')'
+
+                    // Busca a função e valida os tipos
                     FunctionStatement func = FunctionStatement.getFunction(functionName);
-                    log(" Função encontrada: " + functionName);
-                    if (func != null) {
-                        func.consumir(argumentos);
-                    } else {
+                    if (func == null) {
                         throw new RuntimeException("Função não encontrada: " + functionName);
                     }
-                    advance();
+
+                    // Validação de tipos
+                    Map<String, String> parametrosTipos = func.variablesFunction;
+                    List<String> parametros = func.getParametros();
+                    if (parametros.size() != argumentos.size()) {
+                        throw new RuntimeException("Número de argumentos incorreto para a função: " + functionName);
+                    }
+
+                    for (int i = 0; i < parametros.size(); i++) {
+                        String nomeParametro = parametros.get(i);
+                        String tipoEsperado = parametrosTipos.get(nomeParametro);
+                        Object argumento = argumentos.get(i);
+
+                        if (!validarTipo(tipoEsperado, argumento)) {
+                            throw new RuntimeException("Tipo incompatível para o parâmetro '" + nomeParametro +
+                                    "': esperado " + tipoEsperado + ", recebido " + argumento.getClass().getSimpleName());
+                        }
+                    }
+
+                    // Executa a função
+                    func.consumir(argumentos);
                     break;
+
                 case "return":
                     log("Processing return statement.");
                     break;
@@ -373,6 +397,21 @@ public class Parser extends  GlobalClass {
             throw new RuntimeException("Erro de sintaxe: esperado KEYWORD ou IDENTIFIER mas encontrado " + currentToken.getType() + " " + currentToken.getValue());
         }
     }
+
+
+    private boolean validarTipo(String tipoEsperado, Object argumento) {
+        switch (tipoEsperado) {
+            case "int":
+                return argumento instanceof Integer;
+            case "double":
+                return argumento instanceof Double;
+            case "string":
+                return argumento instanceof String;
+            default:
+                throw new RuntimeException("Tipo desconhecido: " + tipoEsperado);
+        }
+    }
+
 
     public void parse() {
 

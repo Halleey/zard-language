@@ -13,6 +13,10 @@ public class FunctionStatement  {
     private List<String> parametros;
     private List<Object> corpo;
     private static final Map<String, FunctionStatement> functionMap = new HashMap<>();
+    public Map<String, String> variablesFunction = new HashMap<>();
+    String currentName = null;
+    String currentType = null;
+
 
 
     public FunctionStatement(Parser parser) {
@@ -50,6 +54,7 @@ public class FunctionStatement  {
             throw new RuntimeException("Corpo da função não definido para: " + nome);
         }
     }
+
 
     public String getNome() {
         return nome;
@@ -116,8 +121,9 @@ public class FunctionStatement  {
     }
 
 
-    public void executeStatement(Object instrucao) {
 
+
+    public void executeStatement(Object instrucao) {
         if (instrucao instanceof String instrucaoStr) {
 
             // Trata operações de incremento/decremento
@@ -129,6 +135,7 @@ public class FunctionStatement  {
                 parser.log("Variável " + nomeVariavel + " atualizada para " + novoValor);
                 return;
             }
+
             // Trata instruções de impressão
             if (instrucaoStr.startsWith("print")) {
                 String valorImprimir = instrucaoStr.substring(instrucaoStr.indexOf('(') + 1,
@@ -138,14 +145,48 @@ public class FunctionStatement  {
                 System.out.println(valorImprimir);
                 return;
             }
-            // Trata declarações de variáveis
+
+            // Trata declarações de variáveis ou atribuições
             if (instrucaoStr.startsWith("int") || instrucaoStr.startsWith("double") || instrucaoStr.startsWith("string")) {
-                processarVariavel(instrucaoStr, instrucaoStr.split("")[0]);
+                processarVariavel(instrucaoStr, instrucaoStr.split(" ")[0]);
+                return;
             }
-            else
-            {
-                throw new RuntimeException("TOKEN ATUAL INCORRETO PARA PROCESSAMENTO  " + parser.getCurrentToken().getValue());
+
+            // Verifica se a instrução é uma atribuição de variável simples
+            String[] partes = instrucaoStr.split("=");
+            if (partes.length == 2) {
+                String nomeVariavel = partes[0].trim();
+                String valorStr = partes[1].trim();
+
+                // Processa o valor e atualiza a variável
+                Object valor = processarValor(valorStr);
+                parser.getVariableValues().put(nomeVariavel, valor);
+                parser.log("Variável " + nomeVariavel + " atribuída com valor " + valor);
+                return;
             }
+
+            // Caso não seja um tipo reconhecido, lança um erro
+            throw new RuntimeException("TOKEN ATUAL INCORRETO PARA PROCESSAMENTO: " + parser.getCurrentToken().getValue());
+        }
+    }
+
+
+    private Object processarValor(String valorStr) {
+        // Se for uma expressão matemática, trata a expressão
+        if (valorStr.contains("+") || valorStr.contains("-") || valorStr.contains("*") || valorStr.contains("/")) {
+            return calcularExpressao(valorStr, "int"); // Ou o tipo que você precisar
+        }
+
+        // Caso contrário, converte diretamente o valor para o tipo correspondente
+        if (valorStr.matches("-?\\d+")) {
+            return Integer.parseInt(valorStr); // Para inteiros
+        } else if (valorStr.matches("-?\\d+\\.\\d+")) {
+            return Double.parseDouble(valorStr); // Para doubles
+        } else if (valorStr.equalsIgnoreCase("true") || valorStr.equalsIgnoreCase("false")) {
+            return Boolean.parseBoolean(valorStr); // Para booleans
+        } else {
+            // Trata como string ou tenta pegar o valor da variável
+            return substituirVariaveis(valorStr);
         }
     }
 
@@ -153,9 +194,7 @@ public class FunctionStatement  {
     private List<String> functionParametros() {
         parser.eat(Token.TokenType.DELIMITER);
         List<String> parametros = new ArrayList<>();
-        Map<String, String> variablesFunction = new HashMap<>();
-        String currentName = null;
-        String currentType = null;
+
 
         while (!(parser.getCurrentToken().getType() == Token.TokenType.DELIMITER && parser.getCurrentToken().getValue().equals(")"))) {
 
@@ -226,7 +265,6 @@ public class FunctionStatement  {
 
         return resultado.toString();
     }
-
 
 
     private void processarVariavel(String instrucaoStr, String tipo) {

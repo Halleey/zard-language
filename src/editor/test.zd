@@ -1,10 +1,12 @@
 main() {
  function teste(int a string nome){
     print("Tenho "  a   "anos e meu nome é "nome);
-    
+
 }
 
- call teste("18" "hallyson");
+
+
+ call teste(18, hallyson);
 
  int a = 4;
  string teste = "hallyson";
