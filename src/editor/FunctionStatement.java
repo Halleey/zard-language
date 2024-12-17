@@ -18,8 +18,6 @@ public class FunctionStatement  {
     String currentName = null;
     String currentType = null;
 
-
-
     public FunctionStatement(Parser parser) {
         this.parser = parser;
     }
@@ -29,7 +27,6 @@ public class FunctionStatement  {
         this.parametros = parametros;
         this.corpo = corpo;
         functionMap.put(nome, this);
-        parser.log("Função '" + nome + "' salva. Funções disponíveis: " + functionMap.keySet());
     }
 
     public static FunctionStatement getFunction(String nome) {
@@ -132,7 +129,7 @@ public class FunctionStatement  {
                 int incremento = instrucaoStr.endsWith("++") ? 1 : -1;
                 Object novoValor = calcularIncremento(nomeVariavel, incremento);
                 parser.getVariableValues().put(nomeVariavel, novoValor);
-                parser.log("Variável " + nomeVariavel + " atualizada para " + novoValor);
+
                 return;
             }
 
@@ -141,7 +138,7 @@ public class FunctionStatement  {
                 String valorImprimir = instrucaoStr.substring(instrucaoStr.indexOf('(') + 1,
                         instrucaoStr.lastIndexOf(')')).trim();
                 valorImprimir = substituirVariaveis(valorImprimir);
-                parser.log(valorImprimir);
+
                 System.out.println(valorImprimir);
                 return;
             }
@@ -162,7 +159,7 @@ public class FunctionStatement  {
                 // Processa o valor e atualiza a variável
                 Object valor = processarValor(valorStr);
                 parser.getVariableValues().put(nomeVariavel, valor);
-                parser.log("Variável " + nomeVariavel + " atribuída com valor " + valor);
+
                 return;
             }
 

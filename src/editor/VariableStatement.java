@@ -34,7 +34,6 @@ public class VariableStatement {
         }
 
         parser.eat(Token.TokenType.DELIMITER);
-        parser.log("Declaração de variável: Tipo " + type + ", Nome: " + variableName);
     }
 
     private Object getDefault(String type) {
@@ -56,19 +55,19 @@ public class VariableStatement {
         String variableType = variableTypes.get(variableName);
 
         if ("int".equals(variableType) && !(value instanceof Integer)) {
-            parser.log("Erro de tipo: Esperado int mas encontrado " + value.getClass().getSimpleName());
+
             throw new RuntimeException("Erro de tipo: Esperado int mas encontrado " + value.getClass().getSimpleName());
         }
         else if ("double".equals(variableType) && !(value instanceof Double)) {
-            parser.log("Erro de tipo: Esperado double mas encontrado " + value.getClass().getSimpleName());
+
             throw new RuntimeException("Erro de tipo: Esperado double mas encontrado " + value.getClass().getSimpleName());
         }
         else if ("string".equals(variableType) && !(value instanceof String)) {
-            parser.log("Erro de tipo: Esperado string mas encontrado " + value.getClass().getSimpleName());
+
             throw new RuntimeException("Erro de tipo: Esperado string mas encontrado " + value.getClass().getSimpleName());
         }
         else if ("boolean".equals(variableType) && !(value instanceof Boolean)) {
-            parser.log("Erro de tipo: Esperado boolean mas encontrado " + value.getClass().getSimpleName());
+
             throw new RuntimeException("Erro de tipo: Esperado boolean mas encontrado " + value.getClass().getSimpleName());
         }
     }
