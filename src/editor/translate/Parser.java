@@ -4,8 +4,6 @@ import editor.*;
 import editor.expressions.ExpressionStatement;
 import editor.inputs.InputStatement;
 import editor.whiles.WhileStatement;
-
-import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -20,10 +18,6 @@ public class Parser extends  GlobalClass {
     private int whilePosition;
     private ExpressionStatement expressionEvaluator;
 
-
-    public void setCurrentToken(Token currentToken) {
-        this.currentToken = currentToken;
-    }
 
     public void backToWhile() {
         while (pos >= 0) {
@@ -133,7 +127,7 @@ public class Parser extends  GlobalClass {
 
 
     public void statement() {
-       // System.out.println("Current token in statement: " + currentToken);
+        // System.out.println("Current token in statement: " + currentToken);
 
         if (currentToken.getType() == Token.TokenType.KEYWORD) {
             switch (currentToken.getValue()) {
@@ -200,11 +194,9 @@ public class Parser extends  GlobalClass {
                             }
                         } else if (getCurrentToken().getType() == Token.TokenType.STRING || getCurrentToken().getType() == Token.TokenType.IDENTIFIER) {
                             argumentos.add(getCurrentToken().getValue()); // Strings e identificadores são adicionados diretamente
-                        }
-                        else if(getCurrentToken().getType() == Token.TokenType.BOOLEAN) {
+                        } else if (getCurrentToken().getType() == Token.TokenType.BOOLEAN) {
                             argumentos.add(Boolean.parseBoolean(getCurrentToken().getValue()));
-                        }
-                        else {
+                        } else {
                             throw new RuntimeException("Token inesperado ao processar argumentos: " + getCurrentToken());
                         }
                         advance();
@@ -251,13 +243,12 @@ public class Parser extends  GlobalClass {
                 default:
                     throw new RuntimeException("Erro de sintaxe: declaração inesperada " + currentToken);
             }
-        }
-
-        else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
+        } else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
             // Processa identificadores e atribuições
             String variableName = currentToken.getValue();
             advance();
             System.out.println("Processing : " + getCurrentToken());
+
             if (currentToken.getType() == Token.TokenType.OPERATOR &&
                     currentToken.getValue().equals("=")) {
                 new VariableStatement(this).atribuir(variableName);
@@ -266,16 +257,30 @@ public class Parser extends  GlobalClass {
                 // Processa operadores de incremento/decremento
                 String operator = currentToken.getValue();
 
-                advance();
+                advance(); // Avança para o próximo token (onde está o valor)
 
                 if (variableValues.containsKey(variableName)) {
-                    Number value = (Number) variableValues.get(variableName);
-                    if (operator.equals("++")) {
-                        value = (value instanceof Double) ? value.doubleValue() + 1.0 : value.intValue() + 1;
-                    } else if (operator.equals("--")) {
-                        value = (value instanceof Double) ? value.doubleValue() - 1.0 : value.intValue() - 1;
+                    Object value = variableValues.get(variableName);
+
+                    if (value instanceof Integer) {
+                        int intValue = (int) value;
+                        if (operator.equals("++")) {
+                            intValue++;
+                        } else if (operator.equals("--")) {
+                            intValue--;
+                        }
+                        variableValues.put(variableName, intValue);  // Atualiza o valor da variável
+                    } else if (value instanceof Double) {
+                        double doubleValue = (double) value;
+                        if (operator.equals("++")) {
+                            doubleValue += 1.0;
+                        } else if (operator.equals("--")) {
+                            doubleValue -= 1.0;
+                        }
+                        variableValues.put(variableName, doubleValue);  // Atualiza o valor da variável
+                    } else {
+                        throw new RuntimeException("Tipo de variável incompatível para incremento/decremento: " + variableName);
                     }
-                    variableValues.put(variableName, value);
                 } else {
                     throw new RuntimeException("Variável não declarada: " + variableName);
                 }
@@ -331,9 +336,6 @@ public class Parser extends  GlobalClass {
             Lexer lexer = new Lexer(input);
             List<Token> tokens = lexer.tokenize();
             Parser parser = new Parser(tokens);
-
-
-
             parser.parse();
         } catch (IOException e) {
             e.printStackTrace();

@@ -115,19 +115,20 @@ public class ExpressionStatement {
             String operator = parser.getCurrentToken().getValue();
             parser.eat(Token.TokenType.OPERATOR);
             Object right = term();
-            if (result instanceof Number && right instanceof Number) {
-                if (result instanceof Double || right instanceof Double) {
-                    if (operator.equals("+")) {
-                        result = ((Number) result).doubleValue() + ((Number) right).doubleValue();
-                    } else if (operator.equals("-")) {
-                        result = ((Number) result).doubleValue() - ((Number) right).doubleValue();
-                    }
-                } else {
-                    if (operator.equals("+")) {
-                        result = ((Integer) result) + ((Integer) right);
-                    } else if (operator.equals("-")) {
-                        result = ((Integer) result) - ((Integer) right);
-                    }
+
+            if (result instanceof Integer && right instanceof Integer) {
+                // Ambos os operandos são inteiros, trata como inteiro
+                if (operator.equals("+")) {
+                    result = ((Integer) result) + ((Integer) right);
+                } else if (operator.equals("-")) {
+                    result = ((Integer) result) - ((Integer) right);
+                }
+            } else if (result instanceof Double || right instanceof Double) {
+                // Se qualquer operando for double, converte a operação para double
+                if (operator.equals("+")) {
+                    result = ((Number) result).doubleValue() + ((Number) right).doubleValue();
+                } else if (operator.equals("-")) {
+                    result = ((Number) result).doubleValue() - ((Number) right).doubleValue();
                 }
             } else {
                 throw new RuntimeException("Erro de sintaxe: operações aritméticas suportadas apenas para números");
@@ -135,4 +136,6 @@ public class ExpressionStatement {
         }
         return result;
     }
+
+
 }
