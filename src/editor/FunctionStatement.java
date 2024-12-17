@@ -1,6 +1,7 @@
 package editor;
 
 import editor.translate.Parser;
+import editor.whiles.WhileStatement;
 
 import java.util.HashMap;
 import java.util.List;
@@ -122,7 +123,6 @@ public class FunctionStatement  {
 
 
 
-
     public void executeStatement(Object instrucao) {
         if (instrucao instanceof String instrucaoStr) {
 
@@ -147,7 +147,8 @@ public class FunctionStatement  {
             }
 
             // Trata declarações de variáveis ou atribuições
-            if (instrucaoStr.startsWith("int") || instrucaoStr.startsWith("double") || instrucaoStr.startsWith("string")) {
+            if (instrucaoStr.startsWith("int") || instrucaoStr.startsWith("double") || instrucaoStr.startsWith("string")
+            || ((String) instrucao).startsWith("boolean")) {
                 processarVariavel(instrucaoStr, instrucaoStr.split(" ")[0]);
                 return;
             }
@@ -164,6 +165,7 @@ public class FunctionStatement  {
                 parser.log("Variável " + nomeVariavel + " atribuída com valor " + valor);
                 return;
             }
+
 
             // Caso não seja um tipo reconhecido, lança um erro
             throw new RuntimeException("TOKEN ATUAL INCORRETO PARA PROCESSAMENTO: " + parser.getCurrentToken().getValue());
@@ -191,7 +193,7 @@ public class FunctionStatement  {
     }
 
 
-    private List<String> functionParametros() {
+    public List<String> functionParametros() {
         parser.eat(Token.TokenType.DELIMITER);
         List<String> parametros = new ArrayList<>();
 

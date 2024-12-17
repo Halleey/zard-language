@@ -1,12 +1,9 @@
 main() {
- function teste(int a string nome boolean tentei double flut){
-    print("Tenho "  a   "anos e meu nome é "nome " " tentei " kilos" flut);
 
+int a =0;
+while(a < 10) {
+    print(a);
+    a++;
 }
- call teste(18 hallyson false 51.3);
-
- int a = 4;
- string teste = "hallyson";
- print("sou o " teste " e tenho " a  " dias para resolver essa merda" );
-
+print("saimos do looping " a);
 }

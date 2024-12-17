@@ -1,6 +1,8 @@
 package editor.translate;
 
 import editor.*;
+import editor.whiles.WhileStatement;
+
 import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -457,4 +459,5 @@ public class Parser extends  GlobalClass {
             e.printStackTrace();
         }
     }
+
 }
