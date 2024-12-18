@@ -1,14 +1,10 @@
 package editor.translate;
-
 import editor.*;
 import editor.expressions.ExpressionStatement;
 import editor.functions.FunctionStatement;
 import editor.functions.ValidateArgs;
 import editor.inputs.InputStatement;
 import editor.whiles.WhileStatement;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class Parser extends  GlobalClass {
@@ -86,8 +82,6 @@ public class Parser extends  GlobalClass {
             throw new RuntimeException("Erro de sintaxe: esperado " + type + " mas encontrado " + currentToken.getType());
         }
     }
-
-
     public void parseBlock() {
         System.out.println("Parsing block start");
         while (currentToken.getType() != Token.TokenType.DELIMITER || !currentToken.getValue().equals("}")) {
@@ -295,7 +289,6 @@ public class Parser extends  GlobalClass {
         }
     }
     public void parse() {
-
         while (currentToken.getType() != Token.TokenType.EOF) {
             if (currentToken.getValue().equals("main")) {
                 statement();
@@ -308,17 +301,4 @@ public class Parser extends  GlobalClass {
             throw new RuntimeException("Main method not defined");
         }
     }
-
-    public static void main(String[] args) {
-        try {
-            String input = new String(Files.readAllBytes(Paths.get("src/editor/test.zd")));
-            Lexer lexer = new Lexer(input);
-            List<Token> tokens = lexer.tokenize();
-            Parser parser = new Parser(tokens);
-            parser.parse();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 }

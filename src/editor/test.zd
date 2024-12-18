@@ -1,17 +1,8 @@
+#define PI 3.14159
+#define GREETING "Hello, World!"
+
 main() {
-
-int z = 5;
-double b =5.0;
-function  teste(int  a string d ) {
-    print ("idade " a " nome " d);
-}
-print (z " " b);
-int a =0;
-while(b < 10) {
-    print(b);
-    b++;
-}
-
-call teste(18 "hallyson");
-print("saimos do looping " a);
+    print(GREETING);
+    double area = PI * 10 * 10;
+    print(area);
 }
