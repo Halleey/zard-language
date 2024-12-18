@@ -1,8 +1,7 @@
-package editor;
+package editor.functions;
 
+import editor.Token;
 import editor.translate.Parser;
-import editor.whiles.WhileStatement;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +52,6 @@ public class FunctionStatement  {
         }
     }
 
-
     public String getNome() {
         return nome;
     }
@@ -65,6 +63,7 @@ public class FunctionStatement  {
     public List<Object> getCorpo() {
         return corpo;
     }
+
     public void definirFuncao() {
         parser.eat(Token.TokenType.KEYWORD);
         String nomeFunction = parser.getCurrentToken().getValue();
@@ -328,7 +327,6 @@ public class FunctionStatement  {
             }
             default -> 0;
         };
-
         return tipo.equals("int") ? (int) resultado : resultado;
     }
 
@@ -342,7 +340,6 @@ public class FunctionStatement  {
     }
 
     private double calcularResultado(double op1, double op2, String operador) {
-
         return switch (operador) {
             case "+" -> op1 + op2;
             case "-" -> op1 - op2;

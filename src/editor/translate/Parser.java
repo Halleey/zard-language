@@ -2,6 +2,8 @@ package editor.translate;
 
 import editor.*;
 import editor.expressions.ExpressionStatement;
+import editor.functions.FunctionStatement;
+import editor.functions.ValidateArgs;
 import editor.inputs.InputStatement;
 import editor.whiles.WhileStatement;
 import java.io.IOException;
@@ -32,7 +34,6 @@ public class Parser extends  GlobalClass {
 
         System.out.println("Token 'while' não encontrado. Chegou ao início.");
     }
-
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
         this.pos = 0;
@@ -44,9 +45,7 @@ public class Parser extends  GlobalClass {
 
 
     public Token getCurrentToken() {
-
         return currentToken;
-
     }
 
     public Map<String, Object> getVariableValues() {
@@ -166,6 +165,7 @@ public class Parser extends  GlobalClass {
                     new FunctionStatement(this).definirFuncao();
                     break;
                 case "call":
+                    ValidateArgs validateArgs = new ValidateArgs();
                     advance();
                     String functionName = getCurrentToken().getValue(); // Captura o nome da função
                     advance();
@@ -222,7 +222,7 @@ public class Parser extends  GlobalClass {
                         String tipoEsperado = parametrosTipos.get(nomeParametro); // Busca o tipo esperado do parâmetro com base no nome.
                         Object argumento = argumentos.get(i); // Obtém o argumento fornecido para o parâmetro atual.
 
-                        if (!validarTipo(tipoEsperado, argumento)) {
+                        if (!validateArgs.validarTipo(tipoEsperado, argumento)) {
                             throw new RuntimeException("Tipo incompatível para o parâmetro '" + nomeParametro +
                                     "': esperado " + tipoEsperado + ", recebido " + argumento.getClass().getSimpleName());
                         }
@@ -231,13 +231,10 @@ public class Parser extends  GlobalClass {
                     // Executa a função
                     func.consumir(argumentos);
                     break;
-
                 case "return":
-
                     break;
                 case "}":
                 case ";":
-
                     advance();
                     break;
                 default:
@@ -297,24 +294,6 @@ public class Parser extends  GlobalClass {
             throw new RuntimeException("Erro de sintaxe: esperado KEYWORD ou IDENTIFIER mas encontrado " + currentToken.getType() + " " + currentToken.getValue());
         }
     }
-
-
-    private boolean validarTipo(String tipoEsperado, Object argumento) {
-        switch (tipoEsperado) {
-            case "int":
-                return argumento instanceof Integer;
-            case "double":
-                return argumento instanceof Double;
-            case "string":
-                return argumento instanceof String;
-            case "boolean":
-                return  argumento instanceof  Boolean;
-            default:
-                throw new RuntimeException("Tipo desconhecido: " + tipoEsperado);
-        }
-    }
-
-
     public void parse() {
 
         while (currentToken.getType() != Token.TokenType.EOF) {
