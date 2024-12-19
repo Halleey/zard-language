@@ -1,6 +1,8 @@
-package editor;
+package editor.variables;
 
 import editor.translate.Parser;
+import editor.translate.Token;
+
 import java.util.HashMap;
 import java.util.Map;
 

@@ -1,6 +1,6 @@
 package editor.whiles;
 
-import editor.Token;
+import editor.translate.Token;
 import editor.translate.Parser;
 
 public class CheckCondition {

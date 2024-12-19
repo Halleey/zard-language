@@ -1,6 +1,6 @@
 package editor.functions;
 
-import editor.Token;
+import editor.translate.Token;
 import editor.translate.Parser;
 import java.util.HashMap;
 import java.util.List;
@@ -16,9 +16,12 @@ public class FunctionStatement  {
     public Map<String, String> variablesFunction = new HashMap<>();
     String currentName = null;
     String currentType = null;
-
+    private final ArithmeticVariable variablesFunctions;
+    private final SubstituteVariable substituteVariable;
     public FunctionStatement(Parser parser) {
         this.parser = parser;
+        this.variablesFunctions = new ArithmeticVariable(parser);
+        this.substituteVariable = new SubstituteVariable(parser);
     }
 
     public void salvarFuncao(String nome, List<String> parametros, List<Object> corpo) {
@@ -117,8 +120,6 @@ public class FunctionStatement  {
         return corpo;
     }
 
-
-
     public void executeStatement(Object instrucao) {
         if (instrucao instanceof String instrucaoStr) {
 
@@ -126,7 +127,7 @@ public class FunctionStatement  {
             if (instrucaoStr.endsWith("++") || instrucaoStr.endsWith("--")) {
                 String nomeVariavel = instrucaoStr.substring(0, instrucaoStr.length() - 2).trim();
                 int incremento = instrucaoStr.endsWith("++") ? 1 : -1;
-                Object novoValor = calcularIncremento(nomeVariavel, incremento);
+                Object novoValor = variablesFunctions.calcularIncremento(nomeVariavel, incremento);
                 parser.getVariableValues().put(nomeVariavel, novoValor);
 
                 return;
@@ -136,7 +137,7 @@ public class FunctionStatement  {
             if (instrucaoStr.startsWith("print")) {
                 String valorImprimir = instrucaoStr.substring(instrucaoStr.indexOf('(') + 1,
                         instrucaoStr.lastIndexOf(')')).trim();
-                valorImprimir = substituirVariaveis(valorImprimir);
+                valorImprimir = substituteVariable.substituirVariaveis(valorImprimir);
 
                 System.out.println(valorImprimir);
                 return;
@@ -145,7 +146,7 @@ public class FunctionStatement  {
             // Trata declarações de variáveis ou atribuições
             if (instrucaoStr.startsWith("int") || instrucaoStr.startsWith("double") || instrucaoStr.startsWith("string")
             || ((String) instrucao).startsWith("boolean")) {
-                processarVariavel(instrucaoStr, instrucaoStr.split(" ")[0]);
+                variablesFunctions.processarVariavel(instrucaoStr, instrucaoStr.split(" ")[0]);
                 return;
             }
 
@@ -158,11 +159,8 @@ public class FunctionStatement  {
                 // Processa o valor e atualiza a variável
                 Object valor = processarValor(valorStr);
                 parser.getVariableValues().put(nomeVariavel, valor);
-
                 return;
             }
-
-
             // Caso não seja um tipo reconhecido, lança um erro
             throw new RuntimeException("TOKEN ATUAL INCORRETO PARA PROCESSAMENTO: " + parser.getCurrentToken().getValue());
         }
@@ -172,9 +170,8 @@ public class FunctionStatement  {
     private Object processarValor(String valorStr) {
         // Se for uma expressão matemática, trata a expressão
         if (valorStr.contains("+") || valorStr.contains("-") || valorStr.contains("*") || valorStr.contains("/")) {
-            return calcularExpressao(valorStr, "int"); // Ou o tipo que você precisar
+            return variablesFunctions.calcularExpressao(valorStr, "int"); // Ou o tipo que você precisar
         }
-
         // Caso contrário, converte diretamente o valor para o tipo correspondente
         if (valorStr.matches("-?\\d+")) {
             return Integer.parseInt(valorStr); // Para inteiros
@@ -184,7 +181,7 @@ public class FunctionStatement  {
             return Boolean.parseBoolean(valorStr); // Para booleans
         } else {
             // Trata como string ou tenta pegar o valor da variável
-            return substituirVariaveis(valorStr);
+            return substituteVariable.substituirVariaveis(valorStr);
         }
     }
 
@@ -212,150 +209,5 @@ public class FunctionStatement  {
         }
         parser.eat(Token.TokenType.DELIMITER);
         return parametros;
-    }
-
-
-    private String substituirVariaveis(String instrucoes) {
-        StringBuilder resultado = new StringBuilder();
-        boolean dentroAspas = false; // Variável para controlar quando estamos dentro de aspas
-
-        // Dividir a instrução em caracteres individuais para percorrer com controle de aspas
-        StringBuilder palavra = new StringBuilder();
-        for (int i = 0; i < instrucoes.length(); i++) {
-            char c = instrucoes.charAt(i);
-
-            if (c == '\"') { // Verifica se encontramos aspas
-                if (dentroAspas) {
-                    // Se já estamos dentro de aspas, terminamos a parte literal
-                    resultado.append(palavra);
-                    palavra.setLength(0); // Limpar palavra para próximo uso
-                } else {
-                    // Se não estamos dentro de aspas, começamos a parte literal
-                    // Não adiciona as aspas ao resultado
-                }
-                dentroAspas = !dentroAspas; // Alterna entre dentro e fora de aspas
-            } else if (c == ' ' && !dentroAspas) { // Se estivermos fora de aspas e encontrar espaço
-                if (palavra.length() > 0) {
-                    // Substitui as variáveis apenas fora de aspas
-                    String variavel = palavra.toString().trim();
-                    if (parser.getVariableValues().containsKey(variavel)) {
-                        resultado.append(parser.getVariableValues().get(variavel));
-                    } else {
-                        resultado.append(variavel); // Caso não seja uma variável, adiciona a palavra
-                    }
-                    palavra.setLength(0); // Limpar palavra após processar
-                }
-                resultado.append(" "); // Adiciona o espaço entre palavras
-            } else {
-                palavra.append(c); // Adiciona o caractere à palavra atual
-            }
-        }
-
-        // Processar a última palavra fora de aspas, caso exista
-        if (palavra.length() > 0) {
-            String variavel = palavra.toString().trim();
-            if (parser.getVariableValues().containsKey(variavel)) {
-                resultado.append(parser.getVariableValues().get(variavel));
-            } else {
-                resultado.append(variavel);
-            }
-        }
-
-        return resultado.toString();
-    }
-
-
-    private void processarVariavel(String instrucaoStr, String tipo) {
-        String resto = instrucaoStr.substring(tipo.length()).trim();
-        String[] partes = resto.split("=");
-        String nomeVariavel = partes[0].trim();
-
-        Object valor = null;
-
-        if (partes.length == 2) {
-            String expressao = partes[1].trim();
-
-            if (expressao.contains("+") || expressao.contains("-") || expressao.contains("*") || expressao.contains("/")) {
-                valor = calcularExpressao(expressao, tipo);
-            } else if (expressao.equals(nomeVariavel + "++") || expressao.equals("++" + nomeVariavel)) {
-                valor = calcularIncremento(nomeVariavel, 1);
-            } else if (expressao.equals(nomeVariavel + "--") || expressao.equals("--" + nomeVariavel)) {
-                valor = calcularIncremento(nomeVariavel, -1);
-            } else {
-                valor = switch (tipo) {
-                    case "int" -> Integer.parseInt(expressao);
-                    case "double" -> Double.parseDouble(expressao);
-                    case "boolean" -> Boolean.parseBoolean(expressao);
-                    case "string" -> {
-                        // Remover aspas caso estejam presentes
-                        String valorStr = expressao;
-                        if (expressao.startsWith("\"") && expressao.endsWith("\"")) {
-                            valorStr = expressao.substring(1, expressao.length() - 1);
-                        }
-                        yield valorStr;
-                    }
-                    default -> valor;
-                };
-            }
-        }
-
-        // operação `a++;` ou `a--;`
-        else if (partes.length == 1) {
-            if (nomeVariavel.endsWith("++")) {
-                nomeVariavel = nomeVariavel.substring(0, nomeVariavel.length() - 2).trim();
-                valor = calcularIncremento(nomeVariavel, 1);
-            } else if (nomeVariavel.endsWith("--")) {
-                nomeVariavel = nomeVariavel.substring(0, nomeVariavel.length() - 2).trim();
-                valor = calcularIncremento(nomeVariavel, -1);
-            }
-        }
-        if (valor != null) {
-            parser.getVariableValues().put(nomeVariavel, valor);
-            System.out.println("Variável " + nomeVariavel + " armazenada com valor " + valor);
-        }
-    }
-
-    private Object calcularExpressao(String expressao, String tipo) {
-        String[] operandos = expressao.split("\\s*([+\\-*/])\\s*");
-        String operador = expressao.replaceAll("[^+\\-*/]", "").trim();
-
-        double resultado = switch (tipo) {
-            case "int", "double" -> {
-                double op1 = obterValorComoDouble(operandos[0].trim());
-                double op2 = obterValorComoDouble(operandos[1].trim());
-                yield  calcularResultado(op1, op2, operador);
-            }
-            default -> 0;
-        };
-        return tipo.equals("int") ? (int) resultado : resultado;
-    }
-
-    private double obterValorComoDouble(String operando) {
-        // Se o operando é uma variável, pegue seu valor; caso contrário, converta diretamente
-        if (parser.getVariableValues().containsKey(operando)) {
-            return ((Number) parser.getVariableValues().get(operando)).doubleValue();
-        } else {
-            return Double.parseDouble(operando);
-        }
-    }
-
-    private double calcularResultado(double op1, double op2, String operador) {
-        return switch (operador) {
-            case "+" -> op1 + op2;
-            case "-" -> op1 - op2;
-            case "*" -> op1 * op2;
-            case "/" -> op1 / op2;
-            default -> 0;
-        };
-    }
-
-    private Object calcularIncremento(String variavel, int plus) {
-        Object valorAtual = parser.getVariableValues().get(variavel);
-        if (valorAtual instanceof Integer) {
-            return (Integer) valorAtual + plus;
-        } else if (valorAtual instanceof Double) {
-            return (Double) valorAtual + plus;
-        }
-        return null;
     }
 }

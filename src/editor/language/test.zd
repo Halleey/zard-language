@@ -1,0 +1,16 @@
+main(){
+
+function somar(int a int b) {
+ int resultado = a +b;
+ print(resultado);
+}
+
+function teste(string nome) {
+    print(nome);
+}
+
+call somar(5 3);
+int z = 5;
+print(z);
+call teste("hallyson");
+}

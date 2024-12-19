@@ -1,4 +1,4 @@
-package editor;
+package editor.globals;
 
 public class GlobalClass {
     boolean foundReturn;

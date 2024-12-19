@@ -1,7 +1,5 @@
 package editor.translate;
 
-import editor.Token;
-
 import java.util.ArrayList;
 import java.util.List;
 

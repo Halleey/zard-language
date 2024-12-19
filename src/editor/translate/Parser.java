@@ -1,13 +1,17 @@
 package editor.translate;
-import editor.*;
 import editor.expressions.ExpressionStatement;
 import editor.functions.FunctionStatement;
 import editor.functions.ValidateArgs;
+import editor.globals.GlobalClass;
+import editor.globals.MainStatement;
+import editor.globals.PrintStatement;
+import editor.ifStatement.IfStatement;
 import editor.inputs.InputStatement;
+import editor.variables.VariableStatement;
 import editor.whiles.WhileStatement;
 import java.util.*;
 
-public class Parser extends  GlobalClass {
+public class Parser extends GlobalClass {
     private final List<Token> tokens;
     private int pos;
     private Token currentToken;

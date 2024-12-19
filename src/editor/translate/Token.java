@@ -1,4 +1,4 @@
-package editor;
+package editor.translate;
 
 public class Token {
     public enum TokenType {

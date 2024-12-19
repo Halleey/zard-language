@@ -1,5 +1,6 @@
-package editor;
+package editor.globals;
 
+import editor.translate.Token;
 import editor.translate.Parser;
 
 public class MainStatement {

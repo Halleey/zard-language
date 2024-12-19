@@ -1,7 +1,7 @@
 package editor.whiles;
 
-import editor.GlobalClass;
-import editor.Token;
+import editor.globals.GlobalClass;
+import editor.translate.Token;
 import editor.translate.Parser;
 
 public class ProcessWhileBlock extends GlobalClass {

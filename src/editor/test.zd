@@ -1,8 +1,0 @@
-#define PI 3.14159
-#define GREETING "Hello, World!"
-
-main() {
-    print(GREETING);
-    double area = PI * 10 * 10;
-    print(area);
-}

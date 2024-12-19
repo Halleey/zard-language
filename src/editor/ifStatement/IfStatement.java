@@ -1,4 +1,5 @@
-package editor;
+package editor.ifStatement;
+import editor.translate.Token;
 import editor.translate.Parser;
 
 public class IfStatement  {

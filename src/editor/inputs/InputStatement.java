@@ -1,6 +1,6 @@
 package editor.inputs;
 
-import editor.Token;
+import editor.translate.Token;
 import editor.translate.Parser;
 
 import java.util.Scanner;

@@ -1,6 +1,6 @@
 package editor.translate;
 
-import editor.Token;
+import editor.process.PreProcess;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,7 +11,7 @@ public class Execute {
     public static void main(String[] args) {
         try {
             // Lê o arquivo com o código-fonte
-            String input = new String(Files.readAllBytes(Paths.get("src/editor/test.zd")));
+            String input = new String(Files.readAllBytes(Paths.get("src/editor/language/test.zd")));
 
             // Pré-processa o código para substituir macros
             PreProcess preprocessor = new PreProcess(input);
