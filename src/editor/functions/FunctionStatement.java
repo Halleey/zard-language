@@ -18,6 +18,9 @@ public class FunctionStatement  {
     String currentType = null;
     private final ArithmeticVariable variablesFunctions;
     private final SubstituteVariable substituteVariable;
+
+
+
     public FunctionStatement(Parser parser) {
         this.parser = parser;
         this.variablesFunctions = new ArithmeticVariable(parser);
@@ -120,6 +123,11 @@ public class FunctionStatement  {
         return corpo;
     }
 
+    public int somar(int a, int b)  {
+        int resultado = a +b;
+        return resultado;
+    }
+
     public void executeStatement(Object instrucao) {
         if (instrucao instanceof String instrucaoStr) {
 
@@ -140,6 +148,22 @@ public class FunctionStatement  {
                 valorImprimir = substituteVariable.substituirVariaveis(valorImprimir);
 
                 System.out.println(valorImprimir);
+                return;
+            }
+            // terminar, quando encontrar um return, verifique se é uma variavel, se for gere um print senão gere um erro
+            if (instrucaoStr.startsWith("return")) {
+                // Remove o 'return' e obtém o nome do valor ou variável a ser retornado
+                String valorRetorno = instrucaoStr.substring(6).trim(); // Remove a palavra "return"
+
+                // Verifica se o valor é uma variável ou um valor literal
+                if (parser.getVariableValues().containsKey(valorRetorno)) {
+                    // Se for uma variável, imprime o valor dela
+                    Object valorVariavel = parser.getVariableValues().get(valorRetorno);
+                    System.out.println(valorVariavel);
+                } else {
+
+                    throw new RuntimeException("Variável não encontrada para o return: " + valorRetorno);
+                }
                 return;
             }
 
@@ -170,9 +194,8 @@ public class FunctionStatement  {
     private Object processarValor(String valorStr) {
         // Se for uma expressão matemática, trata a expressão
         if (valorStr.contains("+") || valorStr.contains("-") || valorStr.contains("*") || valorStr.contains("/")) {
-            return variablesFunctions.calcularExpressao(valorStr, "int"); // Ou o tipo que você precisar
+            return variablesFunctions.calcularExpressao(valorStr, "int");
         }
-        // Caso contrário, converte diretamente o valor para o tipo correspondente
         if (valorStr.matches("-?\\d+")) {
             return Integer.parseInt(valorStr); // Para inteiros
         } else if (valorStr.matches("-?\\d+\\.\\d+")) {
