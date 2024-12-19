@@ -107,7 +107,21 @@ public class FunctionStatement  {
                 System.out.println(valorImprimir);
                 return;
             }
+            /*
 
+            não precisamos de escopos globais seu animal, apenas verifique como
+            o while se comporta retornando e revalidando a informação, adicione isso ao Parser para uma chamada recursiva
+             */
+
+            if(instrucaoStr.startsWith("while")) {
+                //implementar aqui
+                System.out.println("token antes " + parser.getCurrentToken().getValue());
+                parser.backToWhile();
+                System.out.println("token atual  " + parser.getCurrentToken().getValue());
+                WhileStatement whileStatement = new WhileStatement(parser);
+                whileStatement.execute();
+                parser.advance();
+            }
 
             // terminar, quando encontrar um return, verifique se é uma variavel, se for gere um print senão gere um erro
             if (instrucaoStr.startsWith("return")) {

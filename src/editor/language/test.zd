@@ -1,10 +1,11 @@
-import Math.zd
 main(){
-
+# protótipo funcional de como retornar de maneira rápida um valor passado na função
+# OBSERVAÇÃO NÃO TENTE ATUALMENTE IMPLEMENTAR JUNTO DO MÉTODO WHILE
 function teste(int a int b) {
 int resultado = a + b;
 int cont = 0;
-return resultado;
+
+ return resultado;
 }
 
 call teste(19 20);
@@ -12,3 +13,15 @@ int z = 5;
 print(z);
 
 }
+
+##EXEMPLO##
+function teste(int a int b) {
+int resultado = a + b;
+int cont = 0;
+while(cont < 10) {
+print(cont);
+cont++;
+}
+ return resultado;
+}
+#vai quebrar no "resultado" e irá parar o codigo.

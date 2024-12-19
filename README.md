@@ -1,6 +1,6 @@
 🚀 Zard.
 
-- **Zard é uma linguagem de programação ao qual estou construindo baseada no java. Bem, ela no momento é só para caso de estudo, mas continuarei atualizando a mesma.
+- Zard é uma linguagem de programação ao qual estou construindo baseada no java. Bem, ela no momento é só para caso de estudo, mas continuarei atualizando a mesma.
 
 
 📚 Índice
@@ -9,46 +9,16 @@
 
 📝 Exemplo de Código
 
-    main() {
-    int idade = 15;
-    int peso;
-    double preco = 13.2;
-    string nome = "hallyson";
-    boolean teste = true;
-    peso++;
-    idade--;
-    print(idade " " peso " " preco " " nome " " teste);
+    main(){
 
-    int contador = 0;
-    if (idade > 16) {
-        print("Você é maior de idade.");
-    } else {
-        print("Você é menor de idade.");
+    function teste(int a int b) {
+    int resultado = a + b;
+    int cont = 0;
+    return resultado;
     }
-
-    while (contador < 15) {
-        print(contador);
-        contador++;
-        print(contador);
-        if (contador == 15) {
-            print("4");
-        }
-        else if (contador == 6) {
-            print("6");
-        }
-        # Outros ifs...
-    }
-
-    if (idade == 15) {
-        print("teste");
-    } else {
-        print("menor de idade");
-    }
-
-    string teste;
-    print("Insira um texto");
-    input teste;
-    print(teste);
+    
+    call teste(19 20);
+    ##gera resultado da soma.
     }
 
 🔧 Uso
