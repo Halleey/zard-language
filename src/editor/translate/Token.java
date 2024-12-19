@@ -2,7 +2,7 @@ package editor.translate;
 
 public class Token {
     public enum TokenType {
-        KEYWORD, IDENTIFIER, OPERATOR, NUMBER, STRING, DELIMITER, EOF, BOOLEAN
+        KEYWORD, IDENTIFIER, OPERATOR, NUMBER, STRING, DELIMITER, EOF, BOOLEAN, INSTANCE
     }
 
     private final TokenType type;

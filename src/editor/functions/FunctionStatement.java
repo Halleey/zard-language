@@ -2,6 +2,8 @@ package editor.functions;
 
 import editor.translate.Token;
 import editor.translate.Parser;
+import editor.whiles.WhileStatement;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,13 +20,14 @@ public class FunctionStatement  {
     String currentType = null;
     private final ArithmeticVariable variablesFunctions;
     private final SubstituteVariable substituteVariable;
-
+    private final FunctionBody functionBody;
 
 
     public FunctionStatement(Parser parser) {
         this.parser = parser;
         this.variablesFunctions = new ArithmeticVariable(parser);
         this.substituteVariable = new SubstituteVariable(parser);
+        this.functionBody = new FunctionBody(parser);
     }
 
     public void salvarFuncao(String nome, List<String> parametros, List<Object> corpo) {
@@ -75,63 +78,17 @@ public class FunctionStatement  {
         String nomeFunction = parser.getCurrentToken().getValue();
         parser.advance();
         List<String> parametros = functionParametros();
-        List<Object> corpo = functionBody();
+        List<Object> corpo = functionBody.saveFunctionBody();
         salvarFuncao(nomeFunction, parametros, corpo);
         System.out.println("function name  " + getNome());
         System.out.println("parametros " + getParametros());
         System.out.println("corpo " + getCorpo());
     }
 
-    private List<Object> functionBody() {
-        List<Object> corpo = new ArrayList<>();
-        int chave = 0;
-
-        if (parser.getCurrentToken().getValue().equals("{")) {
-            chave++;
-            parser.advance();
-
-            StringBuilder instrucaoCompleta = new StringBuilder();
-            while (chave > 0) {
-                String tokenValue = parser.getCurrentToken().getValue();
-
-                if (tokenValue.equals("{")) {
-                    chave++;
-                }
-
-                if (tokenValue.equals("}")) {
-                    chave--;
-                }
-
-                // Verifica se é uma string e mantém as aspas
-                if (parser.getCurrentToken().getType() == Token.TokenType.STRING) {
-                    instrucaoCompleta.append("\"").append(tokenValue).append("\""); // Adiciona as aspas manualmente
-                } else {
-                    instrucaoCompleta.append(tokenValue).append(" ");
-                }
-
-                parser.advance();
-
-                if (parser.getCurrentToken().getType() == Token.TokenType.DELIMITER &&
-                        parser.getCurrentToken().getValue().equals(";")) {
-                    corpo.add(instrucaoCompleta.toString().trim());
-                    instrucaoCompleta.setLength(0);
-                    parser.advance();
-                }
-            }
-        }
-        System.out.println("Corpo da função salvo: " + corpo);
-        return corpo;
-    }
-
-    public int somar(int a, int b)  {
-        int resultado = a +b;
-        return resultado;
-    }
 
     public void executeStatement(Object instrucao) {
         if (instrucao instanceof String instrucaoStr) {
 
-            // Trata operações de incremento/decremento
             if (instrucaoStr.endsWith("++") || instrucaoStr.endsWith("--")) {
                 String nomeVariavel = instrucaoStr.substring(0, instrucaoStr.length() - 2).trim();
                 int incremento = instrucaoStr.endsWith("++") ? 1 : -1;
@@ -150,12 +107,13 @@ public class FunctionStatement  {
                 System.out.println(valorImprimir);
                 return;
             }
+
+
             // terminar, quando encontrar um return, verifique se é uma variavel, se for gere um print senão gere um erro
             if (instrucaoStr.startsWith("return")) {
                 // Remove o 'return' e obtém o nome do valor ou variável a ser retornado
                 String valorRetorno = instrucaoStr.substring(6).trim(); // Remove a palavra "return"
 
-                // Verifica se o valor é uma variável ou um valor literal
                 if (parser.getVariableValues().containsKey(valorRetorno)) {
                     // Se for uma variável, imprime o valor dela
                     Object valorVariavel = parser.getVariableValues().get(valorRetorno);

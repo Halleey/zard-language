@@ -72,9 +72,9 @@ public class Lexer {
             case "main":
             case "while":
             case "call":
-            case "public":
-            case "private":
                 return new Token(Token.TokenType.KEYWORD, identifier);
+            case "new":
+                return  new Token(Token.TokenType.INSTANCE, identifier);
             case "boolean":
                 return new Token(Token.TokenType.KEYWORD, identifier); // BOOLEAN como KEYWORD para declaração
             case "true":
@@ -147,7 +147,8 @@ public class Lexer {
                 skipWhitespace();
                 continue;
             }
-            if (currentChar == '(' || currentChar == ')' || currentChar == '{' || currentChar == '}' || currentChar == ';' || currentChar ==  ',') {
+            if (currentChar == '(' || currentChar == ')' || currentChar ==  '.' ||
+                    currentChar == '{' || currentChar == '}' || currentChar == ';' || currentChar ==  ',') {
                 tokens.add(new Token(Token.TokenType.DELIMITER, Character.toString(currentChar)));
                 advance();
                 continue;

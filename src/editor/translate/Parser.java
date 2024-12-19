@@ -83,7 +83,7 @@ public class Parser extends GlobalClass {
         if (currentToken.getType() == type) {
             advance();
         } else {
-            throw new RuntimeException("Erro de sintaxe: esperado " + type + " mas encontrado " + currentToken.getType());
+            throw new RuntimeException("Erro de sintaxe: esperado " + type + " mas encontrado " + currentToken.getType()+ "  valor  " + getCurrentToken().getValue());
         }
     }
     public void parseBlock() {
@@ -140,7 +140,6 @@ public class Parser extends GlobalClass {
                     new VariableStatement(this).execute();
                     break;
                 case "main":
-
                     new MainStatement(this).execute();
                     mainFound = true;
                     break;

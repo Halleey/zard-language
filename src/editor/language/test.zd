@@ -1,10 +1,14 @@
+import Math.zd
 main(){
 
-function somar(int a int b) {
- int resultado = a +b;
- return resultado;
+function teste(int a int b) {
+int resultado = a + b;
+int cont = 0;
+return resultado;
 }
 
-call somar(5 3);
+call teste(19 20);
+int z = 5;
+print(z);
 
 }

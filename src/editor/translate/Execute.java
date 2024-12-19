@@ -8,13 +8,15 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class Execute {
+
+
     public static void main(String[] args) {
         try {
             // Lê o arquivo com o código-fonte
             String input = new String(Files.readAllBytes(Paths.get("src/editor/language/test.zd")));
-
+            String basePatch = new String (Files.readAllBytes(Paths.get("src/editor/libs/Math.zd")));
             // Pré-processa o código para substituir macros
-            PreProcess preprocessor = new PreProcess(input);
+            PreProcess preprocessor = new PreProcess(input, basePatch);
             String preprocessedCode = preprocessor.preprocess();
 
             // Exibe o código pré-processado
