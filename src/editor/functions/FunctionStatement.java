@@ -107,11 +107,7 @@ public class FunctionStatement  {
                 System.out.println(valorImprimir);
                 return;
             }
-            /*
 
-            não precisamos de escopos globais seu animal, apenas verifique como
-            o while se comporta retornando e revalidando a informação, adicione isso ao Parser para uma chamada recursiva
-             */
 
             if(instrucaoStr.startsWith("while")) {
                 //implementar aqui

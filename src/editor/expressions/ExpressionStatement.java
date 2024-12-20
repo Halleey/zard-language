@@ -70,8 +70,6 @@ public class ExpressionStatement {
         return result;
     }
 
-
-
     public Object factor() {
         Token token = parser.getCurrentToken();
         switch (token.getType()) {

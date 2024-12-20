@@ -1,27 +1,15 @@
-main(){
-# protótipo funcional de como retornar de maneira rápida um valor passado na função
-# OBSERVAÇÃO NÃO TENTE ATUALMENTE IMPLEMENTAR JUNTO DO MÉTODO WHILE
-function teste(int a int b) {
-int resultado = a + b;
-int cont = 0;
+main() {
+int contador = 0;
 
- return resultado;
+while(true) {
+print("testando");
+
+if(contador == 10) {
+print(contador);
+return;
 }
-
-call teste(19 20);
-int z = 5;
-print(z);
+contador++;
 
 }
-
-##EXEMPLO##
-function teste(int a int b) {
-int resultado = a + b;
-int cont = 0;
-while(cont < 10) {
-print(cont);
-cont++;
+print("saimos daqui");
 }
- return resultado;
-}
-#vai quebrar no "resultado" e irá parar o codigo.
