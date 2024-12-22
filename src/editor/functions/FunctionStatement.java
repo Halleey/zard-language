@@ -1,5 +1,6 @@
 package editor.functions;
 
+import editor.globals.GlobalClass;
 import editor.translate.Token;
 import editor.translate.Parser;
 import editor.whiles.WhileStatement;
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.*;
 
-public class FunctionStatement  {
+public class FunctionStatement extends GlobalClass {
     private final Parser parser;
     private String nome;
     private List<String> parametros;
@@ -108,32 +109,29 @@ public class FunctionStatement  {
                 return;
             }
 
-
-            if(instrucaoStr.startsWith("while")) {
-                //implementar aqui
-                System.out.println("token antes " + parser.getCurrentToken().getValue());
+            //Criar um método de execução própria para o while.
+            if (instrucaoStr.startsWith("while")) {
                 parser.backToWhile();
-                System.out.println("token atual  " + parser.getCurrentToken().getValue());
+                System.out.println("Iniciando processamento do 'while'.");
                 WhileStatement whileStatement = new WhileStatement(parser);
                 whileStatement.execute();
-                parser.advance();
+                return;
             }
 
-            // terminar, quando encontrar um return, verifique se é uma variavel, se for gere um print senão gere um erro
+
             if (instrucaoStr.startsWith("return")) {
-                // Remove o 'return' e obtém o nome do valor ou variável a ser retornado
-                String valorRetorno = instrucaoStr.substring(6).trim(); // Remove a palavra "return"
+                String valorRetorno = instrucaoStr.substring(6).trim();
 
-                if (parser.getVariableValues().containsKey(valorRetorno)) {
-                    // Se for uma variável, imprime o valor dela
-                    Object valorVariavel = parser.getVariableValues().get(valorRetorno);
-                    System.out.println(valorVariavel);
+                Object valor = parser.getVariableValues().getOrDefault(valorRetorno, processarValor(valorRetorno));
+
+                if (valor != null) {
+                    System.out.println(valor);
                 } else {
-
-                    throw new RuntimeException("Variável não encontrada para o return: " + valorRetorno);
+                    throw new RuntimeException("Valor ou variável não encontrado para o return: " + valorRetorno);
                 }
                 return;
             }
+
 
             // Trata declarações de variáveis ou atribuições
             if (instrucaoStr.startsWith("int") || instrucaoStr.startsWith("double") || instrucaoStr.startsWith("string")
@@ -157,7 +155,6 @@ public class FunctionStatement  {
             throw new RuntimeException("TOKEN ATUAL INCORRETO PARA PROCESSAMENTO: " + parser.getCurrentToken().getValue());
         }
     }
-
 
     private Object processarValor(String valorStr) {
         // Se for uma expressão matemática, trata a expressão

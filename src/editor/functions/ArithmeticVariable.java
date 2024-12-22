@@ -1,5 +1,4 @@
 package editor.functions;
-
 import editor.translate.Parser;
 
 public class ArithmeticVariable {
@@ -9,11 +8,12 @@ public class ArithmeticVariable {
         this.parser = parser;
     }
 
+
     public void processarVariavel(String instrucaoStr, String tipo) {
         String resto = instrucaoStr.substring(tipo.length()).trim();
         String[] partes = resto.split("=");
         String nomeVariavel = partes[0].trim();
-
+        
         Object valor = null;
 
         if (partes.length == 2) {

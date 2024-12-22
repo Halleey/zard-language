@@ -9,7 +9,6 @@ import java.util.List;
 
 public class Execute {
 
-
     public static void main(String[] args) {
         try {
             // Lê o arquivo com o código-fonte

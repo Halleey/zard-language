@@ -19,7 +19,7 @@ public class Parser extends GlobalClass {
     private boolean mainFound;
     private int whilePosition;
     private ExpressionStatement expressionEvaluator;
-
+    private final ValidateFunction validateFunction;
 
     public void backToWhile() {
         while (pos >= 0) {
@@ -41,6 +41,7 @@ public class Parser extends GlobalClass {
         this.variableValues = new HashMap<>();
         this.mainFound = false;
         this.expressionEvaluator = new ExpressionStatement(this); // Inicializa expressionEvaluator
+        this.validateFunction = new ValidateFunction(this);
     }
 
 
@@ -174,10 +175,6 @@ public class Parser extends GlobalClass {
                     // Captura os argumentos fornecidos
                     List<Object> argumentos = new ArrayList<>();
                     while (!(getCurrentToken().getType() == Token.TokenType.DELIMITER && getCurrentToken().getValue().equals(")"))) {
-                        if (getCurrentToken().getType() == Token.TokenType.DELIMITER && getCurrentToken().getValue().equals(",")) {
-                            advance(); // Ignora a vírgula e passa para o próximo token
-                            continue;
-                        }
                         if (getCurrentToken().getType() == Token.TokenType.NUMBER) {
                             String valorToken = getCurrentToken().getValue(); // Obtém o valor do token como string.
 
@@ -198,32 +195,16 @@ public class Parser extends GlobalClass {
                         }
                         advance();
                     }
-
                     eat(Token.TokenType.DELIMITER); // Consome ')'
 
-                    // Busca a função e valida os tipos
+                    // Busca a função
                     FunctionStatement func = FunctionStatement.getFunction(functionName);
                     if (func == null) {
                         throw new RuntimeException("Função não encontrada: " + functionName);
                     }
 
-                    // Validação de tipos
-                    Map<String, String> parametrosTipos = func.variablesFunction;
-                    List<String> parametros = func.getParametros();
-                    if (parametros.size() != argumentos.size()) {
-                        throw new RuntimeException("Número de argumentos incorreto para a função: " + functionName);
-                    }
-
-                    for (int i = 0; i < parametros.size(); i++) {
-                        String nomeParametro = parametros.get(i);
-                        String tipoEsperado = parametrosTipos.get(nomeParametro); // Busca o tipo esperado do parâmetro com base no nome.
-                        Object argumento = argumentos.get(i); // Obtém o argumento fornecido para o parâmetro atual.
-
-                        if (!validateArgs.validarTipo(tipoEsperado, argumento)) {
-                            throw new RuntimeException("Tipo incompatível para o parâmetro '" + nomeParametro +
-                                    "': esperado " + tipoEsperado + ", recebido " + argumento.getClass().getSimpleName());
-                        }
-                    }
+                    // Valida os tipos dos argumentos
+                    validateFunction.validarTiposDeArgumentos(func, argumentos, validateArgs);
 
                     // Executa a função
                     func.consumir(argumentos);
@@ -291,6 +272,8 @@ public class Parser extends GlobalClass {
             throw new RuntimeException("Erro de sintaxe: esperado KEYWORD ou IDENTIFIER mas encontrado " + currentToken.getType() + " " + currentToken.getValue());
         }
     }
+
+
 
     public void parse() {
         while (currentToken.getType() != Token.TokenType.EOF) {

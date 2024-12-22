@@ -1,15 +1,12 @@
 main() {
-int contador = 0;
+function teste(int a int b) {
+    int resultado = a + b;
+    int z = 0;
 
-while(true) {
-print("testando");
 
-if(contador == 10) {
-print(contador);
-return;
+    return resultado;
 }
-contador++;
 
-}
-print("saimos daqui");
+call teste(10 10);
+print("teste");
 }
