@@ -37,29 +37,24 @@ public class FunctionStatement extends GlobalClass {
         this.parametros = parametros;
         this.corpo = corpo;
         functionMap.put(nome, this);
-        System.out.println("[DEBUG] Função salva: " + nome);
-        System.out.println("[DEBUG] Parâmetros da função: " + parametros);
-        System.out.println("[DEBUG] Corpo da função: " + corpo);
     }
 
     public static FunctionStatement getFunction(String nome) {
-        System.out.println("[DEBUG] Buscando função: " + nome);
+
         return functionMap.get(nome);
     }
 
     public void consumir(List<Object> argumentos) {
-        System.out.println("[DEBUG] Consumindo argumentos: " + argumentos);
         if (parametros != null && parametros.size() == argumentos.size()) {
             for (int i = 0; i < parametros.size(); i++) {
                 parser.getVariableValues().put(parametros.get(i), argumentos.get(i));
-                System.out.println("[DEBUG] Parâmetro " + parametros.get(i) + " atribuído valor " + argumentos.get(i));
+
             }
         } else {
             throw new RuntimeException("Número de argumentos incorreto para a função: " + nome);
         }
 
         if (corpo != null) {
-            System.out.println("[DEBUG] Executando corpo da função: " + corpo);
             for (Object statement : corpo) {
                 executeStatement(statement);
             }
@@ -83,17 +78,17 @@ public class FunctionStatement extends GlobalClass {
     public void definirFuncao() {
         parser.eat(Token.TokenType.KEYWORD);
         String nomeFunction = parser.getCurrentToken().getValue();
-        System.out.println("[DEBUG] Nome da função sendo definida: " + nomeFunction);
+
         parser.advance();
         List<String> parametros = functionParametros();
         List<Object> corpo = functionBody.saveFunctionBody();
         salvarFuncao(nomeFunction, parametros, corpo);
-        System.out.println("[DEBUG] Função definida com sucesso.");
+
     }
 
 
     public void executeStatement(Object instrucao) {
-        System.out.println("[DEBUG] Executando instrução: " + instrucao);
+
         if (instrucao instanceof String instrucaoStr) {
 
             if (instrucaoStr.endsWith("++") || instrucaoStr.endsWith("--")) {
@@ -101,7 +96,7 @@ public class FunctionStatement extends GlobalClass {
                 int incremento = instrucaoStr.endsWith("++") ? 1 : -1;
                 Object novoValor = variablesFunctions.calcularIncremento(nomeVariavel, incremento);
                 parser.getVariableValues().put(nomeVariavel, novoValor);
-                System.out.println("[DEBUG] Incremento/Decremento: " + nomeVariavel + " novo valor: " + novoValor);
+
                 return;
             }
 
@@ -110,26 +105,15 @@ public class FunctionStatement extends GlobalClass {
                 String valorImprimir = instrucaoStr.substring(instrucaoStr.indexOf('(') + 1,
                         instrucaoStr.lastIndexOf(')')).trim();
                 valorImprimir = substituteVariable.substituirVariaveis(valorImprimir);
-                System.out.println("[DEBUG] Executando 'print': " + valorImprimir);
+
                 System.out.println(valorImprimir);
                 return;
             }
 
-          if(((String) instrucao).startsWith("while")) {
-              setFunctionWhile(true);
-              WhileStatement whileStatement = new WhileStatement(parser);
-
-              parser.backToWhile();
-              if(isFunctionWhile()) {
-                  whileStatement.execute();
-              }
-              return;
-          }
-
             if (instrucaoStr.startsWith("return")) {
                 String valorRetorno = instrucaoStr.substring(6).trim();
                 Object valor = parser.getVariableValues().getOrDefault(valorRetorno, processarValor(valorRetorno));
-                System.out.println("[DEBUG] Executando 'return': " + valor);
+
                 if (valor != null) {
                     System.out.println(valor);
                 } else {
@@ -163,7 +147,7 @@ public class FunctionStatement extends GlobalClass {
     }
 
     private Object processarValor(String valorStr) {
-        System.out.println("[DEBUG] Processando valor: " + valorStr);
+
         // Se for uma expressão matemática, trata a expressão
         if (valorStr.contains("+") || valorStr.contains("-") || valorStr.contains("*") || valorStr.contains("/")) {
             return variablesFunctions.calcularExpressao(valorStr, "int");
@@ -183,25 +167,25 @@ public class FunctionStatement extends GlobalClass {
     public List<String> functionParametros() {
         parser.eat(Token.TokenType.DELIMITER);
         List<String> parametros = new ArrayList<>();
-        System.out.println("[DEBUG] Iniciando análise dos parâmetros da função.");
+
         while (!(parser.getCurrentToken().getType() == Token.TokenType.DELIMITER && parser.getCurrentToken().getValue().equals(")"))) {
 
             if (parser.getCurrentToken().getType() == Token.TokenType.KEYWORD) {
                 currentType = parser.getCurrentToken().getValue();
                 parser.advance();
-                System.out.println("[DEBUG] Tipo de variável: " + currentType);
+
             }
 
             if (parser.getCurrentToken().getType() == Token.TokenType.IDENTIFIER) {
                 currentName = parser.getCurrentToken().getValue();  // Captura o nome da variável
                 parametros.add(currentName);  // Adiciona o nome à lista de parâmetros
                 variablesFunction.put(currentName, currentType);  // Salva a variável e seu tipo no Map
-                System.out.println("[DEBUG] Nome da variável: " + currentName + ", Tipo: " + currentType);
+
             }
             parser.advance();
         }
         parser.eat(Token.TokenType.DELIMITER);
-        System.out.println("[DEBUG] Parâmetros analisados: " + parametros);
+
         return parametros;
     }
 }

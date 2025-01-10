@@ -5,7 +5,9 @@ function teste(int a int b) {
     return resultado;
 }
 
-list nome = ["oi"];
+list vazia;
+list nome = ["Hallyson" 18, "Desenvolvedor"];
 call teste(10 10);
 print("teste");
+print("Minhas informações: " nome);
 }

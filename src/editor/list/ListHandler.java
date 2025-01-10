@@ -13,6 +13,7 @@ public class ListHandler {
         this.parser = parser;
     }
 
+
     public void execute() {
         parser.eat(Token.TokenType.KEYWORD);
         String listName = parser.getCurrentToken().getValue();
@@ -25,15 +26,23 @@ public class ListHandler {
             // Inicializa a lista
             if (parser.getCurrentToken().getValue().equals("[")) {
                 parser.advance();
+
                 List<Object> elements = new ArrayList<>();
 
                 while (!parser.getCurrentToken().getValue().equals("]")) {
+                    // Adiciona o elemento à lista
                     elements.add(parser.expression());
-                    if (parser.getCurrentToken().getValue().equals(",")) {
-                        parser.advance();
+
+                    // Após cada elemento, verifica o próximo token
+                    if (!parser.getCurrentToken().getValue().equals("]")) {
+                        if (parser.getCurrentToken().getValue().equals(",")) {
+                            parser.advance(); // Avança após a vírgula
+                        } else {
+                            throw new RuntimeException("Erro de sintaxe: Esperado ',' entre os elementos da lista.");
+                        }
                     }
                 }
-                parser.advance();
+                parser.advance(); // Avança após ']'
 
                 parser.getVariableValues().put(listName, new ListStatement(elements));
 
@@ -42,12 +51,10 @@ public class ListHandler {
                 throw new RuntimeException("Erro de sintaxe: esperado '[' para inicializar a lista.");
             }
         } else {
-
             parser.getVariableValues().put(listName, new ListStatement());
-
-
             System.out.println("[DEBUG] Lista salva: " + listName + " = []");
         }
     }
+
 
 }

@@ -111,22 +111,22 @@ public class Parser extends GlobalClass {
     }
 
     public Object expression() {
-        System.out.println("[DEBUG] Executando expressão...");
+
         return expressionEvaluator.expression();
     }
 
     public Object term() {
-        System.out.println("[DEBUG] Executando termo...");
+
         return expressionEvaluator.term();
     }
 
     public Object factor() {
-        System.out.println("[DEBUG] Executando fator...");
+
         return expressionEvaluator.factor();
     }
 
     public Object calc() {
-        System.out.println("[DEBUG] Executando cálculo...");
+
         return expressionEvaluator.calc();
     }
 
