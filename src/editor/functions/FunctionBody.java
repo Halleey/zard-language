@@ -20,6 +20,7 @@ public class FunctionBody {
 
         if (parser.getCurrentToken().getValue().equals("{")) {
             chave++;
+            System.out.println("numero de chaves " + chave);
             parser.advance();
 
             StringBuilder instrucaoCompleta = new StringBuilder();
@@ -28,10 +29,13 @@ public class FunctionBody {
 
                 if (tokenValue.equals("{")) {
                     chave++;
+                    System.out.println("chave atualmente incremento " + chave);
                 }
 
                 if (tokenValue.equals("}")) {
                     chave--;
+                    System.out.println("chave atualmente decremento " + chave);
+
                 }
 
                 // Verifica se é uma string e mantém as aspas
@@ -52,6 +56,7 @@ public class FunctionBody {
             }
         }
         System.out.println("Corpo da função salvo: " + corpo);
+        System.out.println("numero final de chaves  " + chave);
         return corpo;
     }
 

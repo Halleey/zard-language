@@ -1,12 +1,11 @@
 main() {
 function teste(int a int b) {
     int resultado = a + b;
-    int z = 0;
-
 
     return resultado;
 }
 
+list nome = ["oi"];
 call teste(10 10);
 print("teste");
 }

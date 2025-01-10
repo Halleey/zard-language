@@ -10,6 +10,7 @@ public class IfStatement  {
     }
 
     public void execute() {
+
         parser.eat(Token.TokenType.KEYWORD);
         parser.eat(Token.TokenType.DELIMITER);
 

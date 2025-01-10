@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.*;
 import java.util.regex.*;
 
+
 public class PreProcess {
     private final String input;
     private final String filePatch;
@@ -23,6 +24,7 @@ public class PreProcess {
         // Depois, processa macros no código já incluído
         return processMacros(processedIncludes);
     }
+
 
     private String processMacros(String input) {
         Map<String, String> macros = new HashMap<>();

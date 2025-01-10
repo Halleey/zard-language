@@ -12,8 +12,6 @@ public class WhileStatement extends GlobalClass {
         this.skipWhile = new SkipWhile(parser);
     }
 
-
-
     public void execute() {
         parser.eat(Token.TokenType.KEYWORD);
         parser.eat(Token.TokenType.DELIMITER);
@@ -32,11 +30,12 @@ public class WhileStatement extends GlobalClass {
 
             //cada iteração dentro
             System.out.println("Dentro do loop. Condição: " + condition);
-            System.out.println("TOKEN CURRENT " + parser.getCurrentToken().getValue() );
+            System.out.println("TOKEN CURRENT para looping " + parser.getCurrentToken().getValue() );
 
             if (isFoundReturn()) {
                 skipWhile.skipToEndOfFunction();
                 setFoundReturn(false);
+                setFunctionWhile(false);
                 break;
             }
 
@@ -59,12 +58,10 @@ public class WhileStatement extends GlobalClass {
         // Verificação final, após o loop
         System.out.println("Execução do while finalizada.");
         if (parser.getCurrentToken().getType() != Token.TokenType.EOF) {
-            System.out.println("TOKEN CURRENT" + parser.getCurrentToken().getValue());
             skipWhile.skipToEndOfFunction();
-
+            setFunctionWhile(false);
             parser.advance();
-
-            System.out.println("TOKEN CURRENT" + parser.getCurrentToken().getValue());
+            System.out.println("TOKEN CURRENT final looping" + parser.getCurrentToken().getValue());
         }
 
     }
@@ -77,6 +74,7 @@ public class WhileStatement extends GlobalClass {
 
             if (parser.getCurrentToken().getValue().equals("return")) {
                 setFoundReturn(true);
+
                 skipWhile.skipToEndOfFunction();
                 return;
             }

@@ -72,6 +72,7 @@ public class Lexer {
             case "main":
             case "while":
             case "call":
+            case "list":
                 return new Token(Token.TokenType.KEYWORD, identifier);
             case "new":
                 return  new Token(Token.TokenType.INSTANCE, identifier);
@@ -148,6 +149,7 @@ public class Lexer {
                 continue;
             }
             if (currentChar == '(' || currentChar == ')' || currentChar ==  '.' ||
+                    currentChar == '[' || currentChar == ']' ||
                     currentChar == '{' || currentChar == '}' || currentChar == ';' || currentChar ==  ',') {
                 tokens.add(new Token(Token.TokenType.DELIMITER, Character.toString(currentChar)));
                 advance();
