@@ -8,6 +8,7 @@ import editor.globals.PrintStatement;
 import editor.ifStatement.IfStatement;
 import editor.inputs.InputStatement;
 import editor.list.ListHandler;
+import editor.process.IdentifierProcessor;
 import editor.variables.VariableStatement;
 import editor.whiles.WhileStatement;
 import java.util.*;
@@ -22,6 +23,8 @@ public class Parser extends GlobalClass {
     private int whilePosition;
     private ExpressionStatement expressionEvaluator;
     private final ValidateFunction validateFunction;
+    private final IdentifierProcessor identifierProcessor;
+
 
     public void backToWhile() {
         System.out.println("[DEBUG] Backtracking to 'while'...");
@@ -46,6 +49,7 @@ public class Parser extends GlobalClass {
         this.mainFound = false;
         this.expressionEvaluator = new ExpressionStatement(this); // Inicializa expressionEvaluator
         this.validateFunction = new ValidateFunction(this);
+        this.identifierProcessor = new IdentifierProcessor(this, variableValues);
     }
 
     public Token getCurrentToken() {
@@ -134,7 +138,6 @@ public class Parser extends GlobalClass {
 
 
     public void statement() {
-        // Debugging: Informando qual tipo de declaração estamos processando
         System.out.println("[DEBUG] Processando declaração: " + currentToken);
 
         if (currentToken.getType() == Token.TokenType.KEYWORD) {
@@ -177,7 +180,6 @@ public class Parser extends GlobalClass {
                     System.out.println("[DEBUG] Executando declaração de lista.");
                     new ListHandler(this).execute();
                     break;
-
                 case "call":
                     System.out.println("[DEBUG] Chamando função.");
                     ValidateArgs validateArgs = new ValidateArgs();
@@ -235,52 +237,14 @@ public class Parser extends GlobalClass {
                     throw new RuntimeException("Erro de sintaxe: declaração inesperada " + currentToken);
             }
         } else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
-            // Debugging ao processar identificadores
-            System.out.println("[DEBUG] Processando identificador: " + currentToken.getValue());
-
-            String variableName = currentToken.getValue();
-            advance();
-            if (currentToken.getType() == Token.TokenType.OPERATOR &&
-                    currentToken.getValue().equals("=")) {
-                new VariableStatement(this).atribuir(variableName);
-            } else if (currentToken.getType() == Token.TokenType.OPERATOR &&
-                    (currentToken.getValue().equals("++") || currentToken.getValue().equals("--"))) {
-                String operator = currentToken.getValue();
-                advance(); // Avança para o próximo token
-                if (variableValues.containsKey(variableName)) {
-                    Object value = variableValues.get(variableName);
-                    if (value instanceof Integer) {
-                        int intValue = (int) value;
-                        if (operator.equals("++")) {
-                            intValue++;
-                        } else if (operator.equals("--")) {
-                            intValue--;
-                        }
-                        variableValues.put(variableName, intValue);
-                    } else if (value instanceof Double) {
-                        double doubleValue = (double) value;
-                        if (operator.equals("++")) {
-                            doubleValue += 1.0;
-                        } else if (operator.equals("--")) {
-                            doubleValue -= 1.0;
-                        }
-                        variableValues.put(variableName, doubleValue);
-                    } else {
-                        throw new RuntimeException("Tipo de variável incompatível para incremento/decremento: " + variableName);
-                    }
-                } else {
-                    throw new RuntimeException("Variável não declarada: " + variableName);
-                }
-            } else {
-                // Atribui valor padrão
-                System.out.println("[DEBUG] Atribuindo valor à variável.");
-                new VariableStatement(this).assignValue();
-            }
+            // Lógica de identificador extraída
+            identifierProcessor.processIdentifier();
         } else if (currentToken.getType() == Token.TokenType.DELIMITER &&
                 (currentToken.getValue().equals("}") || currentToken.getValue().equals(";"))) {
             advance();
         } else {
-            throw new RuntimeException("Erro de sintaxe: esperado KEYWORD ou IDENTIFIER mas encontrado " + currentToken.getType() + " " + currentToken.getValue());
+            throw new RuntimeException("Erro de sintaxe: esperado KEYWORD ou IDENTIFIER mas encontrado " +
+                    currentToken.getType() + " " + currentToken.getValue());
         }
     }
 

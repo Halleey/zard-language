@@ -6,8 +6,11 @@ function teste(int a int b) {
 }
 
 list vazia;
-list nome = ["Hallyson" 18, "Desenvolvedor"];
+list nome = ["Hallyson", 18, "Desenvolvedor"];
 call teste(10 10);
 print("teste");
 print("Minhas informações: " nome);
+int a;
+a++;
+print(a);
 }

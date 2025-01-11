@@ -73,11 +73,13 @@ public class Lexer {
             case "while":
             case "call":
             case "list":
+            case "boolean":
                 return new Token(Token.TokenType.KEYWORD, identifier);
             case "new":
                 return  new Token(Token.TokenType.INSTANCE, identifier);
-            case "boolean":
-                return new Token(Token.TokenType.KEYWORD, identifier); // BOOLEAN como KEYWORD para declaração
+            case "add":
+            case "remove":
+                return  new Token(Token.TokenType.METHODS, identifier);
             case "true":
             case "false":
                 return new Token(Token.TokenType.BOOLEAN, identifier); // true e false como BOOLEAN

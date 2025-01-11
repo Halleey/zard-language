@@ -13,7 +13,6 @@ public class ListHandler {
         this.parser = parser;
     }
 
-
     public void execute() {
         parser.eat(Token.TokenType.KEYWORD);
         String listName = parser.getCurrentToken().getValue();
@@ -55,6 +54,4 @@ public class ListHandler {
             System.out.println("[DEBUG] Lista salva: " + listName + " = []");
         }
     }
-
-
 }

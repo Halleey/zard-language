@@ -33,7 +33,3 @@
 🔧#Uso
 
 -  **Uma línguagem nova, com recursos já conhecidos, simples de manipular e boa para treinar lógica.
-
-🛠️ #Contribuição.
-
-- **Caso queiram contribuir, enviar mensagem no whatsapp http://Wa.me/5518996636287.
