@@ -7,6 +7,7 @@ import editor.globals.MainStatement;
 import editor.globals.PrintStatement;
 import editor.ifStatement.IfStatement;
 import editor.inputs.InputStatement;
+import editor.list.ListAdd;
 import editor.list.ListHandler;
 import editor.process.IdentifierProcessor;
 import editor.variables.VariableStatement;
@@ -143,45 +144,44 @@ public class Parser extends GlobalClass {
         if (currentToken.getType() == Token.TokenType.KEYWORD) {
             switch (currentToken.getValue()) {
                 case "print":
-                    System.out.println("[DEBUG] Executando comando print.");
                     new PrintStatement(this).execute();
                     break;
                 case "int":
                 case "double":
                 case "string":
                 case "boolean":
-                    System.out.println("[DEBUG] Executando declaração de variável.");
+
                     new VariableStatement(this).execute();
                     break;
                 case "main":
-                    System.out.println("[DEBUG] Encontrado 'main'. Iniciando execução do método main.");
+
                     new MainStatement(this).execute();
                     mainFound = true;
                     break;
                 case "if":
                 case "else if":
                 case "else":
-                    System.out.println("[DEBUG] Executando estrutura de controle if/else.");
+
                     new IfStatement(this).execute();
                     break;
                 case "input":
-                    System.out.println("[DEBUG] Executando comando de entrada.");
+
                     new InputStatement(this).execute();
                     break;
                 case "while":
-                    System.out.println("[DEBUG] Executando loop while.");
+
                     new WhileStatement(this).execute();
                     break;
                 case "function":
-                    System.out.println("[DEBUG] Definindo função.");
+
                     new FunctionStatement(this).definirFuncao();
                     break;
                 case "list":
-                    System.out.println("[DEBUG] Executando declaração de lista.");
+
                     new ListHandler(this).execute();
                     break;
                 case "call":
-                    System.out.println("[DEBUG] Chamando função.");
+
                     ValidateArgs validateArgs = new ValidateArgs();
                     advance();
                     String functionName = getCurrentToken().getValue(); // Captura o nome da função
@@ -237,8 +237,22 @@ public class Parser extends GlobalClass {
                     throw new RuntimeException("Erro de sintaxe: declaração inesperada " + currentToken);
             }
         } else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
-            // Lógica de identificador extraída
-            identifierProcessor.processIdentifier();
+            // Verifica se o identificador é seguido por um "."
+            String identifier = currentToken.getValue();
+            advance(); // Avança para verificar o próximo token
+
+            if (currentToken.getValue().equals(".")) {
+                // Consome o ponto e delega o processamento para ListAdd
+                advance(); // Avança para o método após o "."
+                System.out.println("[DEBUG] TOKEN APÓS INVOCAR LISTA: " + currentToken);
+
+                // Passa o nome da lista como parâmetro
+                new ListAdd(this, identifier).execute();
+            } else {
+                // Trata como uma declaração ou uso de variável normal
+                identifierProcessor.processIdentifier();
+            }
+            System.out.println("TOKEN APOS INVOCAR LISTA  "+ getCurrentToken().getValue());
         } else if (currentToken.getType() == Token.TokenType.DELIMITER &&
                 (currentToken.getValue().equals("}") || currentToken.getValue().equals(";"))) {
             advance();

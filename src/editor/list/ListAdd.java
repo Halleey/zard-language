@@ -2,48 +2,47 @@ package editor.list;
 
 import editor.translate.Parser;
 import editor.translate.Token;
-
 public class ListAdd {
 
     private final Parser parser;
+    private final String listName;  // Armazena o nome da lista
 
-    public ListAdd(Parser parser) {
+    public ListAdd(Parser parser, String listName) {
         this.parser = parser;
+        this.listName = listName;
     }
 
     public void execute() {
-        parser.eat(Token.TokenType.IDENTIFIER);
-        String listName = parser.getCurrentToken().getValue();
-        parser.advance();
-
-        if (!parser.getCurrentToken().getValue().equals(".")) {
-            throw new RuntimeException("Erro de sintaxe: esperado '.' após a invocação da lista.");
+        // Recupera o nome do método
+        if (!parser.getCurrentToken().getType().equals(Token.TokenType.METHODS)) {
+            throw new RuntimeException("Erro de sintaxe: esperado um método após o ponto.");
         }
-        parser.advance();
-
-        parser.eat(Token.TokenType.METHODS);
         String methodName = parser.getCurrentToken().getValue();
-        parser.advance();
+        parser.advance(); // Consome o nome do método
 
+        // Verifica se o próximo token é "("
         if (!parser.getCurrentToken().getValue().equals("(")) {
-            throw new RuntimeException("Erro de sintaxe: esperado '(' após o nome do método.");
+            throw new RuntimeException("Erro de sintaxe: esperado '(' após o método '" + methodName + "'.");
         }
-        parser.advance();
+        parser.advance(); // Consome o token "("
 
+        // Recupera a lista do escopo de variáveis usando o nome da lista
         ListStatement listStatement = (ListStatement) parser.getVariableValues().get(listName);
         if (listStatement == null) {
             throw new RuntimeException("Erro: a variável '" + listName + "' não existe ou não é uma lista.");
         }
 
+        // Lida com métodos específicos
         switch (methodName) {
             case "add" -> handleAdd(listStatement);
             default -> throw new RuntimeException("Erro: método desconhecido '" + methodName + "'.");
         }
 
+        // Verifica se o próximo token é ")"
         if (!parser.getCurrentToken().getValue().equals(")")) {
             throw new RuntimeException("Erro de sintaxe: esperado ')' para fechar o método.");
         }
-        parser.advance();
+        parser.advance(); // Consome o token ")"
     }
 
     private void handleAdd(ListStatement listStatement) {
@@ -56,4 +55,3 @@ public class ListAdd {
         System.out.println("[DEBUG] Elemento adicionado à lista: " + element);
     }
 }
-
