@@ -9,6 +9,7 @@ import editor.ifStatement.IfStatement;
 import editor.inputs.InputStatement;
 import editor.list.ListAdd;
 import editor.list.ListHandler;
+import editor.list.ListRemove;
 import editor.process.IdentifierProcessor;
 import editor.variables.VariableStatement;
 import editor.whiles.WhileStatement;
@@ -236,23 +237,36 @@ public class Parser extends GlobalClass {
                 default:
                     throw new RuntimeException("Erro de sintaxe: declaração inesperada " + currentToken);
             }
-        } else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
+        }  else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
             // Verifica se o identificador é seguido por um "."
             String identifier = currentToken.getValue();
             advance(); // Avança para verificar o próximo token
 
             if (currentToken.getValue().equals(".")) {
-                // Consome o ponto e delega o processamento para ListAdd
-                advance(); // Avança para o método após o "."
-                System.out.println("[DEBUG] TOKEN APÓS INVOCAR LISTA: " + currentToken);
+                advance(); // Consome o ponto
 
-                // Passa o nome da lista como parâmetro
-                new ListAdd(this, identifier).execute();
+                // Verifica o nome do método da lista
+                if (currentToken.getType() == Token.TokenType.METHODS) {
+                    String methodName = currentToken.getValue();
+                    switch (methodName) {
+                        case "add":
+                            new ListAdd(this, identifier).execute();
+                            break;
+                        case "remove":
+                            new ListRemove(this, identifier).execute();
+                            break;
+//                        case "index":
+//                            new ListIndex(this, identifier).execute();
+//                            break;
+                        default:
+                            throw new RuntimeException("Erro: método desconhecido '" + methodName + "' para lista '" + identifier + "'.");
+                    }
+                }
             } else {
                 // Trata como uma declaração ou uso de variável normal
                 identifierProcessor.processIdentifier();
             }
-            System.out.println("TOKEN APOS INVOCAR LISTA  "+ getCurrentToken().getValue());
+            System.out.println("TOKEN APOS INVOCAR LISTA  " + getCurrentToken().getValue());
         } else if (currentToken.getType() == Token.TokenType.DELIMITER &&
                 (currentToken.getValue().equals("}") || currentToken.getValue().equals(";"))) {
             advance();
@@ -261,6 +275,7 @@ public class Parser extends GlobalClass {
                     currentToken.getType() + " " + currentToken.getValue());
         }
     }
+
 
     public void parse() {
         while (currentToken.getType() != Token.TokenType.EOF) {

@@ -22,8 +22,6 @@ public class ListStatement {
             return objectList.get(index);
         }
 
-
-
         public boolean remove(Object element) {
             if (element instanceof Integer && ((Integer) element >= 0 && (Integer) element < objectList.size())) {
                 objectList.remove((int) element);

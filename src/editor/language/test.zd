@@ -11,6 +11,9 @@ call teste(10 10);
 print("teste");
 print("Minhas informações: " nome);
 vazia.add("my name is zard");
+vazia.add("I at 18 years old");
+vazia.add("I am developer");
 print (vazia);
-
+vazia.remove(0);
+print(vazia);
 }

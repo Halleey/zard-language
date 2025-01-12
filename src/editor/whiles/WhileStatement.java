@@ -7,6 +7,7 @@ public class WhileStatement extends GlobalClass {
     private final Parser parser;
     private final SkipWhile skipWhile;
 
+
     public WhileStatement(Parser parser) {
         this.parser = parser;
         this.skipWhile = new SkipWhile(parser);
