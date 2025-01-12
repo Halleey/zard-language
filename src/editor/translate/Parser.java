@@ -10,6 +10,7 @@ import editor.inputs.InputStatement;
 import editor.list.ListAdd;
 import editor.list.ListHandler;
 import editor.list.ListRemove;
+import editor.list.ListStatement;
 import editor.process.IdentifierProcessor;
 import editor.variables.VariableStatement;
 import editor.whiles.WhileStatement;
@@ -97,17 +98,17 @@ public class Parser extends GlobalClass {
     }
 
     public void parseBlock() {
-        System.out.println("[DEBUG] Iniciando parsing do bloco.");
+
         while (currentToken.getType() != Token.TokenType.DELIMITER || !currentToken.getValue().equals("}")) {
             if (currentToken.getValue().equals("return")) {
                 setFoundReturn(true);
-                System.out.println("[DEBUG] Encontrei 'return' no bloco. Retornando...");
+
                 return;
             }
-            System.out.println("[DEBUG] Dentro do bloco, token atual: " + currentToken);
+
             statement();
             if (currentToken.getType() == Token.TokenType.EOF) {
-                System.out.println("[DEBUG] Último token: " + getCurrentToken());
+
                 throw new RuntimeException("Erro de sintaxe: bloco não terminado");
             }
         }
@@ -135,8 +136,6 @@ public class Parser extends GlobalClass {
 
         return expressionEvaluator.calc();
     }
-
-
 
 
     public void statement() {
@@ -237,15 +236,14 @@ public class Parser extends GlobalClass {
                 default:
                     throw new RuntimeException("Erro de sintaxe: declaração inesperada " + currentToken);
             }
-        }  else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
-            // Verifica se o identificador é seguido por um "."
+        }else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
             String identifier = currentToken.getValue();
-            advance(); // Avança para verificar o próximo token
+            advance();
 
             if (currentToken.getValue().equals(".")) {
-                advance(); // Consome o ponto
+                advance();
 
-                // Verifica o nome do método da lista
+
                 if (currentToken.getType() == Token.TokenType.METHODS) {
                     String methodName = currentToken.getValue();
                     switch (methodName) {
@@ -253,11 +251,9 @@ public class Parser extends GlobalClass {
                             new ListAdd(this, identifier).execute();
                             break;
                         case "remove":
+                        case "clear":
                             new ListRemove(this, identifier).execute();
                             break;
-//                        case "index":
-//                            new ListIndex(this, identifier).execute();
-//                            break;
                         default:
                             throw new RuntimeException("Erro: método desconhecido '" + methodName + "' para lista '" + identifier + "'.");
                     }
@@ -275,6 +271,7 @@ public class Parser extends GlobalClass {
                     currentToken.getType() + " " + currentToken.getValue());
         }
     }
+
 
 
     public void parse() {

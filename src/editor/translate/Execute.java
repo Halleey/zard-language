@@ -5,12 +5,12 @@ import editor.process.PreProcess;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Execute {
 
     public static void main(String[] args) {
+
         try {
             // Lê o arquivo com o código-fonte
             String input = new String(Files.readAllBytes(Paths.get("src/editor/language/test.zd")));

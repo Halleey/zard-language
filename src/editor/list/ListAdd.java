@@ -2,10 +2,15 @@ package editor.list;
 
 import editor.translate.Parser;
 import editor.translate.Token;
+
+
 public class ListAdd {
 
     private final Parser parser;
     private final String listName;  // Armazena o nome da lista
+
+
+
 
     public ListAdd(Parser parser, String listName) {
         this.parser = parser;

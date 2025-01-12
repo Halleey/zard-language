@@ -1,19 +1,22 @@
 main() {
-function teste(int a int b) {
-    int resultado = a + b;
-
-    return resultado;
-}
 
 list vazia;
-list nome = ["Hallyson", 18, "Desenvolvedor"];
-call teste(10 10);
+list nome = ["zard", 18, "Desenvolvedor"];
+
 print("teste");
 print("Minhas informações: " nome);
+
+
 vazia.add("my name is zard");
-vazia.add("I at 18 years old");
+vazia.add("I am 18 years old");
 vazia.add("I am developer");
+
+
 print (vazia);
-vazia.remove(0);
+
+
+vazia.clear();
+print(vazia);
+vazia.add(1);
 print(vazia);
 }
