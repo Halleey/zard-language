@@ -17,6 +17,12 @@ print (vazia);
 
 vazia.clear();
 print(vazia);
+vazia.add(0);
 vazia.add(1);
+vazia.add(2);
+vazia.add(3);
+
 print(vazia);
+vazia.size();
+
 }

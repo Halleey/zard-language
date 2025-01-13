@@ -3,14 +3,10 @@ package editor.list;
 import editor.translate.Parser;
 import editor.translate.Token;
 
-
 public class ListAdd {
 
     private final Parser parser;
-    private final String listName;  // Armazena o nome da lista
-
-
-
+    private final String listName;
 
     public ListAdd(Parser parser, String listName) {
         this.parser = parser;
@@ -40,6 +36,7 @@ public class ListAdd {
         // Lida com métodos específicos
         switch (methodName) {
             case "add" -> handleAdd(listStatement);
+            case "size" -> handleSize(listStatement);
             default -> throw new RuntimeException("Erro: método desconhecido '" + methodName + "'.");
         }
 
@@ -58,5 +55,10 @@ public class ListAdd {
         listStatement.getObjectList().add(element);
 
         System.out.println("[DEBUG] Elemento adicionado à lista: " + element);
+    }
+
+    public void handleSize(ListStatement listStatement) {
+        System.out.println("invocando tamanho da lista");
+        System.out.println(listStatement.size());
     }
 }

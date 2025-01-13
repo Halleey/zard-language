@@ -10,7 +10,6 @@ import editor.inputs.InputStatement;
 import editor.list.ListAdd;
 import editor.list.ListHandler;
 import editor.list.ListRemove;
-import editor.list.ListStatement;
 import editor.process.IdentifierProcessor;
 import editor.variables.VariableStatement;
 import editor.whiles.WhileStatement;
@@ -136,8 +135,6 @@ public class Parser extends GlobalClass {
 
         return expressionEvaluator.calc();
     }
-
-
     public void statement() {
         System.out.println("[DEBUG] Processando declaração: " + currentToken);
 
@@ -150,22 +147,18 @@ public class Parser extends GlobalClass {
                 case "double":
                 case "string":
                 case "boolean":
-
                     new VariableStatement(this).execute();
                     break;
                 case "main":
-
                     new MainStatement(this).execute();
                     mainFound = true;
                     break;
                 case "if":
                 case "else if":
                 case "else":
-
                     new IfStatement(this).execute();
                     break;
                 case "input":
-
                     new InputStatement(this).execute();
                     break;
                 case "while":
@@ -181,7 +174,6 @@ public class Parser extends GlobalClass {
                     new ListHandler(this).execute();
                     break;
                 case "call":
-
                     ValidateArgs validateArgs = new ValidateArgs();
                     advance();
                     String functionName = getCurrentToken().getValue(); // Captura o nome da função
@@ -242,12 +234,11 @@ public class Parser extends GlobalClass {
 
             if (currentToken.getValue().equals(".")) {
                 advance();
-
-
                 if (currentToken.getType() == Token.TokenType.METHODS) {
                     String methodName = currentToken.getValue();
                     switch (methodName) {
                         case "add":
+                        case "size":
                             new ListAdd(this, identifier).execute();
                             break;
                         case "remove":
@@ -271,8 +262,6 @@ public class Parser extends GlobalClass {
                     currentToken.getType() + " " + currentToken.getValue());
         }
     }
-
-
 
     public void parse() {
         while (currentToken.getType() != Token.TokenType.EOF) {

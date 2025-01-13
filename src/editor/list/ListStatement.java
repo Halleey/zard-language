@@ -22,7 +22,6 @@ public class ListStatement {
             return objectList.get(index);
         }
 
-
         public void clear(){
             objectList.clear();
         }

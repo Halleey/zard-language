@@ -80,6 +80,7 @@ public class Lexer {
             case "add":
             case "remove":
             case "clear":
+            case "size":
                 return  new Token(Token.TokenType.METHODS, identifier);
             case "true":
             case "false":
