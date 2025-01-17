@@ -1,28 +1,7 @@
 main() {
 
-list vazia;
-list nome = ["zard", 18, "Desenvolvedor"];
-
-print("teste");
-print("Minhas informações: " nome);
-
-
-vazia.add("my name is zard");
-vazia.add("I am 18 years old");
-vazia.add("I am developer");
-
-
-print (vazia);
-
-
-vazia.clear();
-print(vazia);
-vazia.add(0);
-vazia.add(1);
-vazia.add(2);
-vazia.add(3);
-
-print(vazia);
-vazia.size();
+int index = 154;
+index++;
+map teste = {0: index};
 
 }

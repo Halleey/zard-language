@@ -15,6 +15,7 @@ public class ListStatement {
         public void add(Object element) {
             objectList.add(element);
         }
+
         public Object get(int index) {
             if (index < 0 || index >= objectList.size()) {
                 throw new IndexOutOfBoundsException("Índice fora dos limites: " + index);

@@ -10,6 +10,7 @@ import editor.inputs.InputStatement;
 import editor.list.ListAdd;
 import editor.list.ListHandler;
 import editor.list.ListRemove;
+import editor.map.MapHandler;
 import editor.process.IdentifierProcessor;
 import editor.variables.VariableStatement;
 import editor.whiles.WhileStatement;
@@ -162,61 +163,19 @@ public class Parser extends GlobalClass {
                     new InputStatement(this).execute();
                     break;
                 case "while":
-
                     new WhileStatement(this).execute();
                     break;
                 case "function":
-
                     new FunctionStatement(this).definirFuncao();
                     break;
                 case "list":
-
                     new ListHandler(this).execute();
                     break;
+                case "map":
+                    new MapHandler(this).execute();
+                    break;
                 case "call":
-                    ValidateArgs validateArgs = new ValidateArgs();
-                    advance();
-                    String functionName = getCurrentToken().getValue(); // Captura o nome da função
-                    advance();
-                    if (!getCurrentToken().getValue().equals("(")) {
-                        throw new RuntimeException("Erro de sintaxe: esperado '(' mas encontrado " + getCurrentToken().getValue());
-                    }
-                    eat(Token.TokenType.DELIMITER);
-
-                    // Captura os argumentos fornecidos
-                    List<Object> argumentos = new ArrayList<>();
-                    while (!(getCurrentToken().getType() == Token.TokenType.DELIMITER && getCurrentToken().getValue().equals(")"))) {
-                        if (getCurrentToken().getType() == Token.TokenType.NUMBER) {
-                            String valorToken = getCurrentToken().getValue();
-                            if (valorToken.contains(".")) {
-                                // Se sim, interpreta como um número de ponto flutuante
-                                argumentos.add(Double.parseDouble(valorToken));
-                            } else {
-                                // Caso contrário, interpreta como um número inteiro
-                                argumentos.add(Integer.parseInt(valorToken));
-                            }
-                        } else if (getCurrentToken().getType() == Token.TokenType.STRING || getCurrentToken().getType() == Token.TokenType.IDENTIFIER) {
-                            argumentos.add(getCurrentToken().getValue());
-                        } else if (getCurrentToken().getType() == Token.TokenType.BOOLEAN) {
-                            argumentos.add(Boolean.parseBoolean(getCurrentToken().getValue()));
-                        } else {
-                            throw new RuntimeException("Token inesperado ao processar argumentos: " + getCurrentToken());
-                        }
-                        advance();
-                    }
-                    eat(Token.TokenType.DELIMITER); // Consome ')'
-
-                    // Busca a função
-                    FunctionStatement func = FunctionStatement.getFunction(functionName);
-                    if (func == null) {
-                        throw new RuntimeException("Função não encontrada: " + functionName);
-                    }
-
-                    // Valida os tipos dos argumentos
-                    validateFunction.validarTiposDeArgumentos(func, argumentos, validateArgs);
-
-                    // Executa a função
-                    func.consumir(argumentos);
+                    callFunction();
                     break;
                 case "return":
                     System.out.println("[DEBUG] Encontrado 'return'. Finalizando execução.");
@@ -228,31 +187,52 @@ public class Parser extends GlobalClass {
                 default:
                     throw new RuntimeException("Erro de sintaxe: declaração inesperada " + currentToken);
             }
-        }else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
+        } else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
             String identifier = currentToken.getValue();
             advance();
 
-            if (currentToken.getValue().equals(".")) {
-                advance();
-                if (currentToken.getType() == Token.TokenType.METHODS) {
-                    String methodName = currentToken.getValue();
-                    switch (methodName) {
-                        case "add":
-                        case "size":
-                            new ListAdd(this, identifier).execute();
-                            break;
-                        case "remove":
-                        case "clear":
-                            new ListRemove(this, identifier).execute();
-                            break;
-                        default:
-                            throw new RuntimeException("Erro: método desconhecido '" + methodName + "' para lista '" + identifier + "'.");
+            // Verifica se o próximo token é um operador de incremento ou decremento
+            if (currentToken.getType() == Token.TokenType.OPERATOR &&
+                    (currentToken.getValue().equals("++") || currentToken.getValue().equals("--"))) {
+
+                // Identificamos que a variável está sendo incrementada ou decrementada
+                String operator = currentToken.getValue();
+                advance();  // Avançamos para o próximo token
+
+                // Verificamos o tipo da variável e aplicamos a operação de incremento ou decremento
+                if (variableValues.containsKey(identifier)) {
+                    Object value = variableValues.get(identifier);
+
+                    if (value instanceof Integer) {
+                        int intValue = (int) value;
+                        if (operator.equals("++")) {
+                            intValue++;  // Incrementa
+                        } else if (operator.equals("--")) {
+                            intValue--;  // Decrementa
+                        }
+                        variableValues.put(identifier, intValue);
+                        System.out.println("[DEBUG] Variável " + identifier + " atualizada para: " + intValue);
+                    } else if (value instanceof Double) {
+                        double doubleValue = (double) value;
+                        if (operator.equals("++")) {
+                            doubleValue += 1.0;  // Incrementa
+                        } else if (operator.equals("--")) {
+                            doubleValue -= 1.0;  // Decrementa
+                        }
+                        variableValues.put(identifier, doubleValue);
+                        System.out.println("[DEBUG] Variável " + identifier + " atualizada para: " + doubleValue);
+                    } else {
+                        throw new RuntimeException("Tipo de variável incompatível para incremento/decremento: " + identifier);
                     }
+                } else {
+                    throw new RuntimeException("Variável não declarada: " + identifier);
                 }
+
             } else {
-                // Trata como uma declaração ou uso de variável normal
+                // Caso não seja operação de incremento ou decremento, processa a variável normalmente
                 identifierProcessor.processIdentifier();
             }
+
             System.out.println("TOKEN APOS INVOCAR LISTA  " + getCurrentToken().getValue());
         } else if (currentToken.getType() == Token.TokenType.DELIMITER &&
                 (currentToken.getValue().equals("}") || currentToken.getValue().equals(";"))) {
@@ -261,6 +241,53 @@ public class Parser extends GlobalClass {
             throw new RuntimeException("Erro de sintaxe: esperado KEYWORD ou IDENTIFIER mas encontrado " +
                     currentToken.getType() + " " + currentToken.getValue());
         }
+    }
+
+
+    public void callFunction() {
+        ValidateArgs validateArgs = new ValidateArgs();
+        advance();
+        String functionName = getCurrentToken().getValue(); // Captura o nome da função
+        advance();
+        if (!getCurrentToken().getValue().equals("(")) {
+            throw new RuntimeException("Erro de sintaxe: esperado '(' mas encontrado " + getCurrentToken().getValue());
+        }
+        eat(Token.TokenType.DELIMITER);
+
+        // Captura os argumentos fornecidos
+        List<Object> argumentos = new ArrayList<>();
+        while (!(getCurrentToken().getType() == Token.TokenType.DELIMITER && getCurrentToken().getValue().equals(")"))) {
+            if (getCurrentToken().getType() == Token.TokenType.NUMBER) {
+                String valorToken = getCurrentToken().getValue();
+                if (valorToken.contains(".")) {
+                    // Se sim, interpreta como um número de ponto flutuante
+                    argumentos.add(Double.parseDouble(valorToken));
+                } else {
+                    // Caso contrário, interpreta como um número inteiro
+                    argumentos.add(Integer.parseInt(valorToken));
+                }
+            } else if (getCurrentToken().getType() == Token.TokenType.STRING || getCurrentToken().getType() == Token.TokenType.IDENTIFIER) {
+                argumentos.add(getCurrentToken().getValue());
+            } else if (getCurrentToken().getType() == Token.TokenType.BOOLEAN) {
+                argumentos.add(Boolean.parseBoolean(getCurrentToken().getValue()));
+            } else {
+                throw new RuntimeException("Token inesperado ao processar argumentos: " + getCurrentToken());
+            }
+            advance();
+        }
+        eat(Token.TokenType.DELIMITER); // Consome ')'
+
+        // Busca a função
+        FunctionStatement func = FunctionStatement.getFunction(functionName);
+        if (func == null) {
+            throw new RuntimeException("Função não encontrada: " + functionName);
+        }
+
+        // Valida os tipos dos argumentos
+        validateFunction.validarTiposDeArgumentos(func, argumentos, validateArgs);
+
+        // Executa a função
+        func.consumir(argumentos);
     }
 
     public void parse() {
