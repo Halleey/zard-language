@@ -89,7 +89,12 @@ public class ExpressionStatement {
                     if (map == null) {
                         throw new RuntimeException("Erro: mapa '" + token.getValue() + "' não encontrado.");
                     }
-                    return map.get(key);
+                    // Verifica se a chave é válida para o tipo do mapa
+                    if (map.containsKey(key)) {
+                        return map.get(key);
+                    } else {
+                        throw new RuntimeException("Erro: chave '" + key + "' não encontrada no mapa.");
+                    }
                 }
                 return parser.getVariableValues().get(token.getValue());
             case NUMBER:
@@ -145,6 +150,7 @@ public class ExpressionStatement {
         }
         return null;
     }
+
 
     public Object calc() {
         Object result = term();

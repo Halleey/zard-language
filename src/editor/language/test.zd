@@ -2,6 +2,7 @@ main() {
 
 int index = 154;
 index++;
-map teste = {0: index};
-
+boolean val = false);
+string nombre = "hallyson";
+print(teste);
 }
