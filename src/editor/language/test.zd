@@ -1,8 +1,9 @@
 main() {
 
-int index = 154;
-index++;
-boolean val = false);
-string nombre = "hallyson";
+int index = 10;
+map teste = {0: index};
+
+teste.set{"nome ":"texto"};
 print(teste);
+
 }

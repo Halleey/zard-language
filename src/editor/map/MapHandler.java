@@ -70,5 +70,6 @@ public class MapHandler {
             parser.getVariableValues().put(mapName, new HashMap<>());
             System.out.println("[DEBUG] Mapa salvo: " + mapName + " = {}");
         }
+
     }
 }

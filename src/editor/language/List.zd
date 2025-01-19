@@ -7,12 +7,14 @@ list nome = ["zard", 18, "Desenvolvedor"];
 
 
 ##Adicionar item a lista.
-vazia.add(argumentos);
+vazia.add("argumentos");
+vazia.add("teste");
 
+print(vazia);
 
 ##Remover item especifico.
-vazia.remove("indique o índice a ser removido");
-
+vazia.remove("teste");
+print(vazia);
 
 ##limpar lista toda.
 vazia.clear();

@@ -10,6 +10,7 @@ import editor.inputs.InputStatement;
 import editor.list.ListAdd;
 import editor.list.ListHandler;
 import editor.list.ListRemove;
+import editor.map.MapAdd;
 import editor.map.MapHandler;
 import editor.process.IdentifierProcessor;
 import editor.variables.VariableStatement;
@@ -144,6 +145,9 @@ public class Parser extends GlobalClass {
                 case "print":
                     new PrintStatement(this).execute();
                     break;
+                case "map":
+                    new MapHandler(this).execute();  // Agora trata o map
+                    break;
                 case "int":
                 case "double":
                 case "string":
@@ -168,33 +172,56 @@ public class Parser extends GlobalClass {
                 case "function":
                     new FunctionStatement(this).definirFuncao();
                     break;
-                case "list":
-                    new ListHandler(this).execute();
-                    break;
-                case "map":
-                    new MapHandler(this).execute();
-                    break;
                 case "call":
                     callFunction();
+                    break;
+                case "list":
+                    new ListHandler(this).execute();
                     break;
                 case "return":
                     System.out.println("[DEBUG] Encontrado 'return'. Finalizando execução.");
                     break;
                 case "}":
                 case ";":
-                    advance();
+                    advance(); // Avança corretamente após ';'
                     break;
                 default:
                     throw new RuntimeException("Erro de sintaxe: declaração inesperada " + currentToken);
             }
         } else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
+            // Verifica se o identificador é seguido por um "."
             String identifier = currentToken.getValue();
-            advance();
+            advance(); // Avança para verificar o próximo token
 
-            // Verifica se o próximo token é um operador de incremento ou decremento
-            if (currentToken.getType() == Token.TokenType.OPERATOR &&
+            if (currentToken.getValue().equals(".")) {
+                // Consome o ponto e delega o processamento para ListAdd
+                advance(); // Avança para o método após o "."
+                System.out.println("[DEBUG] TOKEN APÓS INVOCAR LISTA: " + currentToken);
+
+                // Passa o nome da lista como parâmetro
+                if (currentToken.getType() == Token.TokenType.METHODS) {
+                    String methodName = currentToken.getValue();
+                    switch (methodName) {
+
+                        case "set":
+                            new MapAdd(this, identifier).execute();
+                            break;
+                        case "add":
+                        case "size":
+                            new ListAdd(this, identifier).execute();
+                            break;
+                        case "remove":
+                        case "clear":
+                            new ListRemove(this, identifier).execute();
+                            break;
+                        default:
+                            throw new RuntimeException("Erro: método desconhecido '" + methodName + "' para lista '" + identifier + "'.");
+                    }
+                } else {
+                    throw new RuntimeException("Erro: método esperado após '.' para a lista '" + identifier + "'.");
+                }
+            } else if (currentToken.getType() == Token.TokenType.OPERATOR &&
                     (currentToken.getValue().equals("++") || currentToken.getValue().equals("--"))) {
-
                 // Identificamos que a variável está sendo incrementada ou decrementada
                 String operator = currentToken.getValue();
                 advance();  // Avançamos para o próximo token
@@ -227,9 +254,8 @@ public class Parser extends GlobalClass {
                 } else {
                     throw new RuntimeException("Variável não declarada: " + identifier);
                 }
-
             } else {
-                // Caso não seja operação de incremento ou decremento, processa a variável normalmente
+                // Trata como uma declaração ou uso de variável normal
                 identifierProcessor.processIdentifier();
             }
 
