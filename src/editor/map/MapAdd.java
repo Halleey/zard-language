@@ -15,55 +15,57 @@ public class MapAdd {
     }
 
     public void execute() {
-
-        // Verifica se o método após o ponto é "put"
+        // Verifica se o método após o ponto é válido
         if (!parser.getCurrentToken().getType().equals(Token.TokenType.METHODS)) {
             throw new RuntimeException("Erro de sintaxe: esperado um método após o ponto.");
         }
 
         String methodName = parser.getCurrentToken().getValue();
-        parser.advance();  // Avança para o próximo token (deve ser '(')
+        parser.advance(); // Avança após o método
 
-        if (!methodName.equals("set")) {
-            throw new RuntimeException("Erro de sintaxe: método desconhecido '" + methodName + "' para o mapa.");
+        // Redireciona para o método apropriado
+        switch (methodName) {
+            case "set":
+                handleSet();
+                break;
+//            case "setOrder":
+//                handleSetOrder();
+//                break;
+            default:
+                throw new RuntimeException("Erro de sintaxe: método desconhecido '" + methodName + "' para o mapa.");
         }
+    }
 
-        // Verifica se o próximo token é um parêntese de abertura '{'
-        if (!parser.getCurrentToken().getValue().equals("{")) {
-            throw new RuntimeException("Erro de sintaxe: esperado '(' após o método 'put'.");
-        }
+    private void handleSet() {
+        validateAndConsume("{"); // Valida '{'
 
-        parser.advance();  // Avança após o '{'
-
-        // A primeira expressão é a chave
-        Object key = parser.expression();
-
-        // Verifica se o próximo token é a vírgula ':'
-        if (!parser.getCurrentToken().getValue().equals(":")) {
-            throw new RuntimeException("Erro de sintaxe: esperado ',' entre a chave e o valor.");
-        }
-        parser.advance();  // Avança após a vírgula
-
-        // A segunda expressão é o valor
+        Object key = parser.expression(); // Extrai a chave
+        validateAndConsume(":");
         Object value = parser.expression();
+        validateAndConsume("}");
 
-        // Verifica se o próximo token é o parêntese de fechamento '}'
-        if (!parser.getCurrentToken().getValue().equals("}")) {
-            throw new RuntimeException("Erro de sintaxe: esperado ')' após o valor.");
-        }
+        Map<Object, Object> map = getMap(); // Recupera o mapa
+        map.put(key, value); // Adiciona a chave e o valor ao mapa
+        System.out.println("[DEBUG] Adicionado ao mapa: " + key + " = " + value);
+    }
 
-        parser.advance();  // Avança após o '}'
-
+    private Map<Object, Object> getMap() {
         // Recupera o mapa armazenado no parser
         Map<Object, Object> map = (Map<Object, Object>) parser.getVariableValues().get(mapName);
-
         if (map == null) {
             throw new RuntimeException("Erro de execução: o mapa '" + mapName + "' não foi encontrado.");
         }
+        return map;
+    }
 
-        // Adiciona a chave e o valor ao mapa
-        map.put(key, value);
-        System.out.println("[DEBUG] Adicionado ao mapa: " + key + " = " + value);
+    private void validateAndConsume(String expected) {
+        // Verifica e consome o token esperado
+        if (!parser.getCurrentToken().getValue().equals(expected)) {
+            throw new RuntimeException(
+                    "Erro de sintaxe: esperado '" + expected + "' mas encontrado '" + parser.getCurrentToken().getValue() + "'."
+            );
+        }
+        parser.advance();
     }
 }
 
