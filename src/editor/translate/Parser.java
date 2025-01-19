@@ -13,6 +13,7 @@ import editor.list.ListRemove;
 import editor.map.MapAdd;
 import editor.map.MapHandler;
 import editor.process.IdentifierProcessor;
+import editor.variables.VariableManager;
 import editor.variables.VariableStatement;
 import editor.whiles.WhileStatement;
 import java.util.*;
@@ -191,18 +192,16 @@ public class Parser extends GlobalClass {
         } else if (currentToken.getType() == Token.TokenType.IDENTIFIER) {
             // Verifica se o identificador é seguido por um "."
             String identifier = currentToken.getValue();
-            advance(); // Avança para verificar o próximo token
+            advance();
 
             if (currentToken.getValue().equals(".")) {
-                // Consome o ponto e delega o processamento para ListAdd
-                advance(); // Avança para o método após o "."
+                advance();
                 System.out.println("[DEBUG] TOKEN APÓS INVOCAR LISTA: " + currentToken);
 
                 // Passa o nome da lista como parâmetro
                 if (currentToken.getType() == Token.TokenType.METHODS) {
                     String methodName = currentToken.getValue();
                     switch (methodName) {
-
                         case "set":
                             new MapAdd(this, identifier).execute();
                             break;
@@ -222,40 +221,13 @@ public class Parser extends GlobalClass {
                 }
             } else if (currentToken.getType() == Token.TokenType.OPERATOR &&
                     (currentToken.getValue().equals("++") || currentToken.getValue().equals("--"))) {
-                // Identificamos que a variável está sendo incrementada ou decrementada
+                VariableManager variableManager = new VariableManager(variableValues);
                 String operator = currentToken.getValue();
-                advance();  // Avançamos para o próximo token
+                advance();
 
-                // Verificamos o tipo da variável e aplicamos a operação de incremento ou decremento
-                if (variableValues.containsKey(identifier)) {
-                    Object value = variableValues.get(identifier);
+                variableManager.handleIncrementDecrement(identifier, operator);
+            }else {
 
-                    if (value instanceof Integer) {
-                        int intValue = (int) value;
-                        if (operator.equals("++")) {
-                            intValue++;  // Incrementa
-                        } else if (operator.equals("--")) {
-                            intValue--;  // Decrementa
-                        }
-                        variableValues.put(identifier, intValue);
-                        System.out.println("[DEBUG] Variável " + identifier + " atualizada para: " + intValue);
-                    } else if (value instanceof Double) {
-                        double doubleValue = (double) value;
-                        if (operator.equals("++")) {
-                            doubleValue += 1.0;  // Incrementa
-                        } else if (operator.equals("--")) {
-                            doubleValue -= 1.0;  // Decrementa
-                        }
-                        variableValues.put(identifier, doubleValue);
-                        System.out.println("[DEBUG] Variável " + identifier + " atualizada para: " + doubleValue);
-                    } else {
-                        throw new RuntimeException("Tipo de variável incompatível para incremento/decremento: " + identifier);
-                    }
-                } else {
-                    throw new RuntimeException("Variável não declarada: " + identifier);
-                }
-            } else {
-                // Trata como uma declaração ou uso de variável normal
                 identifierProcessor.processIdentifier();
             }
 
@@ -268,7 +240,6 @@ public class Parser extends GlobalClass {
                     currentToken.getType() + " " + currentToken.getValue());
         }
     }
-
 
     public void callFunction() {
         ValidateArgs validateArgs = new ValidateArgs();

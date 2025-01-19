@@ -1,0 +1,10 @@
+#Inicializar um mapa vazio
+map mapa;
+
+#Iniciar uma lista com valores
+map teste = {0: index};
+
+
+#inserir um valor
+#Seja inteiros, textos e afins.
+mapa.set{"Key":"Value"};

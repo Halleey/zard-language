@@ -1,10 +1,11 @@
 main() {
+int a;
+a++;
+print(a);
+a++;
+print(a);a++;
+         print(a);
+         a--;
 
-int index = 10;
-map teste = {0: index};
-
-teste.set{"nome ":"texto"};
-teste.set{"1":"de"};
-print(teste);
 
 }
