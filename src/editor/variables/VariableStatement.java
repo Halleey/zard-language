@@ -18,8 +18,13 @@ public class VariableStatement {
         String type = parser.getCurrentToken().getValue();
         parser.eat(Token.TokenType.KEYWORD);
         String variableName = parser.getCurrentToken().getValue();
-        parser.eat(Token.TokenType.IDENTIFIER);
 
+        // Verifica se o nome já está em uso
+        if (variableTypes.containsKey(variableName)) {
+            throw new RuntimeException("Erro: Já existe uma variável declarada com o nome '" + variableName + "'.");
+        }
+
+        parser.eat(Token.TokenType.IDENTIFIER);
         variableTypes.put(variableName, type); // Armazena o tipo da variável
 
         if (parser.getCurrentToken().getType() == Token.TokenType.OPERATOR &&

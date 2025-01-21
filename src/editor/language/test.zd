@@ -1,11 +1,15 @@
 main() {
-int a;
+int a =5;
 a++;
+
+while(a < 10) {
+int teste = 4;
+print(teste);
 print(a);
+teste++;
 a++;
-print(a);a++;
-         print(a);
-         a--;
+}
+
 
 
 }

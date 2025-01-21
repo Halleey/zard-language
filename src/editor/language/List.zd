@@ -8,9 +8,9 @@ list nome = ["zard", 18, "Desenvolvedor"];
 
 ##Adicionar item a lista.
 vazia.add("argumentos");
-vazia.add("teste");
+vazia.add(17);
 
-print(vazia);
+
 
 ##Remover item especifico.
 vazia.remove("teste");

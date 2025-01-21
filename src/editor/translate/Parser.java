@@ -241,6 +241,9 @@ public class Parser extends GlobalClass {
         }
     }
 
+
+
+
     public void callFunction() {
         ValidateArgs validateArgs = new ValidateArgs();
         advance();

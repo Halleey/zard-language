@@ -72,10 +72,8 @@ public class WhileStatement extends GlobalClass {
         while (!(parser.getCurrentToken().getType() == Token.TokenType.DELIMITER &&
                 "}".equals(parser.getCurrentToken().getValue()) && braceLevel == 0)) {
 
-
             if (parser.getCurrentToken().getValue().equals("return")) {
                 setFoundReturn(true);
-
                 skipWhile.skipToEndOfFunction();
                 return;
             }
@@ -88,7 +86,13 @@ public class WhileStatement extends GlobalClass {
                 }
             }
 
-            parser.statement();
+            try {
+                parser.statement(); // Processa a próxima declaração
+            } catch (RuntimeException e) {
+                System.out.println("Erro ao processar token: " + parser.getCurrentToken().getType());
+                parser.advance(); // Avança para evitar travamento
+            }
+
             if (parser.getCurrentToken().getType() == Token.TokenType.EOF) {
                 throw new RuntimeException("Erro de sintaxe: bloco não terminado");
             }
