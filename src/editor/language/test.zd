@@ -1,15 +1,19 @@
 main() {
-int a =5;
-a++;
 
-while(a < 10) {
-int teste = 4;
-print(teste);
-print(a);
-teste++;
-a++;
+
+int a = 0;
+
+if(a == 2) {
+
+while() {
+    a++;
+    print("testando");
+} 
+else {
+    print("não era igual");
 }
 
 
-
+print("testando isso aqui");
+}
 }
