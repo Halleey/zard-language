@@ -2,8 +2,10 @@
 map mapa;
 
 #Iniciar uma lista com valores
-map teste = {0: index};
+map teste = {0: "index", 1 : "main"};
 
+#Ira pegar o primeiro o item de índice 1
+teste.get{1}; #saída será "main"
 
 #inserir um valor
 #Seja inteiros, textos e afins.

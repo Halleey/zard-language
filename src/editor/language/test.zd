@@ -1,19 +1,7 @@
 main() {
 
 
-int a = 0;
+map teste = {0: "index", 1 : "pokemon"};
 
-if(a == 2) {
-
-while() {
-    a++;
-    print("testando");
-} 
-else {
-    print("não era igual");
-}
-
-
-print("testando isso aqui");
-}
+teste.get{1};
 }

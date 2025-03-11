@@ -11,6 +11,7 @@ import editor.list.ListAdd;
 import editor.list.ListHandler;
 import editor.list.ListRemove;
 import editor.map.MapAdd;
+import editor.map.MapGet;
 import editor.map.MapHandler;
 import editor.process.IdentifierProcessor;
 import editor.variables.VariableManager;
@@ -204,6 +205,9 @@ public class Parser extends GlobalClass {
                     switch (methodName) {
                         case "set":
                             new MapAdd(this, identifier).execute();
+                            break;
+                        case "get":
+                            new MapGet(this, identifier).execute();
                             break;
                         case "add":
                         case "size":
