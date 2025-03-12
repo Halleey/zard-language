@@ -18,7 +18,9 @@ public class ListHandler {
         String listName = parser.getCurrentToken().getValue();
         parser.advance();
 
-        // Verifica se é uma inicialização
+        // Mapa de apoio para tomada de decisão no parser
+        parser.getVariableType().put(listName, "list");
+         // Verifica se é uma inicialização
         if (parser.getCurrentToken().getValue().equals("=")) {
             parser.advance();
 

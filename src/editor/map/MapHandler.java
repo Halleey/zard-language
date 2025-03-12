@@ -4,7 +4,6 @@ import editor.translate.Parser;
 import editor.translate.Token;
 import java.util.HashMap;
 import java.util.Map;
-
 public class MapHandler {
     private final Parser parser;
 
@@ -13,9 +12,12 @@ public class MapHandler {
     }
 
     public void execute() {
-        parser.eat(Token.TokenType.KEYWORD); // Consome a palavra-chave 'map'
+        parser.eat(Token.TokenType.KEYWORD);
         String mapName = parser.getCurrentToken().getValue();
         parser.advance();
+
+        parser.getVariableType().put(mapName, "map");
+        System.out.println("[DEBUG] Tipo da variável " + mapName + ": " + parser.getVariableType().get(mapName));
 
         // Verifica se é uma inicialização
         if (parser.getCurrentToken().getValue().equals("=")) {
@@ -70,6 +72,5 @@ public class MapHandler {
             parser.getVariableValues().put(mapName, new HashMap<>());
             System.out.println("[DEBUG] Mapa salvo: " + mapName + " = {}");
         }
-
     }
 }

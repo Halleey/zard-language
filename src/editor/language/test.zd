@@ -1,10 +1,13 @@
 main() {
 
 
-map teste = {0: "index", 1 : "pokemon"};
-list nome = ["zard", 18, "Desenvolvedor"];
+map mapa = {0: "index", 1 : "pokemon"};
+list lista = ["zard", 18, "Desenvolvedor"];
 
 
-teste.get{1};
+mapa.get{1};
+mapa.set{"Key":"Value"};
 
+lista.get(1);
+print(mapa);
 }

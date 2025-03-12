@@ -8,6 +8,7 @@ import editor.globals.PrintStatement;
 import editor.ifStatement.IfStatement;
 import editor.inputs.InputStatement;
 import editor.list.ListAdd;
+import editor.list.ListGet;
 import editor.list.ListHandler;
 import editor.list.ListRemove;
 import editor.map.MapAdd;
@@ -25,14 +26,24 @@ public class Parser extends GlobalClass {
     private int pos;
     private Token currentToken;
     private final Map<String, Object> variableValues;
+    private final Map<String, String > variableType;
     private boolean mainFound;
     private int whilePosition;
     private ExpressionStatement expressionEvaluator;
     private final ValidateFunction validateFunction;
     private final IdentifierProcessor identifierProcessor;
 
-
-
+    public Parser(List<Token> tokens) {
+        this.tokens = tokens;
+        this.pos = 0;
+        this.currentToken = tokens.get(pos);
+        this.variableValues = new HashMap<>();
+        this.mainFound = false;
+        this.variableType = new HashMap<>();
+        this.expressionEvaluator = new ExpressionStatement(this); // Inicializa expressionEvaluator
+        this.validateFunction = new ValidateFunction(this);
+        this.identifierProcessor = new IdentifierProcessor(this, variableValues);
+    }
 
 
     public void backToWhile() {
@@ -51,15 +62,8 @@ public class Parser extends GlobalClass {
         System.out.println("[DEBUG] Token 'while' não encontrado. Chegou ao início.");
     }
 
-    public Parser(List<Token> tokens) {
-        this.tokens = tokens;
-        this.pos = 0;
-        this.currentToken = tokens.get(pos);
-        this.variableValues = new HashMap<>();
-        this.mainFound = false;
-        this.expressionEvaluator = new ExpressionStatement(this); // Inicializa expressionEvaluator
-        this.validateFunction = new ValidateFunction(this);
-        this.identifierProcessor = new IdentifierProcessor(this, variableValues);
+    public Map<String, String> getVariableType() {
+        return variableType;
     }
 
     public Token getCurrentToken() {
@@ -144,7 +148,8 @@ public class Parser extends GlobalClass {
         return expressionEvaluator.calc();
     }
     public void statement() {
-        System.out.println("[DEBUG] Processando declaração: " + currentToken);
+//        System.out.println("[DEBUG] Processando declaração: " + currentToken);
+//        System.out.println("[-----] PROCESSANDO VALOR DO TIPO " + getVariableType());
 
         if (currentToken.getType() == Token.TokenType.KEYWORD) {
             switch (currentToken.getValue()) {
@@ -198,7 +203,6 @@ public class Parser extends GlobalClass {
             // Verifica se o identificador é seguido por um "."
             String identifier = currentToken.getValue();
             advance();
-
             if (currentToken.getValue().equals(".")) {
                 advance();
                 System.out.println("[DEBUG] TOKEN APÓS INVOCAR ESTRUTURA DE DADOS: " + currentToken);
@@ -210,7 +214,14 @@ public class Parser extends GlobalClass {
                             new MapAdd(this, identifier).execute();
                             break;
                         case "get":
-                            new MapGet(this, identifier).execute();
+                            if (getVariableType().get(identifier).equals("map")) {
+                                new MapGet(this, identifier).execute();
+                            } else if (getVariableType().get(identifier).equals("list")) {
+                                new ListGet(identifier, this).execute();
+                            } else {
+                                throw new RuntimeException("Tipo desconhecido para 'get': " + identifier);
+                            }
+
                             break;
                         case "add":
                         case "size":
@@ -247,6 +258,9 @@ public class Parser extends GlobalClass {
                     currentToken.getType() + " " + currentToken.getValue());
         }
     }
+
+
+
 
 
     public void callFunction() {
