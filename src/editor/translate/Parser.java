@@ -32,8 +32,12 @@ public class Parser extends GlobalClass {
     private final IdentifierProcessor identifierProcessor;
 
 
+
+
+
     public void backToWhile() {
         System.out.println("[DEBUG] Backtracking to 'while'...");
+
         while (pos >= 0) {
             if (currentToken.getType() == Token.TokenType.KEYWORD &&
                     "while".equals(currentToken.getValue())) {
@@ -197,9 +201,8 @@ public class Parser extends GlobalClass {
 
             if (currentToken.getValue().equals(".")) {
                 advance();
-                System.out.println("[DEBUG] TOKEN APÓS INVOCAR LISTA: " + currentToken);
+                System.out.println("[DEBUG] TOKEN APÓS INVOCAR ESTRUTURA DE DADOS: " + currentToken);
 
-                // Passa o nome da lista como parâmetro
                 if (currentToken.getType() == Token.TokenType.METHODS) {
                     String methodName = currentToken.getValue();
                     switch (methodName) {
@@ -244,8 +247,6 @@ public class Parser extends GlobalClass {
                     currentToken.getType() + " " + currentToken.getValue());
         }
     }
-
-
 
 
     public void callFunction() {
@@ -295,6 +296,7 @@ public class Parser extends GlobalClass {
     }
 
     public void parse() {
+
         while (currentToken.getType() != Token.TokenType.EOF) {
             if (currentToken.getValue().equals("main")) {
                 System.out.println("[DEBUG] Iniciando análise do método main...");

@@ -2,6 +2,9 @@ main() {
 
 
 map teste = {0: "index", 1 : "pokemon"};
+list nome = ["zard", 18, "Desenvolvedor"];
+
 
 teste.get{1};
+
 }
