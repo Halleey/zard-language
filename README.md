@@ -16,7 +16,6 @@ Zard é uma linguagem de programação baseada em Java, criada para fins de estu
 main(){
     function teste(int a int b) {
         int resultado = a + b;
-        int cont = 0;
         return resultado;
     }
     
