@@ -11,7 +11,6 @@ import java.util.List;
 public class Execute {
 
     public static void main(String[] args) {
-
         try {
             // Lê o arquivo com o código-fonte
             String input = new String(Files.readAllBytes(Paths.get("src/editor/language/test.zd")));
@@ -19,8 +18,6 @@ public class Execute {
             // Pré-processa o código para substituir macros
             PreProcess preprocessor = new PreProcess(input, basePatch);
             String preprocessedCode = preprocessor.preprocess();
-
-            List lista = new ArrayList();
 
             // Exibe o código pré-processado
             System.out.println("Código pré-processado:\n" + preprocessedCode);

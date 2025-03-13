@@ -14,10 +14,13 @@ import editor.list.ListRemove;
 import editor.map.MapAdd;
 import editor.map.MapGet;
 import editor.map.MapHandler;
+import editor.map.MapRemove;
 import editor.process.IdentifierProcessor;
 import editor.variables.VariableManager;
 import editor.variables.VariableStatement;
 import editor.whiles.WhileStatement;
+
+import javax.management.RuntimeErrorException;
 import java.util.*;
 
 
@@ -232,7 +235,15 @@ public class Parser extends GlobalClass {
                             break;
                         case "remove":
                         case "clear":
-                            new ListRemove(this, identifier).execute();
+                            if(getVariableType().get(identifier).equals("map")) {
+                                new MapRemove(this,identifier).execute();
+                            }
+                            else if (getVariableType().get(identifier).equals("list")){
+                                new ListRemove(this, identifier).execute();
+                            }
+                            else {
+                                throw new RuntimeException("Tipo desconhecido para 'get'" + identifier);
+                            }
                             break;
                         default:
                             throw new RuntimeException("Erro: método desconhecido '" + methodName + "' para lista '" + identifier + "'.");
