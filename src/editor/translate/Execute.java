@@ -5,6 +5,7 @@ import editor.process.PreProcess;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Execute {
@@ -18,6 +19,8 @@ public class Execute {
             // Pré-processa o código para substituir macros
             PreProcess preprocessor = new PreProcess(input, basePatch);
             String preprocessedCode = preprocessor.preprocess();
+
+            List lista = new ArrayList();
 
             // Exibe o código pré-processado
             System.out.println("Código pré-processado:\n" + preprocessedCode);

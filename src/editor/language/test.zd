@@ -9,5 +9,7 @@ mapa.get{1};
 mapa.set{"Key":"Value"};
 
 lista.get(1);
+lista.size();
+print(lista);
 print(mapa);
 }

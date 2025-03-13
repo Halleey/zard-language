@@ -3,6 +3,9 @@ package editor.list;
 import editor.translate.Parser;
 import editor.translate.Token;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ListAdd {
 
     private final Parser parser;
@@ -33,11 +36,12 @@ public class ListAdd {
             throw new RuntimeException("Erro: a variável '" + listName + "' não existe ou não é uma lista.");
         }
 
-        // Lida com métodos específicos
-        switch (methodName) {
-            case "add" -> handleAdd(listStatement);
-            case "size" -> handleSize(listStatement);
-            default -> throw new RuntimeException("Erro: método desconhecido '" + methodName + "'.");
+
+        if (methodName.equals("add")) {
+            handleAdd(listStatement);
+
+        } else {
+            throw new RuntimeException("Erro: método desconhecido '" + methodName + "'.");
         }
 
         // Verifica se o próximo token é ")"
@@ -56,9 +60,7 @@ public class ListAdd {
 
         System.out.println("[DEBUG] Elemento adicionado à lista: " + element);
     }
+    //possivel nova implementação
+    List lista = new ArrayList();
 
-    public void handleSize(ListStatement listStatement) {
-        System.out.println("invocando tamanho da lista");
-        System.out.println(listStatement.size());
-    }
 }

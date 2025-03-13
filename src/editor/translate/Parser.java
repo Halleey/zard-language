@@ -214,6 +214,7 @@ public class Parser extends GlobalClass {
                             new MapAdd(this, identifier).execute();
                             break;
                         case "get":
+                        case "size":
                             if (getVariableType().get(identifier).equals("map")) {
                                 new MapGet(this, identifier).execute();
                             } else if (getVariableType().get(identifier).equals("list")) {
@@ -221,10 +222,9 @@ public class Parser extends GlobalClass {
                             } else {
                                 throw new RuntimeException("Tipo desconhecido para 'get': " + identifier);
                             }
-
                             break;
                         case "add":
-                        case "size":
+                        case "addAll":
                             new ListAdd(this, identifier).execute();
                             break;
                         case "remove":

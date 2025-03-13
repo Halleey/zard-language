@@ -19,12 +19,21 @@ public class ListGet {
         }
         String methodName = parser.getCurrentToken().getValue();
         parser.advance();
+        ListStatement listStatement = (ListStatement) parser.getVariableValues().get(nameList);
 
-        if (methodName.equals("get")) {
-            handleGetItemList();
-        } else {
-            throw new RuntimeException("Erro: método desconhecido '" + methodName + "' para listas.");
+        switch (methodName) {
+            case "get" -> handleGetItemList();
+            case "size" -> sizeList(listStatement);
+            default -> throw new RuntimeException("Erro: método desconhecido '" + methodName + "'.");
         }
+    }
+
+    private void sizeList(ListStatement listStatement) {
+        validateAndConsume("(");
+        validateAndConsume(")");
+
+        System.out.println("Recuperando tamamnho da lista");
+        System.out.println(listStatement.size());
     }
 
     private void handleGetItemList() {
