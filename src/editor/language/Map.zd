@@ -19,5 +19,8 @@ teste.getKeys();
 test.getValues();
 
 
+#Limpar o mapa
+test.clear();
+
 #Remover item do mapa
 test.remove{0}; #item de indice 0 será removido

@@ -28,7 +28,6 @@ public class MapRemove {
         switch (methodName) {
             case "remove"->
                 removeItem();
-
             case "clear"->
                 removeAll();
         }
@@ -47,8 +46,22 @@ public class MapRemove {
         map.clear();
     }
 
+
     private void removeItem() {
+        parser.eat(Token.TokenType.DELIMITER);
+        Object indice = parser.expression();
+        parser.eat(Token.TokenType.DELIMITER);
 
+        Map<Object, Object> map = (Map<Object, Object>) parser.getVariableValues().get(mapName);
+        if (map == null) {
+            throw new RuntimeException("Erro: o mapa '" + mapName + "' não existe.");
+        }
 
+        if (map.containsKey(indice)) {
+            map.remove(indice);
+            System.out.println("Chave '" + indice + "' removida do mapa.");
+        } else {
+            throw new RuntimeException("Erro: chave '" + indice + "' não encontrada no mapa.");
+        }
     }
 }

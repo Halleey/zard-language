@@ -8,7 +8,6 @@ print("ola mundo");
 teste.getValues();
 
 
-teste.clear();
-
+teste.remove{0};
 print(teste);
 }
