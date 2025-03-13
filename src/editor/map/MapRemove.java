@@ -46,7 +46,6 @@ public class MapRemove {
         map.clear();
     }
 
-
     private void removeItem() {
         parser.eat(Token.TokenType.DELIMITER);
         Object indice = parser.expression();

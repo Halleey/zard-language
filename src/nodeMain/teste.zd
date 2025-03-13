@@ -1,0 +1,8 @@
+int x = 10;
+double y = 5.5;
+string nome = "Zard";
+boolean ativo = true;
+
+x = 20;
+nome = "NovaString";
+ativo = false;

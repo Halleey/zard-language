@@ -1,13 +1,10 @@
-main() {
-map teste = {0: "index", 1 : "main"};
+    main(){
 
+    function teste(int a int b) {
+    int resultado = a + b;
+    return resultado;
+    }
 
-
-teste.getKeys();
-print("ola mundo");
-teste.getValues();
-
-
-teste.remove{0};
-print(teste);
-}
+    call teste(19 20);
+    ##gera resultado da soma.
+    }
