@@ -85,6 +85,7 @@ public class Lexer {
             case "size":
             case "set":
             case "get":
+            case "getValues":
             case "getKeys":
                 return  new Token(Token.TokenType.METHODS, identifier);
             case "true":

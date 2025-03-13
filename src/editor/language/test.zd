@@ -5,4 +5,5 @@ map teste = {0: "index", 1 : "main"};
 
 teste.getKeys();
 print("ola mundo");
-}
+teste.getValues();
+}s

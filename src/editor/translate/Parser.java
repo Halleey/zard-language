@@ -223,7 +223,7 @@ public class Parser extends GlobalClass {
                                 throw new RuntimeException("Tipo desconhecido para 'get': " + identifier);
                             }
                             break;
-                        case "getKeys":
+                        case "getKeys", "getValues":
                             new MapGet(this, identifier).execute();
                             break;
                         case "add":

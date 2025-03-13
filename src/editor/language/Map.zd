@@ -10,3 +10,10 @@ teste.get{1}; #saída será "main"
 #inserir um valor
 #Seja inteiros, textos e afins.
 mapa.set{"Key":"Value"};
+
+
+##Retorna todas as chaves do mapa
+teste.getKeys();
+
+##Retorna todos valores do mapa
+test.getValues();

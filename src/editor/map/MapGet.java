@@ -26,6 +26,9 @@ public class MapGet {
             case "get":
                 handleGet();
                 break;
+            case "getValues":
+                handleValues();
+                break;
             case "getKeys":
                 handleKeys();
                 break;
@@ -71,6 +74,12 @@ public class MapGet {
         System.out.println(map.keySet());
     }
 
+    private void handleValues() {
+        parser.eat(Token.TokenType.DELIMITER);
+        parser.eat(Token.TokenType.DELIMITER);
+        Map<Object, Object> map = getMap();
+        System.out.println(map.values());
+    }
 
 
     private void validateAndConsume(String expected) {
