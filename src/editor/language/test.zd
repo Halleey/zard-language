@@ -1,15 +1,8 @@
 main() {
 
 
-map mapa = {0: "index", 1 : "pokemon"};
 list lista = ["zard", 18, "Desenvolvedor"];
 
-
-mapa.get{1};
-mapa.set{"Key":"Value"};
-
-lista.get(1);
-lista.size();
+lista.addAll("hallyson", 18, "developer");
 print(lista);
-print(mapa);
 }

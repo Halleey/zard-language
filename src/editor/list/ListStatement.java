@@ -27,7 +27,12 @@ public class ListStatement {
             objectList.clear();
         }
 
-        public boolean remove(Object element) {
+        public void addAll(List<Object> elements) {
+            objectList.addAll(elements);
+        }
+
+
+    public boolean remove(Object element) {
             if (element instanceof Integer && ((Integer) element >= 0 && (Integer) element < objectList.size())) {
                 objectList.remove((int) element);
                 return true;

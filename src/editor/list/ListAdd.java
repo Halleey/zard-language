@@ -6,6 +6,7 @@ import editor.translate.Token;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class ListAdd {
 
     private final Parser parser;
@@ -35,13 +36,9 @@ public class ListAdd {
         if (listStatement == null) {
             throw new RuntimeException("Erro: a variável '" + listName + "' não existe ou não é uma lista.");
         }
-
-
-        if (methodName.equals("add")) {
-            handleAdd(listStatement);
-
-        } else {
-            throw new RuntimeException("Erro: método desconhecido '" + methodName + "'.");
+        switch (methodName) {
+            case "add" ->handleAdd(listStatement);
+            case "addAll" -> handleAddAll(listStatement);
         }
 
         // Verifica se o próximo token é ")"
@@ -60,7 +57,23 @@ public class ListAdd {
 
         System.out.println("[DEBUG] Elemento adicionado à lista: " + element);
     }
-    //possivel nova implementação
-    List lista = new ArrayList();
+
+    private void handleAddAll(ListStatement listStatement) {
+        List<Object> elements = new ArrayList<>();
+
+        while (!parser.getCurrentToken().getValue().equals(")")) {
+            elements.add(parser.expression());
+
+            // separando itens por virgula
+            if (parser.getCurrentToken().getValue().equals(",")) {
+                parser.advance();
+            } else {
+                break;
+            }
+        }
+        listStatement.addAll(elements);
+        System.out.println("[DEBUG] Elementos adicionados à lista: " + elements);
+    }
+
 
 }
