@@ -26,6 +26,9 @@ public class MapGet {
             case "get":
                 handleGet();
                 break;
+            case "getKeys":
+                handleKeys();
+                break;
             default:
                 throw new RuntimeException("Erro de sintaxe: método desconhecido '" + methodName + "' para o mapa.");
         }
@@ -56,6 +59,19 @@ public class MapGet {
         }
         return map;
     }
+
+    private void handleKeys() {
+        System.out.println("TOKEN----" + parser.getCurrentToken());
+        parser.eat(Token.TokenType.DELIMITER);
+        parser.eat(Token.TokenType.DELIMITER);
+        System.out.println("TOKEN----" + parser.getCurrentToken());
+
+        Map<Object, Object> map = getMap();
+
+        System.out.println(map.keySet());
+    }
+
+
 
     private void validateAndConsume(String expected) {
         // Verifica e consome o token esperado

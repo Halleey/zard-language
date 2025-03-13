@@ -1,8 +1,8 @@
 main() {
+map teste = {0: "index", 1 : "main"};
 
 
-list lista = ["zard", 18, "Desenvolvedor"];
 
-lista.addAll("hallyson", 18, "developer");
-print(lista);
+teste.getKeys();
+print("ola mundo");
 }

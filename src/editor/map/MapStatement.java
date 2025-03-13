@@ -2,6 +2,7 @@ package editor.map;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 
 public class MapStatement<K, V> {
@@ -31,6 +32,10 @@ public class MapStatement<K, V> {
             throw new IllegalArgumentException("Chave não encontrada: " + key);
         }
         return objectMap.remove(key);
+    }
+
+    public Set<K> getKeys() {
+        return objectMap.keySet();
     }
 
     public boolean containsKey(K key) {

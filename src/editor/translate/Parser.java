@@ -223,6 +223,9 @@ public class Parser extends GlobalClass {
                                 throw new RuntimeException("Tipo desconhecido para 'get': " + identifier);
                             }
                             break;
+                        case "getKeys":
+                            new MapGet(this, identifier).execute();
+                            break;
                         case "add":
                         case "addAll":
                             new ListAdd(this, identifier).execute();
